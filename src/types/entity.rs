@@ -1,4 +1,11 @@
 use serde::Deserialize;
+
+#[derive(Debug)]
+pub struct BasicAuth {
+    pub user: String,
+    pub password: String,
+}
+
 #[derive(Deserialize, Debug)]
 pub struct SessionInfo {
     #[serde(rename="blocklist-enabled")]

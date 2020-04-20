@@ -12,20 +12,11 @@ extern crate tokio_postgres;
 
 use reqwest::header::CONTENT_TYPE;
 
-pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+pub mod types;
+use types::{Result, RpcResponse, SessionGet, SessionInfo};
+use types::BasicAuth;
 
-#[derive(Debug)]
-struct BasicAuth {
-    user: String,
-    password: String,
-}
-
-mod models;
-use models::request::SessionGet;
-use models::response::RpcResponse;
-use models::entity::SessionInfo;
-
-struct TransClient {
+pub struct TransClient {
     url: String,
     auth: Option<BasicAuth>
 }
@@ -73,6 +64,7 @@ impl TransClient {
         session_id
     }
 
+    
     pub async fn get_session(&self) -> Result<RpcResponse<SessionInfo>> {
         info!("Loaded auth: {:?}", &self.auth);
         let rq: reqwest::RequestBuilder = self.rpc_request()
@@ -110,7 +102,7 @@ mod tests {
     async fn it_works() -> Result<()> {
         dotenv().ok();
         env_logger::init();
-        let url= env::var("URL")?;
+        let url= env::var("TURL")?;
         let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
         TransClient::with_auth(&url, basic_auth).get_session().await;
         Ok(())
