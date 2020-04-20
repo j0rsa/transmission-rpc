@@ -5,8 +5,12 @@ pub struct SessionGet {
     method: String
 }
 
-impl Default for SessionGet{
-    fn default() -> SessionGet {
+impl SessionGet{
+    pub fn new() -> SessionGet {
         SessionGet { method: String::from("session-get") }
    }
 }
+
+
+pub trait RpcRequestArgument {}
+impl RpcRequestArgument for SessionGet{}

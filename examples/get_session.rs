@@ -12,7 +12,7 @@ async fn main() -> Result<()> {
     let url= env::var("TURL")?;
     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
     let client = TransClient::with_auth(&url, basic_auth);
-    let response: Result<RpcResponse<SessionInfo>> = client.get_session().await;
+    let response: Result<RpcResponse<SessionInfo>> = client.session_get().await;
     match response {
         Ok(_) => println!("Yay!"),
         Err(_) => panic!("Oh no!")

@@ -1,5 +1,5 @@
-#[allow(unused_imports)]
-#[allow(dead_code)]
+// #[allow(unused_imports)]
+// #[allow(dead_code)]
 
 extern crate ajson;
 extern crate bb8;
@@ -10,10 +10,12 @@ extern crate log;
 extern crate reqwest;
 extern crate tokio_postgres;
 
+use serde::Serialize;
+use serde::de::DeserializeOwned;
 use reqwest::header::CONTENT_TYPE;
 
 pub mod types;
-use types::{Result, RpcResponse, SessionGet, SessionInfo};
+use types::{Result, RpcRequestArgument, RpcResponse, RpcResponseArgument, SessionGet, SessionInfo};
 use types::BasicAuth;
 
 pub struct TransClient {
@@ -50,7 +52,7 @@ impl TransClient {
     async fn get_session_id(&self) -> String {
         info!("Requesting session id info");
         let response: reqwest::Response = self.rpc_request()
-        .json(&SessionGet::default())
+        .json(&SessionGet::new())
         .send()
         .await
         .unwrap();
@@ -65,15 +67,24 @@ impl TransClient {
     }
 
     
-    pub async fn get_session(&self) -> Result<RpcResponse<SessionInfo>> {
+    pub async fn session_get(&self) -> Result<RpcResponse<SessionInfo>> {
+        self.call(SessionGet::new()).await
+    }
+
+    pub async fn torrent_get(&self) -> Result<RpcResponse<>>{}
+
+    async fn call<T, U> (&self, request: T) -> Result<RpcResponse<U>>
+    where   T : RpcRequestArgument + Serialize,
+            U : RpcResponseArgument + DeserializeOwned + std::fmt::Debug
+    {
         info!("Loaded auth: {:?}", &self.auth);
         let rq: reqwest::RequestBuilder = self.rpc_request()
             .header("X-Transmission-Session-Id", self.get_session_id().await)
-            .json(&SessionGet::default());
-        debug!("Request body: {:?}", rq.try_clone().unwrap().body_string()?);
+            .json(&request);
+        info!("Request body: {:?}", rq.try_clone().unwrap().body_string()?);
         let resp: reqwest::Response = rq.send().await?;
         // print!("{:?}", resp.text().await);
-        let rpc_response: RpcResponse<SessionInfo> = resp.json().await?;
+        let rpc_response: RpcResponse<U> = resp.json().await?;
         info!("{:#?}", rpc_response);
         Ok(rpc_response)
     }
@@ -104,7 +115,7 @@ mod tests {
         env_logger::init();
         let url= env::var("TURL")?;
         let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
-        TransClient::with_auth(&url, basic_auth).get_session().await;
+        TransClient::with_auth(&url, basic_auth).session_get().await;
         Ok(())
     }
 }
