@@ -68,6 +68,7 @@ pub struct Torrent {
     pub status: Option<i64>,
     #[serde(rename="totalSize")]
     pub total_size: Option<i64>,
+    pub trackers: Option<Vec<Trackers>>,
     #[serde(rename="uploadRatio")]
     pub upload_ratio: Option<f32>,
     #[serde(rename="uploadedEver")]
@@ -78,4 +79,10 @@ impl RpcResponseArgument for Torrents<Torrent>{}
 #[derive(Deserialize, Debug, RustcEncodable)]
 pub struct Torrents<T> {
     pub torrents: Vec<T>
+}
+
+#[derive(Deserialize, Debug, RustcEncodable)]
+pub struct Trackers {
+    pub id: i32,
+    pub announce: String,
 }
