@@ -8,7 +8,11 @@ license-file = "LICENSE"
 readme = "README.md"
 description = "Transmission JRPC client"
 keywords = ["transmission", "torrent", "jrpc"]
-categories = ["API bindings"]
+categories = ["api-bindings"]
+include = [
+    "**/*.rs",
+    "Cargo.toml",
+]
 
 [dependencies]
 dotenv = "0.15.0"
