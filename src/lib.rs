@@ -2,13 +2,10 @@
 // #[allow(dead_code)]
 
 extern crate ajson;
-extern crate bb8;
-extern crate bb8_postgres;
 extern crate env_logger;
 #[macro_use]
 extern crate log;
 extern crate reqwest;
-extern crate tokio_postgres;
 
 use serde::de::DeserializeOwned;
 use reqwest::header::CONTENT_TYPE;
