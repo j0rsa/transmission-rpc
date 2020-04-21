@@ -10,10 +10,12 @@ pub struct BasicAuth {
     pub password: String,
 }
 
-pub(crate) use self::request::RpcRequestArgument;
-pub(crate) use self::request::SessionGet;
+pub(crate) use self::request::RpcRequest;
+pub use self::request::ArgumentFields;
+pub use self::request::TorrentGetField;
 
 pub use self::response::RpcResponse;
-
 pub(crate) use self::response::RpcResponseArgument;
-pub use self::response::SessionInfo;
+pub use self::response::SessionGet;
+pub use self::response::Torrents;
+pub use self::response::Torrent;

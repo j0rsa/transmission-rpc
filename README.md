@@ -5,7 +5,7 @@ spec: https://github.com/transmission/transmission/blob/master/extras/rpc-spec.t
 Supported Methods:
 
 - [ ] torrent-set
-- [ ] torrent-get
+- [X] torrent-get
 - [ ] torrent-add
 - [ ] torrent-remove
 - [ ] torrent-set-location

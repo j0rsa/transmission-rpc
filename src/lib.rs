@@ -10,13 +10,14 @@ extern crate log;
 extern crate reqwest;
 extern crate tokio_postgres;
 
-use serde::Serialize;
 use serde::de::DeserializeOwned;
 use reqwest::header::CONTENT_TYPE;
 
 pub mod types;
-use types::{Result, RpcRequestArgument, RpcResponse, RpcResponseArgument, SessionGet, SessionInfo};
 use types::BasicAuth;
+use types::{Result, RpcResponse, RpcResponseArgument, RpcRequest};
+use types::SessionGet;
+use types::{TorrentGetField, Torrents, Torrent};
 
 pub struct TransClient {
     url: String,
@@ -52,7 +53,7 @@ impl TransClient {
     async fn get_session_id(&self) -> String {
         info!("Requesting session id info");
         let response: reqwest::Response = self.rpc_request()
-        .json(&SessionGet::new())
+        .json(&RpcRequest::session_get())
         .send()
         .await
         .unwrap();
@@ -67,15 +68,16 @@ impl TransClient {
     }
 
     
-    pub async fn session_get(&self) -> Result<RpcResponse<SessionInfo>> {
-        self.call(SessionGet::new()).await
+    pub async fn session_get(&self) -> Result<RpcResponse<SessionGet>> {
+        self.call(RpcRequest::session_get()).await
     }
 
-    pub async fn torrent_get(&self) -> Result<RpcResponse<>>{}
+    pub async fn torrent_get(&self, fields: Vec<TorrentGetField>) -> Result<RpcResponse<Torrents<Torrent>>> {
+        self.call(RpcRequest::torrent_get(fields)).await
+    }
 
-    async fn call<T, U> (&self, request: T) -> Result<RpcResponse<U>>
-    where   T : RpcRequestArgument + Serialize,
-            U : RpcResponseArgument + DeserializeOwned + std::fmt::Debug
+    async fn call<RS> (&self, request: RpcRequest) -> Result<RpcResponse<RS>>
+    where   RS : RpcResponseArgument + DeserializeOwned + std::fmt::Debug
     {
         info!("Loaded auth: {:?}", &self.auth);
         let rq: reqwest::RequestBuilder = self.rpc_request()
@@ -83,9 +85,8 @@ impl TransClient {
             .json(&request);
         info!("Request body: {:?}", rq.try_clone().unwrap().body_string()?);
         let resp: reqwest::Response = rq.send().await?;
-        // print!("{:?}", resp.text().await);
-        let rpc_response: RpcResponse<U> = resp.json().await?;
-        info!("{:#?}", rpc_response);
+        let rpc_response: RpcResponse<RS> = resp.json().await?;
+        info!("Response body: {:#?}", rpc_response);
         Ok(rpc_response)
     }
 }
@@ -105,7 +106,8 @@ impl BodyString for reqwest::RequestBuilder {
 #[cfg(test)]
 mod tests {
     use crate::Result;
-    use crate::{TransClient, BasicAuth};
+    use crate::{TransClient, BasicAuth, TorrentGetField};
+    use crate::{RpcResponse, Torrents, Torrent};
     use std::env;
     use dotenv::dotenv;
 
@@ -115,7 +117,10 @@ mod tests {
         env_logger::init();
         let url= env::var("TURL")?;
         let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
-        TransClient::with_auth(&url, basic_auth).session_get().await;
+        let client = TransClient::with_auth(&url, basic_auth);
+        let res: RpcResponse<Torrents<Torrent>> = client.torrent_get(vec![TorrentGetField::ID, TorrentGetField::NAME]).await?;
+        let names: Vec<&String> = res.arguments.torrents.iter().map(|it| it.name.as_ref().unwrap()).collect();
+        println!("{:#?}", names);
         Ok(())
     }
 }
