@@ -12,9 +12,10 @@ use reqwest::header::CONTENT_TYPE;
 
 pub mod types;
 use types::BasicAuth;
-use types::{Result, RpcResponse, RpcResponseArgument, RpcRequest};
+use types::{Result, RpcResponse, RpcResponseArgument, RpcRequest, Nothing};
 use types::SessionGet;
 use types::{TorrentGetField, Torrents, Torrent};
+use types::TorrentAction;
 
 pub struct TransClient {
     url: String,
@@ -71,6 +72,10 @@ impl TransClient {
 
     pub async fn torrent_get(&self, fields: Vec<TorrentGetField>) -> Result<RpcResponse<Torrents<Torrent>>> {
         self.call(RpcRequest::torrent_get(fields)).await
+    }
+
+    pub async fn torrent_action(&self, action: TorrentAction, ids: Vec<i64>) -> Result<RpcResponse<Nothing>> {
+        self.call(RpcRequest::torrent_action(action, ids)).await
     }
 
     async fn call<RS> (&self, request: RpcRequest) -> Result<RpcResponse<RS>>

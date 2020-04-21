@@ -4,9 +4,7 @@ use serde::Serialize;
 pub struct RpcRequest {
     method: String,
     #[serde(skip_serializing_if="Option::is_none")]
-    arguments: Option<Fields<String>>,
-    #[serde(skip_serializing_if="Option::is_none")]
-    ids: Option<String>,
+    arguments: Option<Args>,
 }
 
 impl RpcRequest {
@@ -14,7 +12,6 @@ impl RpcRequest {
         RpcRequest { 
             method: String::from("session-get"),
             arguments: None,
-            ids: None,
         }
    }
 
@@ -22,11 +19,16 @@ impl RpcRequest {
        let string_fields = fields.iter().map(|f| f.to_str()).collect();
        RpcRequest {
         method: String::from("torrent-get"),
-        arguments: Some (Fields { fields: string_fields }),
-        ids: None,
+        arguments: Some (Args { fields: Some(string_fields), ids: None }),
        }
    }
 
+   pub fn torrent_action(action: TorrentAction, ids: Vec<i64>) -> RpcRequest {
+    RpcRequest {
+        method: action.to_str(),
+        arguments: Some (Args { fields: None, ids: Some(ids) }),
+       }
+   }
 }
 
 
@@ -34,72 +36,95 @@ pub trait ArgumentFields {}
 impl ArgumentFields for TorrentGetField{}
 
 #[derive(Serialize, Debug, RustcEncodable)]
-struct Fields<T> {
-    fields: Vec<T>
+struct Args {
+    #[serde(skip_serializing_if="Option::is_none")]
+    fields: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    ids: Option<Vec<i64>>
 }
 
 pub enum TorrentGetField {
-    ID,
-    ADDEDDATE,
-    NAME,
-    TOTALSIZE,
-    ERROR,
-    ERRORSTRING,
-    ETA,
-    ISFINISHED,
-    ISSTALLED,
-    LEFTUNTILDONE,
-    METADATAPERCENTCOMPLETE,
-    PEERSCONNECTED,
-    PEERSGETTINGFROMUS,
-    PEERSSENDINGTOUS,
-    PERCENTDONE,
-    QUEUEPOSITION,
-    RATEDOWNLOAD,
-    RATEUPLOAD,
-    RECHECKPROGRESS,
-    SEEDRATIOMODE,
-    SEEDRATIOLIMIT,
-    SIZEWHENDONE,
-    STATUS,
-    TRACKERS,
-    DOWNLOADDIR,
-    UPLOADEDEVER,
-    UPLOADRATIO,
-    WEBSEEDSSENDINGTOUS,
+    Id,
+    Addeddate,
+    Name,
+    Totalsize,
+    Error,
+    Errorstring,
+    Eta,
+    Isfinished,
+    Isstalled,
+    Leftuntildone,
+    Metadatapercentcomplete,
+    Peersconnected,
+    Peersgettingfromus,
+    Peerssendingtous,
+    Percentdone,
+    Queueposition,
+    Ratedownload,
+    Rateupload,
+    Recheckprogress,
+    Seedratiomode,
+    Seedratiolimit,
+    Sizewhendone,
+    Status,
+    Trackers,
+    Downloaddir,
+    Uploadedever,
+    Uploadratio,
+    Webseedssendingtous,
 }
 
 impl TorrentGetField {
     pub fn to_str(&self) -> String {
         match self {
-            TorrentGetField::ID => "id",
-            TorrentGetField::ADDEDDATE => "addedDate",
-            TorrentGetField::NAME => "name",
-            TorrentGetField::TOTALSIZE => "totalSize",
-            TorrentGetField::ERROR => "error",
-            TorrentGetField::ERRORSTRING => "errorString",
-            TorrentGetField::ETA => "eta",
-            TorrentGetField::ISFINISHED => "isFinished",
-            TorrentGetField::ISSTALLED => "isStalled",
-            TorrentGetField::LEFTUNTILDONE => "leftUntilDone",
-            TorrentGetField::METADATAPERCENTCOMPLETE => "metadataPercentComplete",
-            TorrentGetField::PEERSCONNECTED => "peersConnected",
-            TorrentGetField::PEERSGETTINGFROMUS => "peersGettingFromUs",
-            TorrentGetField::PEERSSENDINGTOUS => "peersSendingToUs",
-            TorrentGetField::PERCENTDONE => "percentDone",
-            TorrentGetField::QUEUEPOSITION => "queuePosition",
-            TorrentGetField::RATEDOWNLOAD => "rateDownload",
-            TorrentGetField::RATEUPLOAD => "rateUpload",
-            TorrentGetField::RECHECKPROGRESS => "recheckProgress",
-            TorrentGetField::SEEDRATIOMODE => "seedRatioMode",
-            TorrentGetField::SEEDRATIOLIMIT => "seedRatioLimit",
-            TorrentGetField::SIZEWHENDONE => "sizeWhenDone",
-            TorrentGetField::STATUS => "status",
-            TorrentGetField::TRACKERS => "trackers",
-            TorrentGetField::DOWNLOADDIR => "downloadDir",
-            TorrentGetField::UPLOADEDEVER => "uploadedEver",
-            TorrentGetField::UPLOADRATIO => "uploadRatio",
-            TorrentGetField::WEBSEEDSSENDINGTOUS => "webseedsSendingToUs",
+            TorrentGetField::Id => "id",
+            TorrentGetField::Addeddate => "addedDate",
+            TorrentGetField::Name => "name",
+            TorrentGetField::Totalsize => "totalSize",
+            TorrentGetField::Error => "error",
+            TorrentGetField::Errorstring => "errorString",
+            TorrentGetField::Eta => "eta",
+            TorrentGetField::Isfinished => "isFinished",
+            TorrentGetField::Isstalled => "isStalled",
+            TorrentGetField::Leftuntildone => "leftUntilDone",
+            TorrentGetField::Metadatapercentcomplete => "metadataPercentComplete",
+            TorrentGetField::Peersconnected => "peersConnected",
+            TorrentGetField::Peersgettingfromus => "peersGettingFromUs",
+            TorrentGetField::Peerssendingtous => "peersSendingToUs",
+            TorrentGetField::Percentdone => "percentDone",
+            TorrentGetField::Queueposition => "queuePosition",
+            TorrentGetField::Ratedownload => "rateDownload",
+            TorrentGetField::Rateupload => "rateUpload",
+            TorrentGetField::Recheckprogress => "recheckProgress",
+            TorrentGetField::Seedratiomode => "seedRatioMode",
+            TorrentGetField::Seedratiolimit => "seedRatioLimit",
+            TorrentGetField::Sizewhendone => "sizeWhenDone",
+            TorrentGetField::Status => "status",
+            TorrentGetField::Trackers => "trackers",
+            TorrentGetField::Downloaddir => "downloadDir",
+            TorrentGetField::Uploadedever => "uploadedEver",
+            TorrentGetField::Uploadratio => "uploadRatio",
+            TorrentGetField::Webseedssendingtous => "webseedsSendingToUs",
+        }.to_string()
+    }
+}
+
+pub enum TorrentAction {
+    Start,
+    Stop,
+    StartNow,
+    Verify,
+    Reannounce,
+}
+
+impl TorrentAction {
+    pub fn to_str(&self) -> String {
+        match self {
+            TorrentAction::Start => "torrent-start",
+            TorrentAction::Stop => "torrent-stop",
+            TorrentAction::StartNow => "torrent-start-now",
+            TorrentAction::Verify => "torrent-verify",
+            TorrentAction::Reannounce => "torrent-reannounce",
         }.to_string()
     }
 }

@@ -86,3 +86,7 @@ pub struct Trackers {
     pub id: i32,
     pub announce: String,
 }
+
+#[derive(Deserialize, Debug, RustcEncodable)]
+pub struct Nothing{}
+impl RpcResponseArgument for Nothing {}
