@@ -22,6 +22,7 @@ pub struct TransClient {
 }
 
 impl TransClient {
+    /// Returns HTTP(S) client with configured Basic Auth
     pub fn with_auth(url: &str, basic_auth: BasicAuth) -> TransClient {
         TransClient {
             url: url.to_string(),
@@ -29,6 +30,7 @@ impl TransClient {
         }
     }
 
+    /// Returns HTTP(S) client
     pub fn new(url: &str) -> TransClient {
         TransClient {
             url: url.to_string(),
@@ -36,6 +38,7 @@ impl TransClient {
         }
     }
 
+    /// Prepares a request for provided server and auth
     fn rpc_request(&self) -> reqwest::RequestBuilder {
         let client = reqwest::Client::new();
         if let Some(auth) = &self.auth {
@@ -47,6 +50,12 @@ impl TransClient {
         .header(CONTENT_TYPE, "application/json")
     }
     
+    /// Performs session-get call and takes the x-transmission-session-id
+    /// header to perform calls, using it's value
+    /// 
+    /// # Errors
+    /// 
+    /// Panics if any IO error happens
     async fn get_session_id(&self) -> String {
         info!("Requesting session id info");
         let response: reqwest::Response = self.rpc_request()
@@ -64,19 +73,50 @@ impl TransClient {
         session_id
     }
 
-    
+    /// Performs a session get call
+    /// 
+    /// # Errors
+    /// 
+    /// Any IO Error or Deserialization error
+    /// 
+    /// # Example
+    /// 
+    /// in examples/session-get.rs
     pub async fn session_get(&self) -> Result<RpcResponse<SessionGet>> {
         self.call(RpcRequest::session_get()).await
     }
 
+    /// Performs a torrent get call
+    /// 
+    /// # Errors
+    /// 
+    /// Any IO Error or Deserialization error
+    /// 
+    /// # Example
+    /// 
+    /// in examples/torrent-get.rs
     pub async fn torrent_get(&self, fields: Vec<TorrentGetField>) -> Result<RpcResponse<Torrents<Torrent>>> {
         self.call(RpcRequest::torrent_get(fields)).await
     }
 
+    /// Performs a torrent action call
+    /// 
+    /// # Errors
+    /// 
+    /// Any IO Error or Deserialization error
+    /// 
+    /// # Example
+    /// 
+    /// in examples/torrent-action.rs
     pub async fn torrent_action(&self, action: TorrentAction, ids: Vec<i64>) -> Result<RpcResponse<Nothing>> {
         self.call(RpcRequest::torrent_action(action, ids)).await
     }
 
+    /// Performs an JRPC call to the server
+    /// 
+    /// # Errors
+    /// 
+    /// Any IO Error or Deserialization error
     async fn call<RS> (&self, request: RpcRequest) -> Result<RpcResponse<RS>>
     where   RS : RpcResponseArgument + DeserializeOwned + std::fmt::Debug
     {
