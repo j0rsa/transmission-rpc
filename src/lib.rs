@@ -1,7 +1,6 @@
 // #[allow(unused_imports)]
 // #[allow(dead_code)]
 
-extern crate ajson;
 extern crate env_logger;
 #[macro_use]
 extern crate log;
