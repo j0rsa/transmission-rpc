@@ -120,7 +120,7 @@ mod tests {
         let url= env::var("TURL")?;
         let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
         let client = TransClient::with_auth(&url, basic_auth);
-        let res: RpcResponse<Torrents<Torrent>> = client.torrent_get(vec![TorrentGetField::ID, TorrentGetField::NAME]).await?;
+        let res: RpcResponse<Torrents<Torrent>> = client.torrent_get(vec![TorrentGetField::Id, TorrentGetField::Name]).await?;
         let names: Vec<&String> = res.arguments.torrents.iter().map(|it| it.name.as_ref().unwrap()).collect();
         println!("{:#?}", names);
         Ok(())

@@ -2,9 +2,9 @@ Library to communicate with transmission rpc
 
 spec: https://github.com/transmission/transmission/blob/master/extras/rpc-spec.txt
 
-Supported Methods:
+#### Supported Methods
 
-Torrent Actions:
+##### Torrent Actions
 
 - [X] torrent-start
 - [X] torrent-stop
@@ -12,7 +12,7 @@ Torrent Actions:
 - [X] torrent-verify
 - [X] torrent-reannounce
 
-Torrent modificators:
+##### Torrent Mutators
 
 - [ ] torrent-set
 - [X] torrent-get
