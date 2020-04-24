@@ -4,7 +4,7 @@ use std::env;
 use dotenv::dotenv;
 use transmission_rpc::TransClient;
 use transmission_rpc::types::{Result, RpcResponse, BasicAuth};
-use transmission_rpc::types::{Torrents, Torrent, TorrentGetField};
+use transmission_rpc::types::{Nothing};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -13,9 +13,8 @@ async fn main() -> Result<()> {
     let url= env::var("TURL")?;
     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
     let client = TransClient::with_auth(&url, basic_auth);
-    let res: RpcResponse<Torrents<Torrent>> = client.torrent_get(vec![TorrentGetField::Id, TorrentGetField::Name]).await?;
-    let names: Vec<&String> = res.arguments.torrents.iter().map(|it| it.name.as_ref().unwrap()).collect();
-    println!("{:#?}", names);
+    let res: RpcResponse<Nothing> = client.torrent_remove(vec![1], false).await?;
+    println!("Remove result: {:?}", &res.is_ok());
     
     Ok(())
 }

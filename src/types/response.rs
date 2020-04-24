@@ -27,7 +27,7 @@ pub struct SessionGet {
 }
 impl RpcResponseArgument for SessionGet{}
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, RustcEncodable)]
 pub struct Torrent {
     #[serde(rename="addedDate")]
     pub added_date: Option<i64>,
@@ -47,6 +47,8 @@ pub struct Torrent {
     #[serde(rename="metadataPercentComplete")]
     pub metadata_percent_complete: Option<f32>,
     pub name: Option<String>,
+    #[serde(rename="hashString")]
+    pub hash_string: Option<String>,
     #[serde(rename="peersConnected")]
     pub peers_connected: Option<i64>,
     #[serde(rename="peersGettingFromUs")]
@@ -74,12 +76,12 @@ pub struct Torrent {
     #[serde(rename="uploadedEver")]
     pub uploaded_ever: Option<i64>,   
 }
-impl RpcResponseArgument for Torrents<Torrent>{}
 
 #[derive(Deserialize, Debug, RustcEncodable)]
 pub struct Torrents<T> {
     pub torrents: Vec<T>
 }
+impl RpcResponseArgument for Torrents<Torrent>{}
 
 #[derive(Deserialize, Debug, RustcEncodable)]
 pub struct Trackers {
@@ -90,3 +92,10 @@ pub struct Trackers {
 #[derive(Deserialize, Debug, RustcEncodable)]
 pub struct Nothing{}
 impl RpcResponseArgument for Nothing {}
+
+#[derive(Deserialize, Debug, RustcEncodable)]
+pub struct TorrentAdded {
+    #[serde(rename="torrent-added")]
+    pub torrent_added: Torrent
+}
+impl RpcResponseArgument for TorrentAdded{}

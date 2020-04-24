@@ -16,8 +16,8 @@ spec: https://github.com/transmission/transmission/blob/master/extras/rpc-spec.t
 
 - [ ] torrent-set
 - [X] torrent-get
-- [ ] torrent-add
-- [ ] torrent-remove
+- [X] torrent-add
+- [X] torrent-remove
 - [ ] torrent-set-location
 - [ ] torrent-rename-path
 - [ ] session-set

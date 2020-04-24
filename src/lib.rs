@@ -15,6 +15,7 @@ use types::{Result, RpcResponse, RpcResponseArgument, RpcRequest, Nothing};
 use types::SessionGet;
 use types::{TorrentGetField, Torrents, Torrent};
 use types::TorrentAction;
+use types::{TorrentAddArgs, TorrentAdded};
 
 pub struct TransClient {
     url: String,
@@ -112,7 +113,36 @@ impl TransClient {
         self.call(RpcRequest::torrent_action(action, ids)).await
     }
 
-    /// Performs an JRPC call to the server
+    /// Performs a torrent remove call
+    /// 
+    /// # Errors
+    /// 
+    /// Any IO Error or Deserialization error
+    /// 
+    /// # Example
+    /// 
+    /// in examples/torrent-remove.rs
+    pub async fn torrent_remove(&self, ids: Vec<i64>, delete_local_data: bool) -> Result<RpcResponse<Nothing>> {
+        self.call( RpcRequest::torrent_remove(ids, delete_local_data)).await
+    }
+
+    /// Performs a torrent add call
+    /// 
+    /// # Errors
+    /// 
+    /// Any IO Error or Deserialization error
+    /// 
+    /// # Example
+    /// 
+    /// in examples/torrent-add.rs
+    pub async fn torrent_add(&self, add: TorrentAddArgs) -> Result<RpcResponse<TorrentAdded>> {
+        if add.metainfo == None && add.filename == None {
+            panic!("Metainfo or Filename should be provided")
+        }
+        self.call( RpcRequest::torrent_add(add)).await
+    }
+
+    /// Performs a JRPC call to the server
     /// 
     /// # Errors
     /// 
@@ -141,27 +171,5 @@ impl BodyString for reqwest::RequestBuilder {
         let rq = self.build()?;
         let body = rq.body().unwrap().as_bytes().unwrap();
         Ok(std::str::from_utf8(body)?.to_string())
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::Result;
-    use crate::{TransClient, BasicAuth, TorrentGetField};
-    use crate::{RpcResponse, Torrents, Torrent};
-    use std::env;
-    use dotenv::dotenv;
-
-    #[tokio::test]
-    async fn it_works() -> Result<()> {
-        dotenv().ok();
-        env_logger::init();
-        let url= env::var("TURL")?;
-        let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
-        let client = TransClient::with_auth(&url, basic_auth);
-        let res: RpcResponse<Torrents<Torrent>> = client.torrent_get(vec![TorrentGetField::Id, TorrentGetField::Name]).await?;
-        let names: Vec<&String> = res.arguments.torrents.iter().map(|it| it.name.as_ref().unwrap()).collect();
-        println!("{:#?}", names);
-        Ok(())
     }
 }
