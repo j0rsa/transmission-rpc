@@ -1,3 +1,5 @@
+[![Crates badge](https://img.shields.io/badge/crates.io-transmission_rpc%20=%20%220.2.0%22-brightgreen.svg)](https://crates.io/crates/transmission-rpc)
+
 Library to communicate with transmission rpc
 
 spec: https://github.com/transmission/transmission/blob/master/extras/rpc-spec.txt
@@ -27,3 +29,5 @@ spec: https://github.com/transmission/transmission/blob/master/extras/rpc-spec.t
 - [ ] port-test
 - [ ] session-close
 - [ ] free-space 
+
+[https://crates.io/crates/transmission-rpc]: https://img.shields.io/badge/crates.io-transmission_rpc%20=%20%220.2.0%22-brightgreen.svg
