@@ -16,6 +16,7 @@ pub use self::request::TorrentGetField;
 pub use self::request::TorrentAction;
 pub use self::request::TorrentAddArgs;
 pub use self::request::File;
+pub use self::request::Id;
 
 pub use self::response::RpcResponse;
 pub(crate) use self::response::RpcResponseArgument;

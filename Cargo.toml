@@ -1,6 +1,6 @@
 [package]
 name = "transmission-rpc"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["red <red.avtovo@gmail.com>"]
 edition = "2018"
 repository = "https://github.com/j0rsa/transmission-rpc"
@@ -19,6 +19,7 @@ reqwest = { version = "0.10.4", features = ["json", "rustls-tls"] }
 tokio = { version = "0.2", features = ["macros"] }
 serde = { version = "1.0", features = ["derive"] }
 rustc-serialize = "0.3.24"
+enum-iterator = "0.6.0"
 
 dotenv = "0.15.0"
 log = "0.4.8"

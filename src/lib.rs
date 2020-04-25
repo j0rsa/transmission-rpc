@@ -13,7 +13,7 @@ pub mod types;
 use types::BasicAuth;
 use types::{Result, RpcResponse, RpcResponseArgument, RpcRequest, Nothing};
 use types::SessionGet;
-use types::{TorrentGetField, Torrents, Torrent};
+use types::{TorrentGetField, Torrents, Torrent, Id};
 use types::TorrentAction;
 use types::{TorrentAddArgs, TorrentAdded};
 
@@ -88,6 +88,8 @@ impl TransClient {
     }
 
     /// Performs a torrent get call
+    /// fileds - if None then ALL fields
+    /// ids - if None then All items
     /// 
     /// # Errors
     /// 
@@ -96,8 +98,8 @@ impl TransClient {
     /// # Example
     /// 
     /// in examples/torrent-get.rs
-    pub async fn torrent_get(&self, fields: Vec<TorrentGetField>) -> Result<RpcResponse<Torrents<Torrent>>> {
-        self.call(RpcRequest::torrent_get(fields)).await
+    pub async fn torrent_get(&self, fields: Option<Vec<TorrentGetField>>, ids: Option<Vec<Id>>) -> Result<RpcResponse<Torrents<Torrent>>> {
+        self.call(RpcRequest::torrent_get(fields, ids)).await
     }
 
     /// Performs a torrent action call
@@ -109,7 +111,7 @@ impl TransClient {
     /// # Example
     /// 
     /// in examples/torrent-action.rs
-    pub async fn torrent_action(&self, action: TorrentAction, ids: Vec<i64>) -> Result<RpcResponse<Nothing>> {
+    pub async fn torrent_action(&self, action: TorrentAction, ids: Vec<Id>) -> Result<RpcResponse<Nothing>> {
         self.call(RpcRequest::torrent_action(action, ids)).await
     }
 
@@ -122,7 +124,7 @@ impl TransClient {
     /// # Example
     /// 
     /// in examples/torrent-remove.rs
-    pub async fn torrent_remove(&self, ids: Vec<i64>, delete_local_data: bool) -> Result<RpcResponse<Nothing>> {
+    pub async fn torrent_remove(&self, ids: Vec<Id>, delete_local_data: bool) -> Result<RpcResponse<Nothing>> {
         self.call( RpcRequest::torrent_remove(ids, delete_local_data)).await
     }
 

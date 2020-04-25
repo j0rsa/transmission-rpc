@@ -1,4 +1,5 @@
 use serde::Serialize;
+use enum_iterator::IntoEnumIterator;
 
 #[derive(Serialize, Debug, RustcEncodable)]
 pub struct RpcRequest {
@@ -15,15 +16,15 @@ impl RpcRequest {
         }
    }
 
-    pub fn torrent_get(fields: Vec<TorrentGetField>) -> RpcRequest {
-       let string_fields = fields.iter().map(|f| f.to_str()).collect();
+    pub fn torrent_get(fields: Option<Vec<TorrentGetField>>, ids: Option<Vec<Id>>) -> RpcRequest {
+       let string_fields = fields.unwrap_or(TorrentGetField::all()).iter().map(|f| f.to_str()).collect();
        RpcRequest {
         method: String::from("torrent-get"),
-        arguments: Some ( Args::TorrentGetArgs(TorrentGetArgs { fields: Some(string_fields)} )),
+        arguments: Some ( Args::TorrentGetArgs(TorrentGetArgs { fields: Some(string_fields), ids } )),
        }
    }
 
-   pub fn torrent_remove(ids: Vec<i64>, delete_local_data: bool) -> RpcRequest {
+   pub fn torrent_remove(ids: Vec<Id>, delete_local_data: bool) -> RpcRequest {
         RpcRequest {
             method: String::from("torrent-remove"),
             arguments: Some ( Args::TorrentRemoveArgs(TorrentRemoveArgs {ids, delete_local_data} ) )
@@ -37,7 +38,7 @@ impl RpcRequest {
        }
    }
 
-   pub fn torrent_action(action: TorrentAction, ids: Vec<i64>) -> RpcRequest {
+   pub fn torrent_action(action: TorrentAction, ids: Vec<Id>) -> RpcRequest {
     RpcRequest {
         method: action.to_str(),
         arguments: Some ( Args::TorrentActionArgs(TorrentActionArgs { ids })),
@@ -59,18 +60,37 @@ pub enum Args{
 #[derive(Serialize, Debug, RustcEncodable, Clone)]
 pub struct TorrentGetArgs { 
     #[serde(skip_serializing_if="Option::is_none")]
-    fields: Option<Vec<String>> 
+    fields: Option<Vec<String>>,
+    #[serde(skip_serializing_if="Option::is_none")]
+    ids: Option<Vec<Id>>,
+}
+
+impl Default for TorrentGetArgs {
+    fn default() -> Self {
+        let all_fields = TorrentGetField::into_enum_iter().map (|it| it.to_str()).collect();
+        TorrentGetArgs {
+            fields: Some(all_fields),
+            ids: None
+        }
+    }
 }
 
 #[derive(Serialize, Debug, RustcEncodable, Clone)]
 pub struct TorrentActionArgs {
-    ids: Vec<i64>,
+    ids: Vec<Id>,
 }
 #[derive(Serialize, Debug, RustcEncodable, Clone)]
 pub struct TorrentRemoveArgs {
-    ids: Vec<i64>,
+    ids: Vec<Id>,
     #[serde(rename="delete-local-data")]
     delete_local_data: bool
+}
+
+#[derive(Serialize, Debug, RustcEncodable, Clone)]
+#[serde(untagged)]
+pub enum Id {
+    Id(i64),
+    Hash(String)
 }
 
 #[derive(Serialize, Debug, RustcEncodable, Clone)]
@@ -129,7 +149,7 @@ impl Default for TorrentAddArgs {
 pub struct File {
     //todo
 }
-
+#[derive(Clone, IntoEnumIterator)]
 pub enum TorrentGetField {
     Id,
     Addeddate,
@@ -160,6 +180,12 @@ pub enum TorrentGetField {
     Uploadedever,
     Uploadratio,
     Webseedssendingtous,
+}
+
+impl TorrentGetField {
+    pub fn all() -> Vec<TorrentGetField> {
+        TorrentGetField::into_enum_iter().collect()
+    }
 }
 
 impl TorrentGetField {
