@@ -1,4 +1,4 @@
-[![Crates badge](https://img.shields.io/badge/crates.io-transmission_rpc%20=%20%220.2.0%22-brightgreen.svg)](https://crates.io/crates/transmission-rpc)
+[![Crates badge](https://img.shields.io/badge/crates.io-transmission_rpc%20=%20%220.2.1%22-brightgreen.svg)](https://crates.io/crates/transmission-rpc)
 
 Library to communicate with transmission rpc
 
