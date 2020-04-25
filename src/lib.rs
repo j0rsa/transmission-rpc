@@ -82,7 +82,30 @@ impl TransClient {
     /// 
     /// # Example
     /// 
-    /// in examples/session-get.rs
+    /// ```
+    /// extern crate transmission_rpc;
+    /// 
+    /// use std::env;
+    /// use dotenv::dotenv;
+    /// use transmission_rpc::TransClient;
+    /// use transmission_rpc::types::{Result, RpcResponse, SessionGet, BasicAuth};
+    /// 
+    /// #[tokio::main]
+    /// async fn main() -> Result<()> {
+    ///     dotenv().ok();
+    ///     env_logger::init();
+    ///     let url= env::var("TURL")?;
+    ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
+    ///     let client = TransClient::with_auth(&url, basic_auth);
+    ///     let response: Result<RpcResponse<SessionGet>> = client.session_get().await;
+    ///     match response {
+    ///         Ok(_) => println!("Yay!"),
+    ///         Err(_) => panic!("Oh no!")
+    ///     }
+    ///     println!("Rpc reqsponse is ok: {}", response?.is_ok());
+    ///     Ok(())
+    /// }
+    /// ```
     pub async fn session_get(&self) -> Result<RpcResponse<SessionGet>> {
         self.call(RpcRequest::session_get()).await
     }
@@ -97,7 +120,46 @@ impl TransClient {
     /// 
     /// # Example
     /// 
-    /// in examples/torrent-get.rs
+    /// ```
+    /// extern crate transmission_rpc;
+    /// 
+    /// use std::env;
+    /// use dotenv::dotenv;
+    /// use transmission_rpc::TransClient;
+    /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth};
+    /// use transmission_rpc::types::{Torrents, Torrent, TorrentGetField, Id};
+    /// 
+    /// #[tokio::main]
+    /// async fn main() -> Result<()> {
+    ///     dotenv().ok();
+    ///     env_logger::init();
+    ///     let url= env::var("TURL")?;
+    ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
+    ///     let client = TransClient::with_auth(&url, basic_auth);
+    /// 
+    ///     let res: RpcResponse<Torrents<Torrent>> = client.torrent_get(None, None).await?;
+    ///     let names: Vec<&String> = res.arguments.torrents.iter().map(|it| it.name.as_ref().unwrap()).collect();
+    ///     println!("{:#?}", names);
+    /// 
+    ///     let res1: RpcResponse<Torrents<Torrent>> = client.torrent_get(Some(vec![TorrentGetField::Id, TorrentGetField::Name]), Some(vec![Id::Id(1), Id::Id(2), Id::Id(3)])).await?;
+    ///     let first_three: Vec<String> = res1.arguments.torrents.iter().map(|it| 
+    ///         format!("{}. {}",&it.id.as_ref().unwrap(), &it.name.as_ref().unwrap())
+    ///     ).collect();
+    ///     println!("{:#?}", first_three);
+    /// 
+    /// 
+    ///     let res2: RpcResponse<Torrents<Torrent>> = client.torrent_get(Some(vec![TorrentGetField::Id, TorrentGetField::HashString, TorrentGetField::Name]), Some(vec![Id::Hash(String::from("64b0d9a53ac9cd1002dad1e15522feddb00152fe"))])).await?;
+    ///     let info: Vec<String> = res2.arguments.torrents.iter().map(|it| 
+    ///         format!("{:5}. {:^45} {}", 
+    ///             &it.id.as_ref().unwrap(),
+    ///             &it.hash_string.as_ref().unwrap(), 
+    ///             &it.name.as_ref().unwrap()) 
+    ///     ).collect();
+    ///     println!("{:#?}", info);
+    ///     
+    ///     Ok(())
+    /// }
+    /// ```
     pub async fn torrent_get(&self, fields: Option<Vec<TorrentGetField>>, ids: Option<Vec<Id>>) -> Result<RpcResponse<Torrents<Torrent>>> {
         self.call(RpcRequest::torrent_get(fields, ids)).await
     }
@@ -110,7 +172,30 @@ impl TransClient {
     /// 
     /// # Example
     /// 
-    /// in examples/torrent-action.rs
+    /// ```
+    /// extern crate transmission_rpc;
+    /// 
+    /// use std::env;
+    /// use dotenv::dotenv;
+    /// use transmission_rpc::TransClient;
+    /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth};
+    /// use transmission_rpc::types::{TorrentAction, Nothing, Id};
+    /// 
+    /// #[tokio::main]
+    /// async fn main() -> Result<()> {
+    ///     dotenv().ok();
+    ///     env_logger::init();
+    ///     let url= env::var("TURL")?;
+    ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
+    ///     let client = TransClient::with_auth(&url, basic_auth);
+    ///     let res1: RpcResponse<Nothing> = client.torrent_action(TorrentAction::Start, vec![Id::Id(1)]).await?;
+    ///     println!("Start result: {:?}", &res1.is_ok());
+    ///     let res2: RpcResponse<Nothing> = client.torrent_action(TorrentAction::Stop, vec![Id::Id(1)]).await?;
+    ///     println!("Stop result: {:?}", &res2.is_ok());
+    ///     
+    ///     Ok(())
+    /// }
+    /// ```
     pub async fn torrent_action(&self, action: TorrentAction, ids: Vec<Id>) -> Result<RpcResponse<Nothing>> {
         self.call(RpcRequest::torrent_action(action, ids)).await
     }
@@ -123,7 +208,28 @@ impl TransClient {
     /// 
     /// # Example
     /// 
-    /// in examples/torrent-remove.rs
+    /// ```
+    /// extern crate transmission_rpc;
+    /// 
+    /// use std::env;
+    /// use dotenv::dotenv;
+    /// use transmission_rpc::TransClient;
+    /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth};
+    /// use transmission_rpc::types::{Nothing, Id};
+    /// 
+    /// #[tokio::main]
+    /// async fn main() -> Result<()> {
+    ///     dotenv().ok();
+    ///     env_logger::init();
+    ///     let url= env::var("TURL")?;
+    ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
+    ///     let client = TransClient::with_auth(&url, basic_auth);
+    ///     let res: RpcResponse<Nothing> = client.torrent_remove(vec![Id::Id(1)], false).await?;
+    ///     println!("Remove result: {:?}", &res.is_ok());
+    ///     
+    ///     Ok(())
+    /// }
+    /// ```
     pub async fn torrent_remove(&self, ids: Vec<Id>, delete_local_data: bool) -> Result<RpcResponse<Nothing>> {
         self.call( RpcRequest::torrent_remove(ids, delete_local_data)).await
     }
@@ -136,7 +242,33 @@ impl TransClient {
     /// 
     /// # Example
     /// 
-    /// in examples/torrent-add.rs
+    /// ```
+    /// extern crate transmission_rpc;
+    /// 
+    /// use std::env;
+    /// use dotenv::dotenv;
+    /// use transmission_rpc::TransClient;
+    /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth};
+    /// use transmission_rpc::types::{TorrentAddArgs, TorrentAdded};
+    /// 
+    /// #[tokio::main]
+    /// async fn main() -> Result<()> {
+    ///     dotenv().ok();
+    ///     env_logger::init();
+    ///     let url= env::var("TURL")?;
+    ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
+    ///     let client = TransClient::with_auth(&url, basic_auth);
+    ///     let add: TorrentAddArgs = TorrentAddArgs {
+    ///         filename: Some("https://releases.ubuntu.com/20.04/ubuntu-20.04-desktop-amd64.iso.torrent".to_string()),
+    ///         ..TorrentAddArgs::default()
+    ///     };
+    ///     let res: RpcResponse<TorrentAdded> = client.torrent_add(add).await?;
+    ///     println!("Add result: {:?}", &res.is_ok());
+    ///     println!("response: {:?}", &res);
+    ///     
+    ///     Ok(())
+    /// }
+    /// ```
     pub async fn torrent_add(&self, add: TorrentAddArgs) -> Result<RpcResponse<TorrentAdded>> {
         if add.metainfo == None && add.filename == None {
             panic!("Metainfo or Filename should be provided")
