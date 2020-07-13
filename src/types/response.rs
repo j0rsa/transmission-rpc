@@ -12,7 +12,7 @@ impl<T: RpcResponseArgument> RpcResponse<T> {
 }
 pub trait RpcResponseArgument {}
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct SessionGet {
     #[serde(rename="blocklist-enabled")]
     pub blocklist_enabled: bool,
@@ -27,7 +27,7 @@ pub struct SessionGet {
 }
 impl RpcResponseArgument for SessionGet{}
 
-#[derive(Deserialize, Debug, RustcEncodable)]
+#[derive(Deserialize, Debug, RustcEncodable, Clone)]
 pub struct Torrent {
     #[serde(rename="addedDate")]
     pub added_date: Option<i64>,
@@ -83,7 +83,7 @@ pub struct Torrents<T> {
 }
 impl RpcResponseArgument for Torrents<Torrent>{}
 
-#[derive(Deserialize, Debug, RustcEncodable)]
+#[derive(Deserialize, Debug, RustcEncodable, Clone)]
 pub struct Trackers {
     pub id: i32,
     pub announce: String,
