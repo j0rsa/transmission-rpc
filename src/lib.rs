@@ -307,3 +307,37 @@ impl BodyString for reqwest::RequestBuilder {
         Ok(std::str::from_utf8(body)?.to_string())
     }
 }
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+    use std::env;
+    use dotenv::dotenv;
+
+    #[tokio::test]
+    pub async fn test_malformed_url() -> Result<()> {
+        dotenv().ok();
+        env_logger::init();
+        let url= env::var("TURL")?;
+        let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
+        let client = TransClient::with_auth(&url, basic_auth);
+        info!("Client is ready!");
+        let add: TorrentAddArgs = TorrentAddArgs {
+            filename: Some("https://releases.ubuntu.com/20.04/ubuntu-20.04-desktop-amd64.iso.torrentt".to_string()),
+            ..TorrentAddArgs::default()
+        };
+        match client.torrent_add(add).await {
+            Ok(res) => {
+                println!("Add result: {:?}", &res.is_ok());
+                println!("response: {:?}", &res);
+                assert!(!&res.is_ok());
+            }
+            Err(e) => {
+                println!("Error: {:#?}", e);
+            }
+        }
+        
+        Ok(())
+    }
+}

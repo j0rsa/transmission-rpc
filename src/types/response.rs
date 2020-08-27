@@ -96,6 +96,6 @@ impl RpcResponseArgument for Nothing {}
 #[derive(Deserialize, Debug, RustcEncodable)]
 pub struct TorrentAdded {
     #[serde(rename="torrent-added")]
-    pub torrent_added: Torrent
+    pub torrent_added: Option<Torrent>
 }
 impl RpcResponseArgument for TorrentAdded{}
