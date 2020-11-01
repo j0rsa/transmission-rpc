@@ -56,20 +56,21 @@ impl TransClient {
     /// 
     /// # Errors
     /// 
-    /// Panics if any IO error happens
+    /// If response is impossible to unwrap then it will return an empty session_id
     async fn get_session_id(&self) -> String {
         info!("Requesting session id info");
-        let response: reqwest::Response = self.rpc_request()
+        let response: reqwest::Result<reqwest::Response> = self.rpc_request()
         .json(&RpcRequest::session_get())
         .send()
-        .await
-        .unwrap();
-        let session_id = response.headers()
-            .get("x-transmission-session-id")
-            .expect("Unable to get session id")
-            .to_str()
-            .unwrap()
-            .to_owned();
+        .await;
+        let session_id = match response {
+            Ok(ref resp) =>
+                match resp.headers().get("x-transmission-session-id") {
+                    Some(res) => res.to_str().expect("header value should be a string"),
+                    _ => ""
+                }
+            _ => ""
+        }.to_owned();
         info!("Received session id: {}", session_id);
         session_id
     }
@@ -288,7 +289,9 @@ impl TransClient {
         let rq: reqwest::RequestBuilder = self.rpc_request()
             .header("X-Transmission-Session-Id", self.get_session_id().await)
             .json(&request);
-        info!("Request body: {:?}", rq.try_clone().unwrap().body_string()?);
+        info!("Request body: {:?}", rq.try_clone()
+            .expect("Unable to get the request body")
+            .body_string()?);
         let resp: reqwest::Response = rq.send().await?;
         let rpc_response: RpcResponse<RS> = resp.json().await?;
         info!("Response body: {:#?}", rpc_response);
