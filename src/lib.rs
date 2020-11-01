@@ -64,11 +64,11 @@ impl TransClient {
         .send()
         .await;
         let session_id = match response {
-            Ok(ref resp) => resp.headers()
-                .get("x-transmission-session-id")
-                .expect("Unable to get session id")
-                .to_str()
-                .unwrap(),
+            Ok(ref resp) =>
+                match resp.headers().get("x-transmission-session-id") {
+                    Some(res) => res.to_str().expect("header value should be a string"),
+                    _ => ""
+                }
             _ => ""
         }.to_owned();
         info!("Received session id: {}", session_id);
