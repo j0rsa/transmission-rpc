@@ -235,6 +235,40 @@ impl TransClient {
         self.call( RpcRequest::torrent_remove(ids, delete_local_data)).await
     }
 
+    /// Performs a torrent set location call
+    ///
+    /// # Errors
+    ///
+    /// Any IO Error or Deserialization error
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// extern crate transmission_rpc;
+    ///
+    /// use std::env;
+    /// use dotenv::dotenv;
+    /// use transmission_rpc::TransClient;
+    /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth};
+    /// use transmission_rpc::types::{Nothing, Id};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<()> {
+    ///     dotenv().ok();
+    ///     env_logger::init();
+    ///     let url= env::var("TURL")?;
+    ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
+    ///     let client = TransClient::with_auth(&url, basic_auth);
+    ///     let res: RpcResponse<Nothing> = client.torrent_set_location(vec![Id::Id(1)], String::from("/new/location"), Option::from(false)).await?;
+    ///     println!("Set-location result: {:?}", &res.is_ok());
+    ///
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn torrent_set_location(&self, ids: Vec<Id>, location: String, move_from: Option<bool>) -> Result<RpcResponse<Nothing>> {
+        self.call(RpcRequest::torrent_set_location(ids, location, move_from)).await
+    }
+
     /// Performs a torrent add call
     /// 
     /// # Errors

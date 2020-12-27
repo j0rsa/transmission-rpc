@@ -44,6 +44,13 @@ impl RpcRequest {
         arguments: Some ( Args::TorrentActionArgs(TorrentActionArgs { ids })),
        }
    }
+
+    pub fn torrent_set_location(ids: Vec<Id>, location: String, move_from: Option<bool>) -> RpcRequest {
+        RpcRequest {
+            method: String::from("torrent-set-location"),
+            arguments: Some( Args::TorrentSetLocationArgs(TorrentSetLocationArgs{ids, location, move_from}))
+        }
+    }
 }
 pub trait ArgumentFields {}
 impl ArgumentFields for TorrentGetField{}
@@ -55,6 +62,7 @@ pub enum Args{
     TorrentActionArgs(TorrentActionArgs),   
     TorrentRemoveArgs(TorrentRemoveArgs),
     TorrentAddArgs(TorrentAddArgs),
+    TorrentSetLocationArgs(TorrentSetLocationArgs),
 }
 
 #[derive(Serialize, Debug, RustcEncodable, Clone)]
@@ -84,6 +92,14 @@ pub struct TorrentRemoveArgs {
     ids: Vec<Id>,
     #[serde(rename="delete-local-data")]
     delete_local_data: bool
+}
+
+#[derive(Serialize, Debug, RustcEncodable, Clone)]
+pub struct TorrentSetLocationArgs {
+    ids: Vec<Id>,
+    location: String,
+    #[serde(skip_serializing_if="Option::is_none", rename="move")]
+    move_from: Option<bool>
 }
 
 #[derive(Serialize, Debug, RustcEncodable, Clone)]
