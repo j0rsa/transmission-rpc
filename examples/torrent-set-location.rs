@@ -16,8 +16,12 @@ async fn main() -> Result<()> {
         password: env::var("TPWD")?,
     };
     let client = TransClient::with_auth(&url, basic_auth);
-    let res: RpcResponse<Nothing> = client.torrent_remove(vec![Id::Id(1)], false).await?;
-    println!("Remove result: {:?}", &res.is_ok());
+    let res: RpcResponse<Nothing> = client.torrent_set_location(
+            vec![Id::Id(1)],
+            String::from("/new/location"),
+            Option::from(false),
+        ).await?;
+    println!("Set-location result: {:?}", &res.is_ok());
 
     Ok(())
 }
