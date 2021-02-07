@@ -1,6 +1,6 @@
 name: CI
 
-on: [push]
+on: [release]
 
 jobs:
   build_and_test:
@@ -18,3 +18,12 @@ jobs:
         with:
           command: build
           args: --release --all-features
+      - name: Cargo Login
+        uses: actions-rs/cargo@v1
+        with:
+          command: login
+          args: ${{ secrets.CARGO_TOKEN }}
+      - name: Cargo Publish
+        uses: actions-rs/cargo@v1
+        with:
+          command: publish
