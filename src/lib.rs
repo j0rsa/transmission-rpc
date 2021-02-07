@@ -1,6 +1,3 @@
-// #[allow(unused_imports)]
-// #[allow(dead_code)]
-
 extern crate env_logger;
 #[macro_use]
 extern crate log;
@@ -10,6 +7,7 @@ use reqwest::header::CONTENT_TYPE;
 use serde::de::DeserializeOwned;
 
 pub mod types;
+
 use types::BasicAuth;
 use types::SessionGet;
 use types::TorrentAction;
@@ -49,7 +47,7 @@ impl TransClient {
         } else {
             client.post(&self.url)
         }
-        .header(CONTENT_TYPE, "application/json")
+            .header(CONTENT_TYPE, "application/json")
     }
 
     /// Performs session-get call and takes the x-transmission-session-id
@@ -72,7 +70,7 @@ impl TransClient {
             },
             _ => "",
         }
-        .to_owned();
+            .to_owned();
         info!("Received session id: {}", session_id);
         session_id
     }
@@ -338,8 +336,8 @@ impl TransClient {
     ///
     /// Any IO Error or Deserialization error
     async fn call<RS>(&self, request: RpcRequest) -> Result<RpcResponse<RS>>
-    where
-        RS: RpcResponseArgument + DeserializeOwned + std::fmt::Debug,
+        where
+            RS: RpcResponseArgument + DeserializeOwned + std::fmt::Debug,
     {
         info!("Loaded auth: {:?}", &self.auth);
         let rq: reqwest::RequestBuilder = self
@@ -373,7 +371,6 @@ impl BodyString for reqwest::RequestBuilder {
 
 #[cfg(test)]
 mod tests {
-
     use super::*;
     use dotenv::dotenv;
     use std::env;
