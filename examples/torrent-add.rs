@@ -18,7 +18,7 @@ async fn main() -> Result<()> {
         client = TransClient::new(&url);
     }
     let add: TorrentAddArgs = TorrentAddArgs {
-        filename: Some("https://releases.ubuntu.com/20.04/ubuntu-20.04-desktop-amd64.iso.torrent".to_string()),
+        filename: Some("https://releases.ubuntu.com/20.04/ubuntu-20.04.2.0-desktop-amd64.iso.torrent".to_string()),
         ..TorrentAddArgs::default()
     };
     let res: RpcResponse<TorrentAdded> = client.torrent_add(add).await?;
