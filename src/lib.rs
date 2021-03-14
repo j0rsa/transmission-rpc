@@ -157,7 +157,7 @@ impl TransClient {
     ///             &it.name.as_ref().unwrap())
     ///     ).collect();
     ///     println!("{:#?}", info);
-    ///     
+    ///
     ///     Ok(())
     /// }
     /// ```
@@ -197,7 +197,7 @@ impl TransClient {
     ///     println!("Start result: {:?}", &res1.is_ok());
     ///     let res2: RpcResponse<Nothing> = client.torrent_action(TorrentAction::Stop, vec![Id::Id(1)]).await?;
     ///     println!("Stop result: {:?}", &res2.is_ok());
-    ///     
+    ///
     ///     Ok(())
     /// }
     /// ```
@@ -235,7 +235,7 @@ impl TransClient {
     ///     let client = TransClient::with_auth(&url, basic_auth);
     ///     let res: RpcResponse<Nothing> = client.torrent_remove(vec![Id::Id(1)], false).await?;
     ///     println!("Remove result: {:?}", &res.is_ok());
-    ///     
+    ///
     ///     Ok(())
     /// }
     /// ```
@@ -319,7 +319,7 @@ impl TransClient {
     ///     let res: RpcResponse<TorrentAdded> = client.torrent_add(add).await?;
     ///     println!("Add result: {:?}", &res.is_ok());
     ///     println!("response: {:?}", &res);
-    ///     
+    ///
     ///     Ok(())
     /// }
     /// ```
@@ -380,11 +380,12 @@ mod tests {
         dotenv().ok();
         env_logger::init();
         let url = env::var("TURL")?;
-        let basic_auth = BasicAuth {
-            user: env::var("TUSER")?,
-            password: env::var("TPWD")?,
-        };
-        let client = TransClient::with_auth(&url, basic_auth);
+        let client;
+        if let (Ok(user), Ok(password)) = (env::var("TUSER"), env::var("TPWD")) {
+            client = TransClient::with_auth(&url, BasicAuth {user, password});
+        } else {
+            client = TransClient::new(&url);
+        }
         info!("Client is ready!");
         let add: TorrentAddArgs = TorrentAddArgs {
             filename: Some(
