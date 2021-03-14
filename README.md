@@ -2,6 +2,10 @@
 
 Library to communicate with transmission rpc
 
+**WARNING:**
+
+It is highly encouraged to use HTTPS since the Transmission authentication is using BasicAuth which could be easily intercepted
+
 spec: https://github.com/transmission/transmission/blob/master/extras/rpc-spec.txt
 
 #### Supported Methods
@@ -28,8 +32,6 @@ spec: https://github.com/transmission/transmission/blob/master/extras/rpc-spec.t
 - [ ] blocklist-update
 - [ ] port-test
 - [ ] session-close
-- [ ] free-space 
-
-[https://crates.io/crates/transmission-rpc]: https://img.shields.io/badge/crates.io-transmission_rpc%20=%20%220.2.0%22-brightgreen.svg
+- [ ] free-space
 
 Support the project: [![Donate button](https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=H337RKJSC4YG4&source=url)
