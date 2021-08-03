@@ -10,7 +10,6 @@ pub struct BasicAuth {
 }
 
 pub use self::request::ArgumentFields;
-pub use self::request::File;
 pub use self::request::Id;
 pub(crate) use self::request::RpcRequest;
 pub use self::request::TorrentAction;

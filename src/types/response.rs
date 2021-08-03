@@ -76,6 +76,12 @@ pub struct Torrent {
     #[serde(rename = "uploadedEver")]
     pub uploaded_ever: Option<i64>,
     pub files: Option<Vec<File>>,
+    /// for each file in files, whether or not they will be downloaded (0 or 1)
+    pub wanted: Option<Vec<i8>>,
+    /// for each file in files, their download priority (low:-1,normal:0,high:1)
+    pub priorities: Option<Vec<i8>>,
+    #[serde(rename = "fileStats")]
+    pub file_stats: Option<Vec<FileStat>>,
 }
 
 #[derive(Deserialize, Debug, RustcEncodable)]
@@ -96,6 +102,15 @@ pub struct File {
     #[serde(rename = "bytesCompleted")]
     pub bytes_completed: i64,
     pub name: String,
+}
+
+#[derive(Deserialize, Debug, RustcEncodable, Clone)]
+pub struct FileStat {
+    #[serde(rename = "bytesCompleted")]
+    pub bytes_completed: i64,
+    pub wanted: bool,
+    /// low: -1, normal: 0, high: 1
+    pub priority: i8,
 }
 
 #[derive(Deserialize, Debug, RustcEncodable)]
