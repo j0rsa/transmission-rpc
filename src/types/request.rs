@@ -146,16 +146,22 @@ pub struct TorrentAddArgs {
     pub peer_limit: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none", rename = "bandwidthPriority")]
     pub bandwidth_priority: Option<i64>,
+    /// list of indices of files to be downloaded
+    /// to ignore some files, put their indices in files_unwanted, otherwise they will still be downloaded
     #[serde(skip_serializing_if = "Option::is_none", rename = "files-wanted")]
-    pub files_wanted: Option<Vec<File>>,
+    pub files_wanted: Option<Vec<i32>>,
+    /// list of indices of files not to download
     #[serde(skip_serializing_if = "Option::is_none", rename = "files-unwanted")]
-    pub files_unwanted: Option<Vec<File>>,
+    pub files_unwanted: Option<Vec<i32>>,
+    /// list of indices of files to be downloaded with high priority
     #[serde(skip_serializing_if = "Option::is_none", rename = "priority-high")]
-    pub priority_high: Option<Vec<File>>,
+    pub priority_high: Option<Vec<i32>>,
+    /// list of indices of files to be downloaded with low priority
     #[serde(skip_serializing_if = "Option::is_none", rename = "priority-low")]
-    pub priority_low: Option<Vec<File>>,
+    pub priority_low: Option<Vec<i32>>,
+    /// list of indices of files to be downloaded with normal priority
     #[serde(skip_serializing_if = "Option::is_none", rename = "priority-normal")]
-    pub priority_normal: Option<Vec<File>>,
+    pub priority_normal: Option<Vec<i32>>,
 }
 
 impl Default for TorrentAddArgs {
@@ -177,10 +183,6 @@ impl Default for TorrentAddArgs {
     }
 }
 
-#[derive(Serialize, Debug, RustcEncodable, Clone)]
-pub struct File {
-    //todo
-}
 #[derive(Clone, IntoEnumIterator)]
 pub enum TorrentGetField {
     Id,
@@ -208,10 +210,14 @@ pub enum TorrentGetField {
     Sizewhendone,
     Status,
     Trackers,
+    Files,
     Downloaddir,
     Uploadedever,
     Uploadratio,
     Webseedssendingtous,
+    Wanted,
+    Priorities,
+    Filestats
 }
 
 impl TorrentGetField {
@@ -248,10 +254,14 @@ impl TorrentGetField {
             TorrentGetField::Sizewhendone => "sizeWhenDone",
             TorrentGetField::Status => "status",
             TorrentGetField::Trackers => "trackers",
+            TorrentGetField::Files => "files",
             TorrentGetField::Downloaddir => "downloadDir",
             TorrentGetField::Uploadedever => "uploadedEver",
             TorrentGetField::Uploadratio => "uploadRatio",
             TorrentGetField::Webseedssendingtous => "webseedsSendingToUs",
+            TorrentGetField::Wanted => "wanted",
+            TorrentGetField::Priorities => "priorities",
+            TorrentGetField::Filestats => "fileStats",
         }.to_string()
     }
 }
