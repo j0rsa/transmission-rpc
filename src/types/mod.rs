@@ -15,6 +15,7 @@ pub(crate) use self::request::RpcRequest;
 pub use self::request::TorrentAction;
 pub use self::request::TorrentAddArgs;
 pub use self::request::TorrentGetField;
+pub use self::request::TorrentRenamePathArgs;
 
 pub use self::response::Nothing;
 pub use self::response::RpcResponse;
@@ -23,3 +24,4 @@ pub use self::response::SessionGet;
 pub use self::response::Torrent;
 pub use self::response::TorrentAdded;
 pub use self::response::Torrents;
+pub use self::response::TorrentRenamePath;

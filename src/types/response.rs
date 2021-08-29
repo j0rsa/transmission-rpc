@@ -123,3 +123,12 @@ pub struct TorrentAdded {
     pub torrent_added: Option<Torrent>,
 }
 impl RpcResponseArgument for TorrentAdded {}
+
+#[derive(Deserialize, Debug, RustcEncodable)]
+pub struct TorrentRenamePath{
+    pub path: String,
+    pub name: String,
+    pub id: i64
+
+}
+impl RpcResponseArgument for TorrentRenamePath {}

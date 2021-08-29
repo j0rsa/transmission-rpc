@@ -12,7 +12,7 @@ use types::BasicAuth;
 use types::SessionGet;
 use types::TorrentAction;
 use types::{Id, Torrent, TorrentGetField, Torrents};
-use types::{Nothing, Result, RpcRequest, RpcResponse, RpcResponseArgument};
+use types::{Nothing, Result, RpcRequest, RpcResponse, RpcResponseArgument, TorrentRenamePath};
 use types::{TorrentAddArgs, TorrentAdded};
 
 pub struct TransClient {
@@ -285,6 +285,46 @@ impl TransClient {
         move_from: Option<bool>,
     ) -> Result<RpcResponse<Nothing>> {
         self.call(RpcRequest::torrent_set_location(ids, location, move_from))
+            .await
+    }
+
+    /// Performs a torrent rename path call
+    ///
+    /// # Errors
+    ///
+    /// Any IO Error or Deserialization error
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// extern crate transmission_rpc;
+    /// 
+    /// use std::env;
+    /// use dotenv::dotenv;
+    /// use transmission_rpc::TransClient;
+    /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth};
+    /// use transmission_rpc::types::{TorrentRenamePath, Id};
+    /// 
+    /// #[tokio::main]
+    /// async fn main() -> Result<()> {
+    ///     dotenv().ok();
+    ///     env_logger::init();
+    ///     let url= env::var("TURL")?;
+    ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
+    ///     let client = TransClient::with_auth(&url, basic_auth);
+    ///     let res: RpcResponse<TorrentRenamePath> = client.torrent_rename_path(vec![Id::Id(1)], String::from("Folder/OldFile.jpg"), String::from("NewFile.jpg")).await?;
+    ///     println!("rename-path result: {:#?}", res);
+    /// 
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn torrent_rename_path(
+        &self,
+        ids: Vec<Id>,
+        path: String,
+        name: String,
+    ) -> Result<RpcResponse<TorrentRenamePath>> {
+        self.call(RpcRequest::torrent_rename_path(ids, path, name))
             .await
     }
 

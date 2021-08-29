@@ -65,6 +65,17 @@ impl RpcRequest {
             })),
         }
     }
+
+    pub fn torrent_rename_path(ids: Vec<Id>, path: String, name: String) -> RpcRequest {
+        RpcRequest {
+            method: String::from("torrent-rename-path"),
+            arguments: Some(Args::TorrentRenamePathArgs(TorrentRenamePathArgs {
+                ids,
+                path,
+                name
+            }))
+        }
+    }
 }
 pub trait ArgumentFields {}
 impl ArgumentFields for TorrentGetField {}
@@ -77,6 +88,7 @@ pub enum Args {
     TorrentRemoveArgs(TorrentRemoveArgs),
     TorrentAddArgs(TorrentAddArgs),
     TorrentSetLocationArgs(TorrentSetLocationArgs),
+    TorrentRenamePathArgs(TorrentRenamePathArgs),
 }
 
 #[derive(Serialize, Debug, RustcEncodable, Clone)]
@@ -116,6 +128,13 @@ pub struct TorrentSetLocationArgs {
     location: String,
     #[serde(skip_serializing_if = "Option::is_none", rename = "move")]
     move_from: Option<bool>,
+}
+
+#[derive(Serialize, Debug, RustcEncodable, Clone)]
+pub struct TorrentRenamePathArgs {
+    ids: Vec<Id>,
+    path: String,
+    name: String,
 }
 
 #[derive(Serialize, Debug, RustcEncodable, Clone)]
