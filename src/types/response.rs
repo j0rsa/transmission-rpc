@@ -27,6 +27,25 @@ pub struct SessionGet {
 }
 impl RpcResponseArgument for SessionGet {}
 
+#[derive(Deserialize, Debug, Clone)]
+pub struct SessionStats {
+    #[serde(rename = "torrentCount")]
+    pub torrent_count: i32,
+    #[serde(rename = "activeTorrentCount")]
+    pub active_torrent_count: i32,
+    #[serde(rename = "pausedTorrentCount")]
+    pub paused_torrent_count: i32,
+    #[serde(rename = "downloadSpeed")]
+    pub download_speed: i64,
+    #[serde(rename = "uploadSpeed")]
+    pub upload_speed: i64,
+    #[serde(rename = "current-stats")]
+    pub current_stats: Stats,
+    #[serde(rename = "cumulative-stats")]
+    pub cumulative_stats: Stats,
+}
+impl RpcResponseArgument for SessionStats {}
+
 #[derive(Deserialize, Debug, RustcEncodable, Clone)]
 pub struct Torrent {
     #[serde(rename = "addedDate")]
@@ -82,6 +101,20 @@ pub struct Torrent {
     pub priorities: Option<Vec<i8>>,
     #[serde(rename = "fileStats")]
     pub file_stats: Option<Vec<FileStat>>,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct Stats {
+    #[serde(rename = "filesAdded")]
+    pub files_added: i32,
+    #[serde(rename = "downloadedBytes")]
+    pub downloaded_bytes: i64,
+    #[serde(rename = "uploadedBytes")]
+    pub uploaded_bytes: i64,
+    #[serde(rename = "secondsActive")]
+    pub seconds_active: i64,
+    #[serde(rename = "sessionCount")]
+    pub session_count: Option<i32>
 }
 
 #[derive(Deserialize, Debug, RustcEncodable)]
