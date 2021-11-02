@@ -20,6 +20,7 @@ pub use self::response::Nothing;
 pub use self::response::RpcResponse;
 pub(crate) use self::response::RpcResponseArgument;
 pub use self::response::SessionGet;
+pub use self::response::SessionStats;
 pub use self::response::Torrent;
 pub use self::response::TorrentAdded;
 pub use self::response::Torrents;

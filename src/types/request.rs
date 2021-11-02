@@ -16,6 +16,13 @@ impl RpcRequest {
         }
     }
 
+    pub fn session_stats() -> RpcRequest {
+        RpcRequest {
+            method: String::from("session-stats"),
+            arguments: None,
+        }
+    }
+
     pub fn torrent_get(fields: Option<Vec<TorrentGetField>>, ids: Option<Vec<Id>>) -> RpcRequest {
         let string_fields = fields
             .unwrap_or(TorrentGetField::all())
