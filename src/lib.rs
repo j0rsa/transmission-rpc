@@ -427,10 +427,18 @@ impl TransClient {
                 .expect("Unable to get the request body")
                 .body_string()?
         );
-        let resp: reqwest::Response = rq.send().await?;
-        let rpc_response: RpcResponse<RS> = resp.json().await?;
-        info!("Response body: {:#?}", rpc_response);
-        Ok(rpc_response)
+        let http_resp: reqwest::Response = rq.send().await?;
+        match http_resp.error_for_status() {
+            Ok(http_resp) => {
+                let rpc_resp: RpcResponse<RS> = http_resp.json().await?;
+                info!("Response body: {:#?}", rpc_resp);
+                Ok(rpc_resp)
+            }
+            Err(err) => {
+                error!("{}", err.to_string());
+                Err(err.into())
+            }
+        }
     }
 }
 
