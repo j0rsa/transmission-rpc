@@ -23,6 +23,13 @@ impl RpcRequest {
         }
     }
 
+    pub fn blocklist_update() -> RpcRequest {
+        RpcRequest {
+            method: String::from("blocklist-update"),
+            arguments: None,
+        }
+    }
+
     pub fn torrent_get(fields: Option<Vec<TorrentGetField>>, ids: Option<Vec<Id>>) -> RpcRequest {
         let string_fields = fields
             .unwrap_or(TorrentGetField::all())

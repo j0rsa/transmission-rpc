@@ -46,6 +46,13 @@ pub struct SessionStats {
 }
 impl RpcResponseArgument for SessionStats {}
 
+#[derive(Deserialize, Debug, Clone)]
+pub struct BlocklistUpdate {
+    #[serde(rename = "blocklist-size")]
+    pub blocklist_size: Option<i32>,
+}
+impl RpcResponseArgument for BlocklistUpdate {}
+
 #[derive(Deserialize, Debug, RustcEncodable, Clone)]
 pub struct Torrent {
     #[serde(rename = "addedDate")]
