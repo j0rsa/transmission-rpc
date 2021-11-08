@@ -32,6 +32,6 @@ spec: https://github.com/transmission/transmission/blob/master/extras/rpc-spec.t
 - [X] blocklist-update
 - [X] port-test
 - [ ] session-close
-- [ ] free-space
+- [X] free-space
 
 Support the project: [![Donate button](https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=H337RKJSC4YG4&source=url)
