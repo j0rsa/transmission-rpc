@@ -54,6 +54,14 @@ pub struct BlocklistUpdate {
 impl RpcResponseArgument for BlocklistUpdate {}
 
 #[derive(Deserialize, Debug, Clone)]
+pub struct FreeSpace {
+    path: String,
+    #[serde(rename = "size-bytes")]
+    size_bytes: i64,
+}
+impl RpcResponseArgument for FreeSpace {}
+
+#[derive(Deserialize, Debug, Clone)]
 pub struct PortTest {
     #[serde(rename = "port-is-open")]
     pub port_is_open: bool,

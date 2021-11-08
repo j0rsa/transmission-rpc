@@ -13,6 +13,7 @@ use types::BlocklistUpdate;
 use types::SessionGet;
 use types::SessionStats;
 use types::PortTest;
+use types::FreeSpace;
 use types::TorrentAction;
 use types::{Id, Torrent, TorrentGetField, Torrents};
 use types::{Nothing, Result, RpcRequest, RpcResponse, RpcResponseArgument, TorrentRenamePath};
@@ -184,6 +185,43 @@ impl TransClient {
     /// ```
     pub async fn blocklist_update(&self) -> Result<RpcResponse<BlocklistUpdate>> {
         self.call(RpcRequest::blocklist_update()).await
+    }
+
+    /// Performs a session stats call
+    ///
+    /// # Errors
+    ///
+    /// Any IO Error or Deserialization error
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// extern crate transmission_rpc;
+    ///
+    /// use std::env;
+    /// use dotenv::dotenv;
+    /// use transmission_rpc::TransClient;
+    /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth, FreeSpace};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<()> {
+    ///     dotenv().ok();
+    ///     env_logger::init();
+    ///     let url= env::var("TURL")?;
+    ///     let dir = env::var("TDIR")?;
+    ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
+    ///     let client = TransClient::with_auth(&url, basic_auth);
+    ///     let response: Result<RpcResponse<FreeSpace>> = client.free_space(dir).await;
+    ///     match response {
+    ///         Ok(_) => println!("Yay!"),
+    ///         Err(_) => panic!("Oh no!")
+    ///     }
+    ///     println!("Rpc reqsponse is ok: {}", response?.is_ok());
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn free_space(&self, path: String) -> Result<RpcResponse<FreeSpace>> {
+        self.call(RpcRequest::free_space(path)).await
     }
 
     /// Performs a port test call
