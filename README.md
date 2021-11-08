@@ -30,7 +30,7 @@ spec: https://github.com/transmission/transmission/blob/master/extras/rpc-spec.t
 - [X] session-get
 - [X] session-stats
 - [X] blocklist-update
-- [ ] port-test
+- [X] port-test
 - [ ] session-close
 - [ ] free-space
 

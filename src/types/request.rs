@@ -30,6 +30,13 @@ impl RpcRequest {
         }
     }
 
+    pub fn port_test() -> RpcRequest {
+        RpcRequest {
+            method: String::from("port-test"),
+            arguments: None,
+        }
+    }
+
     pub fn torrent_get(fields: Option<Vec<TorrentGetField>>, ids: Option<Vec<Id>>) -> RpcRequest {
         let string_fields = fields
             .unwrap_or(TorrentGetField::all())

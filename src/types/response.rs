@@ -53,6 +53,13 @@ pub struct BlocklistUpdate {
 }
 impl RpcResponseArgument for BlocklistUpdate {}
 
+#[derive(Deserialize, Debug, Clone)]
+pub struct PortTest {
+    #[serde(rename = "port-is-open")]
+    pub port_is_open: bool,
+}
+impl RpcResponseArgument for PortTest {}
+
 #[derive(Deserialize, Debug, RustcEncodable, Clone)]
 pub struct Torrent {
     #[serde(rename = "addedDate")]
