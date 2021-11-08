@@ -47,11 +47,12 @@ pub struct SessionStats {
 impl RpcResponseArgument for SessionStats {}
 
 #[derive(Deserialize, Debug, Clone)]
-pub struct BlocklistUpdate {
-    #[serde(rename = "blocklist-size")]
-    pub blocklist_size: Option<i32>,
+pub struct FreeSpace {
+    path: String,
+    #[serde(rename = "size-bytes")]
+    size_bytes: i64,
 }
-impl RpcResponseArgument for BlocklistUpdate {}
+impl RpcResponseArgument for FreeSpace {}
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct PortTest {

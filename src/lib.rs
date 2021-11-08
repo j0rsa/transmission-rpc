@@ -9,7 +9,6 @@ use serde::de::DeserializeOwned;
 pub mod types;
 
 use types::BasicAuth;
-use types::BlocklistUpdate;
 use types::SessionGet;
 use types::SessionStats;
 use types::PortTest;
@@ -17,6 +16,7 @@ use types::TorrentAction;
 use types::{Id, Torrent, TorrentGetField, Torrents};
 use types::{Nothing, Result, RpcRequest, RpcResponse, RpcResponseArgument, TorrentRenamePath};
 use types::{TorrentAddArgs, TorrentAdded};
+use crate::types::FreeSpace;
 
 pub struct TransClient {
     url: String,
@@ -150,7 +150,7 @@ impl TransClient {
         self.call(RpcRequest::session_stats()).await
     }
 
-    /// Performs a blocklist update call
+    /// Performs a session stats call
     ///
     /// # Errors
     ///
@@ -164,16 +164,17 @@ impl TransClient {
     /// use std::env;
     /// use dotenv::dotenv;
     /// use transmission_rpc::TransClient;
-    /// use transmission_rpc::types::{Result, BlockListUpdate, RpcResponse, BasicAuth};
+    /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth, FreeSpace};
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<()> {
     ///     dotenv().ok();
     ///     env_logger::init();
     ///     let url= env::var("TURL")?;
+    ///     let dir = env::var("TDIR")?;
     ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
     ///     let client = TransClient::with_auth(&url, basic_auth);
-    ///     let response: Result<RpcResponse<BlockListUpdate>> = client.blocklist_update().await;
+    ///     let response: Result<RpcResponse<FreeSpace>> = client.free_space(dir).await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
     ///         Err(_) => panic!("Oh no!")
@@ -182,8 +183,8 @@ impl TransClient {
     ///     Ok(())
     /// }
     /// ```
-    pub async fn blocklist_update(&self) -> Result<RpcResponse<BlocklistUpdate>> {
-        self.call(RpcRequest::blocklist_update()).await
+    pub async fn free_space(&self, path: String) -> Result<RpcResponse<FreeSpace>> {
+        self.call(RpcRequest::free_space(path)).await
     }
 
     /// Performs a torrent get call
@@ -465,18 +466,10 @@ impl TransClient {
                 .expect("Unable to get the request body")
                 .body_string()?
         );
-        let http_resp: reqwest::Response = rq.send().await?;
-        match http_resp.error_for_status() {
-            Ok(http_resp) => {
-                let rpc_resp: RpcResponse<RS> = http_resp.json().await?;
-                info!("Response body: {:#?}", rpc_resp);
-                Ok(rpc_resp)
-            }
-            Err(err) => {
-                error!("{}", err.to_string());
-                Err(err.into())
-            }
-        }
+        let resp: reqwest::Response = rq.send().await?;
+        let rpc_response: RpcResponse<RS> = resp.json().await?;
+        info!("Response body: {:#?}", rpc_response);
+        Ok(rpc_response)
     }
 }
 

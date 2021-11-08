@@ -23,10 +23,10 @@ impl RpcRequest {
         }
     }
 
-    pub fn blocklist_update() -> RpcRequest {
+    pub fn free_space(path: String) -> RpcRequest {
         RpcRequest {
-            method: String::from("blocklist-update"),
-            arguments: None,
+            method: String::from("free-space"),
+            arguments: Some(Args::FreeSpaceArgs(FreeSpaceArgs { path })),
         }
     }
 
@@ -104,12 +104,18 @@ impl ArgumentFields for TorrentGetField {}
 #[derive(Serialize, Debug, RustcEncodable, Clone)]
 #[serde(untagged)]
 pub enum Args {
+    FreeSpaceArgs(FreeSpaceArgs),
     TorrentGetArgs(TorrentGetArgs),
     TorrentActionArgs(TorrentActionArgs),
     TorrentRemoveArgs(TorrentRemoveArgs),
     TorrentAddArgs(TorrentAddArgs),
     TorrentSetLocationArgs(TorrentSetLocationArgs),
     TorrentRenamePathArgs(TorrentRenamePathArgs),
+}
+
+#[derive(Serialize, Debug, RustcEncodable, Clone)]
+pub struct FreeSpaceArgs {
+    path: String,
 }
 
 #[derive(Serialize, Debug, RustcEncodable, Clone)]
