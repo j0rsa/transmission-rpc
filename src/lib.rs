@@ -12,6 +12,7 @@ use types::BasicAuth;
 use types::BlocklistUpdate;
 use types::SessionGet;
 use types::SessionStats;
+use types::PortTest;
 use types::TorrentAction;
 use types::{Id, Torrent, TorrentGetField, Torrents};
 use types::{Nothing, Result, RpcRequest, RpcResponse, RpcResponseArgument, TorrentRenamePath};
@@ -183,6 +184,42 @@ impl TransClient {
     /// ```
     pub async fn blocklist_update(&self) -> Result<RpcResponse<BlocklistUpdate>> {
         self.call(RpcRequest::blocklist_update()).await
+    }
+
+    /// Performs a port test call
+    ///
+    /// # Errors
+    ///
+    /// Any IO Error or Deserialization error
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// extern crate transmission_rpc;
+    ///
+    /// use std::env;
+    /// use dotenv::dotenv;
+    /// use transmission_rpc::TransClient;
+    /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth, PortTest};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<()> {
+    ///     dotenv().ok();
+    ///     env_logger::init();
+    ///     let url= env::var("TURL")?;
+    ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
+    ///     let client = TransClient::with_auth(&url, basic_auth);
+    ///     let response: Result<RpcResponse<PortTest>> = client.port_test().await;
+    ///     match response {
+    ///         Ok(_) => println!("Yay!"),
+    ///         Err(_) => panic!("Oh no!")
+    ///     }
+    ///     println!("Rpc reqsponse is ok: {}", response?.is_ok());
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn port_test(&self) -> Result<RpcResponse<PortTest>> {
+        self.call(RpcRequest::port_test()).await
     }
 
     /// Performs a torrent get call
@@ -464,18 +501,10 @@ impl TransClient {
                 .expect("Unable to get the request body")
                 .body_string()?
         );
-        let http_resp: reqwest::Response = rq.send().await?;
-        match http_resp.error_for_status() {
-            Ok(http_resp) => {
-                let rpc_resp: RpcResponse<RS> = http_resp.json().await?;
-                info!("Response body: {:#?}", rpc_resp);
-                Ok(rpc_resp)
-            }
-            Err(err) => {
-                error!("{}", err.to_string());
-                Err(err.into())
-            }
-        }
+        let resp: reqwest::Response = rq.send().await?;
+        let rpc_response: RpcResponse<RS> = resp.json().await?;
+        info!("Response body: {:#?}", rpc_response);
+        Ok(rpc_response)
     }
 }
 

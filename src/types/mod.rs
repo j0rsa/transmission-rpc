@@ -23,6 +23,7 @@ pub(crate) use self::response::RpcResponseArgument;
 pub use self::response::SessionGet;
 pub use self::response::SessionStats;
 pub use self::response::BlocklistUpdate;
+pub use self::response::PortTest;
 pub use self::response::Torrent;
 pub use self::response::TorrentAdded;
 pub use self::response::Torrents;
