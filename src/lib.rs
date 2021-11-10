@@ -165,7 +165,7 @@ impl TransClient {
     /// use std::env;
     /// use dotenv::dotenv;
     /// use transmission_rpc::TransClient;
-    /// use transmission_rpc::types::{Result, BlockListUpdate, RpcResponse, BasicAuth};
+    /// use transmission_rpc::types::{Result, BlocklistUpdate, RpcResponse, BasicAuth};
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<()> {
@@ -174,7 +174,7 @@ impl TransClient {
     ///     let url= env::var("TURL")?;
     ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
     ///     let client = TransClient::with_auth(&url, basic_auth);
-    ///     let response: Result<RpcResponse<BlockListUpdate>> = client.blocklist_update().await;
+    ///     let response: Result<RpcResponse<BlocklistUpdate>> = client.blocklist_update().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
     ///         Err(_) => panic!("Oh no!")
