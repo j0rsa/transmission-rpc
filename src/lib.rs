@@ -107,7 +107,7 @@ impl TransClient {
     ///         Ok(_) => println!("Yay!"),
     ///         Err(_) => panic!("Oh no!")
     ///     }
-    ///     println!("Rpc reqsponse is ok: {}", response?.is_ok());
+    ///     println!("Rpc response is ok: {}", response?.is_ok());
     ///     Ok(())
     /// }
     /// ```
@@ -143,7 +143,7 @@ impl TransClient {
     ///         Ok(_) => println!("Yay!"),
     ///         Err(_) => panic!("Oh no!")
     ///     }
-    ///     println!("Rpc reqsponse is ok: {}", response?.is_ok());
+    ///     println!("Rpc response is ok: {}", response?.is_ok());
     ///     Ok(())
     /// }
     /// ```
@@ -179,7 +179,7 @@ impl TransClient {
     ///         Ok(_) => println!("Yay!"),
     ///         Err(_) => panic!("Oh no!")
     ///     }
-    ///     println!("Rpc reqsponse is ok: {}", response?.is_ok());
+    ///     println!("Rpc response is ok: {}", response?.is_ok());
     ///     Ok(())
     /// }
     /// ```
@@ -216,7 +216,7 @@ impl TransClient {
     ///         Ok(_) => println!("Yay!"),
     ///         Err(_) => panic!("Oh no!")
     ///     }
-    ///     println!("Rpc reqsponse is ok: {}", response?.is_ok());
+    ///     println!("Rpc response is ok: {}", response?.is_ok());
     ///     Ok(())
     /// }
     /// ```
@@ -252,7 +252,7 @@ impl TransClient {
     ///         Ok(_) => println!("Yay!"),
     ///         Err(_) => panic!("Oh no!")
     ///     }
-    ///     println!("Rpc reqsponse is ok: {}", response?.is_ok());
+    ///     println!("Rpc response is ok: {}", response?.is_ok());
     ///     Ok(())
     /// }
     /// ```
