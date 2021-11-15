@@ -68,7 +68,7 @@ pub struct PortTest {
 }
 impl RpcResponseArgument for PortTest {}
 
-#[derive(Deserialize, Debug, RustcEncodable, Clone)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Torrent {
     #[serde(rename = "addedDate")]
     pub added_date: Option<i64>,
@@ -139,19 +139,19 @@ pub struct Stats {
     pub session_count: Option<i32>
 }
 
-#[derive(Deserialize, Debug, RustcEncodable)]
+#[derive(Deserialize, Debug)]
 pub struct Torrents<T> {
     pub torrents: Vec<T>,
 }
 impl RpcResponseArgument for Torrents<Torrent> {}
 
-#[derive(Deserialize, Debug, RustcEncodable, Clone)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Trackers {
     pub id: i32,
     pub announce: String,
 }
 
-#[derive(Deserialize, Debug, RustcEncodable, Clone)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct File {
     pub length: i64,
     #[serde(rename = "bytesCompleted")]
@@ -159,7 +159,7 @@ pub struct File {
     pub name: String,
 }
 
-#[derive(Deserialize, Debug, RustcEncodable, Clone)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct FileStat {
     #[serde(rename = "bytesCompleted")]
     pub bytes_completed: i64,
@@ -168,18 +168,18 @@ pub struct FileStat {
     pub priority: i8,
 }
 
-#[derive(Deserialize, Debug, RustcEncodable)]
+#[derive(Deserialize, Debug)]
 pub struct Nothing {}
 impl RpcResponseArgument for Nothing {}
 
-#[derive(Deserialize, Debug, RustcEncodable)]
+#[derive(Deserialize, Debug)]
 pub struct TorrentAdded {
     #[serde(rename = "torrent-added")]
     pub torrent_added: Option<Torrent>,
 }
 impl RpcResponseArgument for TorrentAdded {}
 
-#[derive(Deserialize, Debug, RustcEncodable)]
+#[derive(Deserialize, Debug)]
 pub struct TorrentRenamePath{
     pub path: String,
     pub name: String,

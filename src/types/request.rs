@@ -1,7 +1,7 @@
 use enum_iterator::IntoEnumIterator;
 use serde::Serialize;
 
-#[derive(Serialize, Debug, RustcEncodable)]
+#[derive(Serialize, Debug)]
 pub struct RpcRequest {
     method: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -108,7 +108,7 @@ impl RpcRequest {
 pub trait ArgumentFields {}
 impl ArgumentFields for TorrentGetField {}
 
-#[derive(Serialize, Debug, RustcEncodable, Clone)]
+#[derive(Serialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum Args {
     FreeSpaceArgs(FreeSpaceArgs),
@@ -120,12 +120,12 @@ pub enum Args {
     TorrentRenamePathArgs(TorrentRenamePathArgs),
 }
 
-#[derive(Serialize, Debug, RustcEncodable, Clone)]
+#[derive(Serialize, Debug, Clone)]
 pub struct FreeSpaceArgs {
     path: String,
 }
 
-#[derive(Serialize, Debug, RustcEncodable, Clone)]
+#[derive(Serialize, Debug, Clone)]
 pub struct TorrentGetArgs {
     #[serde(skip_serializing_if = "Option::is_none")]
     fields: Option<Vec<String>>,
@@ -145,18 +145,18 @@ impl Default for TorrentGetArgs {
     }
 }
 
-#[derive(Serialize, Debug, RustcEncodable, Clone)]
+#[derive(Serialize, Debug, Clone)]
 pub struct TorrentActionArgs {
     ids: Vec<Id>,
 }
-#[derive(Serialize, Debug, RustcEncodable, Clone)]
+#[derive(Serialize, Debug, Clone)]
 pub struct TorrentRemoveArgs {
     ids: Vec<Id>,
     #[serde(rename = "delete-local-data")]
     delete_local_data: bool,
 }
 
-#[derive(Serialize, Debug, RustcEncodable, Clone)]
+#[derive(Serialize, Debug, Clone)]
 pub struct TorrentSetLocationArgs {
     ids: Vec<Id>,
     location: String,
@@ -164,21 +164,21 @@ pub struct TorrentSetLocationArgs {
     move_from: Option<bool>,
 }
 
-#[derive(Serialize, Debug, RustcEncodable, Clone)]
+#[derive(Serialize, Debug, Clone)]
 pub struct TorrentRenamePathArgs {
     ids: Vec<Id>,
     path: String,
     name: String,
 }
 
-#[derive(Serialize, Debug, RustcEncodable, Clone)]
+#[derive(Serialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum Id {
     Id(i64),
     Hash(String),
 }
 
-#[derive(Serialize, Debug, RustcEncodable, Clone)]
+#[derive(Serialize, Debug, Clone)]
 pub struct TorrentAddArgs {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cookies: Option<String>,
