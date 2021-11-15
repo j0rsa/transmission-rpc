@@ -181,9 +181,9 @@ impl RpcResponseArgument for TorrentAdded {}
 
 #[derive(Deserialize, Debug)]
 pub struct TorrentRenamePath{
-    pub path: String,
-    pub name: String,
-    pub id: i64
+    pub path: Option<String>,
+    pub name: Option<String>,
+    pub id: Option<i64>,
 
 }
 impl RpcResponseArgument for TorrentRenamePath {}
