@@ -41,6 +41,13 @@ jobs:
           args: --release --all-features
 
       - name: Cargo Test
-        uses:  actions-rs/cargo@v1
+        uses: actions-rs/toolchain@v1
         with:
-          command: test
+          toolchain: stable
+      - run: cargo test -- --skip session_close
+
+      - name: Cargo Test Session Close
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - run: cargo test -- session_close

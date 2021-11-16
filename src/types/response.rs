@@ -47,6 +47,10 @@ pub struct SessionStats {
 impl RpcResponseArgument for SessionStats {}
 
 #[derive(Deserialize, Debug, Clone)]
+pub struct SessionClose {}
+impl RpcResponseArgument for SessionClose {}
+
+#[derive(Deserialize, Debug, Clone)]
 pub struct BlocklistUpdate {
     #[serde(rename = "blocklist-size")]
     pub blocklist_size: Option<i32>,
