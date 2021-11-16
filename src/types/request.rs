@@ -23,6 +23,13 @@ impl RpcRequest {
         }
     }
 
+    pub fn session_close() -> RpcRequest {
+        RpcRequest {
+            method: String::from("session-close"),
+            arguments: None,
+        }
+    }
+
     pub fn blocklist_update() -> RpcRequest {
         RpcRequest {
             method: String::from("blocklist-update"),

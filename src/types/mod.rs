@@ -22,6 +22,7 @@ pub use self::response::RpcResponse;
 pub(crate) use self::response::RpcResponseArgument;
 pub use self::response::SessionGet;
 pub use self::response::SessionStats;
+pub use self::response::SessionClose;
 pub use self::response::BlocklistUpdate;
 pub use self::response::PortTest;
 pub use self::response::FreeSpace;
