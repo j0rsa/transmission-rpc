@@ -59,9 +59,9 @@ impl RpcResponseArgument for BlocklistUpdate {}
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct FreeSpace {
-    path: String,
+    pub path: String,
     #[serde(rename = "size-bytes")]
-    size_bytes: i64,
+    pub size_bytes: i64,
 }
 impl RpcResponseArgument for FreeSpace {}
 
