@@ -12,7 +12,7 @@ async fn main() -> Result<()> {
     env_logger::init();
     let url= env::var("TURL")?;
     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
-    let client = TransClient::with_auth(&url, basic_auth);
+    let mut client = TransClient::with_auth(&url, basic_auth);
     let res: RpcResponse<TorrentRenamePath> = client.torrent_rename_path(vec![Id::Id(1)], String::from("Folder/OldFile.jpg"), String::from("NewFile.jpg")).await?;
     println!("rename-path result: {:#?}", res);
 

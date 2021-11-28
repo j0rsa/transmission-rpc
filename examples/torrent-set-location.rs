@@ -11,7 +11,7 @@ async fn main() -> Result<()> {
     dotenv().ok();
     env_logger::init();
     let url = env::var("TURL")?;
-    let client;
+    let mut client;
     if let (Ok(user), Ok(password)) = (env::var("TUSER"), env::var("TPWD")) {
         client = TransClient::with_auth(&url, BasicAuth {user, password});
     } else {
