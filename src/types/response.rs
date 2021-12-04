@@ -76,6 +76,8 @@ impl RpcResponseArgument for PortTest {}
 pub struct Torrent {
     #[serde(rename = "addedDate")]
     pub added_date: Option<i64>,
+    #[serde(rename = "doneDate")]
+    pub done_date: Option<i64>,
     #[serde(rename = "downloadDir")]
     pub download_dir: Option<String>,
     pub error: Option<i64>,
