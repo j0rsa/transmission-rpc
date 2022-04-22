@@ -6,7 +6,7 @@ Library to communicate with transmission rpc
 
 It is highly encouraged to use HTTPS since the Transmission authentication is using BasicAuth which could be easily intercepted
 
-spec: https://github.com/transmission/transmission/blob/master/extras/rpc-spec.txt
+spec: https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
 
 #### Supported Methods
 
