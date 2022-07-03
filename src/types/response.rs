@@ -179,11 +179,12 @@ pub struct Nothing {}
 impl RpcResponseArgument for Nothing {}
 
 #[derive(Deserialize, Debug)]
-pub struct TorrentAdded {
-    #[serde(rename = "torrent-added")]
-    pub torrent_added: Option<Torrent>,
+#[serde(rename_all="kebab-case")]
+pub enum TorrentAddedOrDuplicate {
+    TorrentDuplicate(Torrent),
+    TorrentAdded(Torrent),
 }
-impl RpcResponseArgument for TorrentAdded {}
+impl RpcResponseArgument for TorrentAddedOrDuplicate {}
 
 #[derive(Deserialize, Debug)]
 pub struct TorrentRenamePath{
