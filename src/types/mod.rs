@@ -9,24 +9,13 @@ pub struct BasicAuth {
     pub password: String,
 }
 
-pub use self::request::ArgumentFields;
-pub use self::request::Id;
 pub(crate) use self::request::RpcRequest;
-pub use self::request::TorrentAction;
-pub use self::request::TorrentAddArgs;
-pub use self::request::TorrentGetField;
-pub use self::request::TorrentRenamePathArgs;
+pub use self::request::{
+    ArgumentFields, Id, TorrentAction, TorrentAddArgs, TorrentGetField, TorrentRenamePathArgs,
+};
 
-pub use self::response::Nothing;
-pub use self::response::RpcResponse;
 pub(crate) use self::response::RpcResponseArgument;
-pub use self::response::SessionGet;
-pub use self::response::SessionStats;
-pub use self::response::SessionClose;
-pub use self::response::BlocklistUpdate;
-pub use self::response::PortTest;
-pub use self::response::FreeSpace;
-pub use self::response::Torrent;
-pub use self::response::TorrentAddedOrDuplicate;
-pub use self::response::Torrents;
-pub use self::response::TorrentRenamePath;
+pub use self::response::{
+    BlocklistUpdate, FreeSpace, Nothing, PortTest, RpcResponse, SessionClose, SessionGet,
+    SessionStats, Torrent, TorrentAddedOrDuplicate, TorrentRenamePath, Torrents,
+};
