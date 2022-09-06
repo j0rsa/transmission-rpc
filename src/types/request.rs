@@ -40,7 +40,7 @@ impl RpcRequest {
     pub fn free_space(path: String) -> RpcRequest {
         RpcRequest {
             method: String::from("free-space"),
-            arguments: Some(Args::FreeSpaceArgs(FreeSpaceArgs { path })),
+            arguments: Some(Args::FreeSpace(FreeSpaceArgs { path })),
         }
     }
 
@@ -53,13 +53,13 @@ impl RpcRequest {
 
     pub fn torrent_get(fields: Option<Vec<TorrentGetField>>, ids: Option<Vec<Id>>) -> RpcRequest {
         let string_fields = fields
-            .unwrap_or(TorrentGetField::all())
+            .unwrap_or_else(TorrentGetField::all)
             .iter()
-            .map(|f| f.to_str())
+            .map(TorrentGetField::to_str)
             .collect();
         RpcRequest {
             method: String::from("torrent-get"),
-            arguments: Some(Args::TorrentGetArgs(TorrentGetArgs {
+            arguments: Some(Args::TorrentGet(TorrentGetArgs {
                 fields: Some(string_fields),
                 ids,
             })),
@@ -69,7 +69,7 @@ impl RpcRequest {
     pub fn torrent_remove(ids: Vec<Id>, delete_local_data: bool) -> RpcRequest {
         RpcRequest {
             method: String::from("torrent-remove"),
-            arguments: Some(Args::TorrentRemoveArgs(TorrentRemoveArgs {
+            arguments: Some(Args::TorrentRemove(TorrentRemoveArgs {
                 ids,
                 delete_local_data,
             })),
@@ -79,21 +79,25 @@ impl RpcRequest {
     pub fn torrent_add(add: TorrentAddArgs) -> RpcRequest {
         RpcRequest {
             method: String::from("torrent-add"),
-            arguments: Some(Args::TorrentAddArgs(add)),
+            arguments: Some(Args::TorrentAdd(add)),
         }
     }
 
     pub fn torrent_action(action: TorrentAction, ids: Vec<Id>) -> RpcRequest {
         RpcRequest {
             method: action.to_str(),
-            arguments: Some(Args::TorrentActionArgs(TorrentActionArgs { ids })),
+            arguments: Some(Args::TorrentAction(TorrentActionArgs { ids })),
         }
     }
 
-    pub fn torrent_set_location(ids: Vec<Id>, location: String, move_from: Option<bool>, ) -> RpcRequest {
+    pub fn torrent_set_location(
+        ids: Vec<Id>,
+        location: String,
+        move_from: Option<bool>,
+    ) -> RpcRequest {
         RpcRequest {
             method: String::from("torrent-set-location"),
-            arguments: Some(Args::TorrentSetLocationArgs(TorrentSetLocationArgs {
+            arguments: Some(Args::TorrentSetLocation(TorrentSetLocationArgs {
                 ids,
                 location,
                 move_from,
@@ -104,11 +108,11 @@ impl RpcRequest {
     pub fn torrent_rename_path(ids: Vec<Id>, path: String, name: String) -> RpcRequest {
         RpcRequest {
             method: String::from("torrent-rename-path"),
-            arguments: Some(Args::TorrentRenamePathArgs(TorrentRenamePathArgs {
+            arguments: Some(Args::TorrentRenamePath(TorrentRenamePathArgs {
                 ids,
                 path,
-                name
-            }))
+                name,
+            })),
         }
     }
 }
@@ -118,13 +122,13 @@ impl ArgumentFields for TorrentGetField {}
 #[derive(Serialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum Args {
-    FreeSpaceArgs(FreeSpaceArgs),
-    TorrentGetArgs(TorrentGetArgs),
-    TorrentActionArgs(TorrentActionArgs),
-    TorrentRemoveArgs(TorrentRemoveArgs),
-    TorrentAddArgs(TorrentAddArgs),
-    TorrentSetLocationArgs(TorrentSetLocationArgs),
-    TorrentRenamePathArgs(TorrentRenamePathArgs),
+    FreeSpace(FreeSpaceArgs),
+    TorrentGet(TorrentGetArgs),
+    TorrentAction(TorrentActionArgs),
+    TorrentRemove(TorrentRemoveArgs),
+    TorrentAdd(TorrentAddArgs),
+    TorrentSetLocation(TorrentSetLocationArgs),
+    TorrentRenamePath(TorrentRenamePathArgs),
 }
 
 #[derive(Serialize, Debug, Clone)]
@@ -185,7 +189,7 @@ pub enum Id {
     Hash(String),
 }
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Serialize, Debug, Default, Clone)]
 pub struct TorrentAddArgs {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cookies: Option<String>,
@@ -224,26 +228,7 @@ pub struct TorrentAddArgs {
     pub priority_normal: Option<Vec<i32>>,
 }
 
-impl Default for TorrentAddArgs {
-    fn default() -> Self {
-        TorrentAddArgs {
-            cookies: None,
-            download_dir: None,
-            filename: None,
-            metainfo: None,
-            paused: None,
-            peer_limit: None,
-            bandwidth_priority: None,
-            files_wanted: None,
-            files_unwanted: None,
-            priority_high: None,
-            priority_low: None,
-            priority_normal: None,
-        }
-    }
-}
-
-#[derive(Clone, IntoEnumIterator)]
+#[derive(Clone, Copy, IntoEnumIterator)]
 pub enum TorrentGetField {
     Id,
     Addeddate,
@@ -278,16 +263,18 @@ pub enum TorrentGetField {
     Webseedssendingtous,
     Wanted,
     Priorities,
-    Filestats
+    Filestats,
 }
 
 impl TorrentGetField {
+    #[must_use]
     pub fn all() -> Vec<TorrentGetField> {
         TorrentGetField::into_enum_iter().collect()
     }
 }
 
 impl TorrentGetField {
+    #[must_use]
     pub fn to_str(&self) -> String {
         match self {
             TorrentGetField::Id => "id",
@@ -324,10 +311,12 @@ impl TorrentGetField {
             TorrentGetField::Wanted => "wanted",
             TorrentGetField::Priorities => "priorities",
             TorrentGetField::Filestats => "fileStats",
-        }.to_string()
+        }
+        .to_string()
     }
 }
 
+#[derive(Clone, Copy, Debug)]
 pub enum TorrentAction {
     Start,
     Stop,
@@ -337,6 +326,7 @@ pub enum TorrentAction {
 }
 
 impl TorrentAction {
+    #[must_use]
     pub fn to_str(&self) -> String {
         match self {
             TorrentAction::Start => "torrent-start",
@@ -344,6 +334,7 @@ impl TorrentAction {
             TorrentAction::StartNow => "torrent-start-now",
             TorrentAction::Verify => "torrent-verify",
             TorrentAction::Reannounce => "torrent-reannounce",
-        }.to_string()
+        }
+        .to_string()
     }
 }

@@ -142,7 +142,7 @@ pub struct Stats {
     #[serde(rename = "secondsActive")]
     pub seconds_active: i64,
     #[serde(rename = "sessionCount")]
-    pub session_count: Option<i32>
+    pub session_count: Option<i32>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -187,10 +187,9 @@ pub enum TorrentAddedOrDuplicate {
 impl RpcResponseArgument for TorrentAddedOrDuplicate {}
 
 #[derive(Deserialize, Debug)]
-pub struct TorrentRenamePath{
+pub struct TorrentRenamePath {
     pub path: Option<String>,
     pub name: Option<String>,
     pub id: Option<i64>,
-
 }
 impl RpcResponseArgument for TorrentRenamePath {}

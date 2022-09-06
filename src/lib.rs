@@ -9,17 +9,11 @@ use serde::de::DeserializeOwned;
 
 pub mod types;
 
-use types::BasicAuth;
-use types::BlocklistUpdate;
-use types::SessionGet;
-use types::SessionStats;
-use types::SessionClose;
-use types::PortTest;
-use types::FreeSpace;
-use types::TorrentAction;
-use types::{Id, Torrent, TorrentGetField, Torrents};
-use types::{Nothing, Result, RpcRequest, RpcResponse, RpcResponseArgument, TorrentRenamePath};
-use types::{TorrentAddArgs, TorrentAddedOrDuplicate};
+use types::{
+    BasicAuth, BlocklistUpdate, FreeSpace, Id, Nothing, PortTest, Result, RpcRequest, RpcResponse,
+    RpcResponseArgument, SessionClose, SessionGet, SessionStats, Torrent, TorrentAction,
+    TorrentAddArgs, TorrentAddedOrDuplicate, TorrentGetField, TorrentRenamePath, Torrents,
+};
 
 const MAX_RETRIES: usize = 5;
 
@@ -49,6 +43,7 @@ pub struct TransClient {
 
 impl TransClient {
     /// Returns HTTP(S) client with configured Basic Auth
+    #[must_use]
     pub fn with_auth(url: &str, basic_auth: BasicAuth) -> TransClient {
         TransClient {
             url: url.to_string(),
@@ -59,6 +54,7 @@ impl TransClient {
     }
 
     /// Returns HTTP(S) client
+    #[must_use]
     pub fn new(url: &str) -> TransClient {
         TransClient {
             url: url.to_string(),
@@ -71,11 +67,13 @@ impl TransClient {
     /// Prepares a request for provided server and auth
     fn rpc_request(&self) -> reqwest::RequestBuilder {
         if let Some(auth) = &self.auth {
-            self.client.post(&self.url)
+            self.client
+                .post(&self.url)
                 .basic_auth(&auth.user, Some(&auth.password))
         } else {
             self.client.post(&self.url)
-        }.header(CONTENT_TYPE, "application/json")
+        }
+        .header(CONTENT_TYPE, "application/json")
     }
 
     /// Performs a session get call
@@ -482,13 +480,13 @@ impl TransClient {
     ///
     /// ```
     /// extern crate transmission_rpc;
-    /// 
+    ///
     /// use std::env;
     /// use dotenv::dotenv;
     /// use transmission_rpc::TransClient;
     /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth};
     /// use transmission_rpc::types::{TorrentRenamePath, Id};
-    /// 
+    ///
     /// #[tokio::main]
     /// async fn main() -> Result<()> {
     ///     dotenv().ok();
@@ -498,7 +496,7 @@ impl TransClient {
     ///     let mut client = TransClient::with_auth(&url, basic_auth);
     ///     let res: RpcResponse<TorrentRenamePath> = client.torrent_rename_path(vec![Id::Id(1)], String::from("Folder/OldFile.jpg"), String::from("NewFile.jpg")).await?;
     ///     println!("rename-path result: {:#?}", res);
-    /// 
+    ///
     ///     Ok(())
     /// }
     /// ```
@@ -547,10 +545,15 @@ impl TransClient {
     ///     Ok(())
     /// }
     /// ```
+    ///
+    /// # Panics
+    /// Either metainfo or torrent filename must be set or this call will panic.
+    ///
     pub async fn torrent_add(&mut self, add: TorrentAddArgs) -> Result<RpcResponse<TorrentAdded>> {
-        if add.metainfo == None && add.filename == None {
-            panic!("Metainfo or Filename should be provided")
-        }
+        assert!(
+            !(add.metainfo == None && add.filename == None),
+            "Metainfo or Filename should be provided"
+        );
         self.call(RpcRequest::torrent_add(add)).await
     }
 
@@ -560,23 +563,21 @@ impl TransClient {
     ///
     /// Any IO Error or Deserialization error
     async fn call<RS>(&mut self, request: RpcRequest) -> Result<RpcResponse<RS>>
-        where
-            RS: RpcResponseArgument + DeserializeOwned + std::fmt::Debug,
+    where
+        RS: RpcResponseArgument + DeserializeOwned + std::fmt::Debug,
     {
         let mut remaining_retries = MAX_RETRIES;
         loop {
-            if remaining_retries <= 0 {
-                return Err(From::from(TransError::MaxRetriesReached));
-            }
-            remaining_retries -= 1;
+            remaining_retries = remaining_retries
+                .checked_sub(1)
+                .ok_or(TransError::MaxRetriesReached)?;
 
             info!("Loaded auth: {:?}", &self.auth);
             let rq = match &self.session_id {
                 None => self.rpc_request(),
-                Some(id) => {
-                    self.rpc_request().header("X-Transmission-Session-Id", id)
-                }
-            }.json(&request);
+                Some(id) => self.rpc_request().header("X-Transmission-Session-Id", id),
+            }
+            .json(&request);
 
             info!(
                 "Request body: {:?}",
@@ -586,23 +587,20 @@ impl TransClient {
             );
 
             let rsp: reqwest::Response = rq.send().await?;
-            match rsp.status() {
-                StatusCode::CONFLICT => {
-                    let session_id = rsp.headers()
-                        .get("X-Transmission-Session-Id")
-                        .ok_or(TransError::NoSessionIdReceived)?
-                        .to_str()?;
-                    self.session_id = Some(String::from(session_id));
+            if matches!(rsp.status(), StatusCode::CONFLICT) {
+                let session_id = rsp
+                    .headers()
+                    .get("X-Transmission-Session-Id")
+                    .ok_or(TransError::NoSessionIdReceived)?
+                    .to_str()?;
+                self.session_id = Some(String::from(session_id));
 
-                    info!("Got new session_id: {}. Retrying request.", session_id);
-                    continue;
-                }
-                _ => {
-                    let rpc_response: RpcResponse<RS> = rsp.json().await?;
-                    info!("Response body: {:#?}", rpc_response);
+                info!("Got new session_id: {}. Retrying request.", session_id);
+            } else {
+                let rpc_response: RpcResponse<RS> = rsp.json().await?;
+                info!("Response body: {:#?}", rpc_response);
 
-                    return Ok(rpc_response)
-                }
+                return Ok(rpc_response);
             }
         }
     }
@@ -633,7 +631,7 @@ mod tests {
         let url = env::var("TURL")?;
         let mut client;
         if let (Ok(user), Ok(password)) = (env::var("TUSER"), env::var("TPWD")) {
-            client = TransClient::with_auth(&url, BasicAuth {user, password});
+            client = TransClient::with_auth(&url, BasicAuth { user, password });
         } else {
             client = TransClient::new(&url);
         }

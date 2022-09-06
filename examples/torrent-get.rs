@@ -2,8 +2,9 @@ extern crate transmission_rpc;
 
 use dotenv::dotenv;
 use std::env;
-use transmission_rpc::types::{BasicAuth, Result, RpcResponse};
-use transmission_rpc::types::{Id, Torrent, TorrentGetField, Torrents};
+use transmission_rpc::types::{
+    BasicAuth, Id, Result, RpcResponse, Torrent, TorrentGetField, Torrents,
+};
 use transmission_rpc::TransClient;
 
 #[tokio::main]
@@ -13,7 +14,7 @@ async fn main() -> Result<()> {
     let url = env::var("TURL")?;
     let mut client;
     if let (Ok(user), Ok(password)) = (env::var("TUSER"), env::var("TPWD")) {
-        client = TransClient::with_auth(&url, BasicAuth {user, password});
+        client = TransClient::with_auth(&url, BasicAuth { user, password });
     } else {
         client = TransClient::new(&url);
     }
@@ -27,15 +28,23 @@ async fn main() -> Result<()> {
         .collect();
     println!("{:#?}", names);
 
-    let res1: RpcResponse<Torrents<Torrent>> = client.torrent_get(
+    let res1: RpcResponse<Torrents<Torrent>> = client
+        .torrent_get(
             Some(vec![TorrentGetField::Id, TorrentGetField::Name]),
             Some(vec![Id::Id(1), Id::Id(2), Id::Id(3)]),
-        ).await?;
+        )
+        .await?;
     let first_three: Vec<String> = res1
         .arguments
         .torrents
         .iter()
-        .map(|it| {format!("{}. {}", &it.id.as_ref().unwrap(), &it.name.as_ref().unwrap())})
+        .map(|it| {
+            format!(
+                "{}. {}",
+                &it.id.as_ref().unwrap(),
+                &it.name.as_ref().unwrap()
+            )
+        })
         .collect();
     println!("{:#?}", first_three);
 
@@ -46,13 +55,23 @@ async fn main() -> Result<()> {
                 TorrentGetField::HashString,
                 TorrentGetField::Name,
             ]),
-            Some(vec![Id::Hash(String::from("64b0d9a53ac9cd1002dad1e15522feddb00152fe",))]),
-        ).await?;
+            Some(vec![Id::Hash(String::from(
+                "64b0d9a53ac9cd1002dad1e15522feddb00152fe",
+            ))]),
+        )
+        .await?;
     let info: Vec<String> = res2
         .arguments
         .torrents
         .iter()
-        .map(|it| {format!("{:5}. {:^45} {}", &it.id.as_ref().unwrap(), &it.hash_string.as_ref().unwrap(), &it.name.as_ref().unwrap())})
+        .map(|it| {
+            format!(
+                "{:5}. {:^45} {}",
+                &it.id.as_ref().unwrap(),
+                &it.hash_string.as_ref().unwrap(),
+                &it.name.as_ref().unwrap()
+            )
+        })
         .collect();
     println!("{:#?}", info);
 

@@ -12,14 +12,14 @@ async fn main() -> Result<()> {
     let url = env::var("TURL")?;
     let mut client;
     if let (Ok(user), Ok(password)) = (env::var("TUSER"), env::var("TPWD")) {
-        client = TransClient::with_auth(&url, BasicAuth {user, password});
+        client = TransClient::with_auth(&url, BasicAuth { user, password });
     } else {
         client = TransClient::new(&url);
     }
     let response: Result<RpcResponse<SessionStats>> = client.session_stats().await;
     match response {
         Ok(_) => println!("Yay!"),
-        Err(_) => panic!("Oh no!")
+        Err(_) => panic!("Oh no!"),
     }
     println!("Rpc response is ok: {}", response?.is_ok());
     Ok(())

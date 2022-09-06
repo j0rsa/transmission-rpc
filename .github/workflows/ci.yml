@@ -1,6 +1,6 @@
 name: CI
 
-on: 
+on:
   push:
   pull_request:
     branches:
@@ -13,41 +13,49 @@ jobs:
 
     steps:
       - name: Checkout source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Get Rust
         uses: actions-rs/toolchain@v1
         with:
+          profile: minimal
           toolchain: stable
+          components: rustfmt, clippy
 
       - name: Setup Test Enviroment
         run: docker-compose up -d
 
-      - name: Use Cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Cargo Build
+      - name: Check formatting
         uses: actions-rs/cargo@v1
         with:
-          command: build
-          args: --release --all-features
+          command: fmt
+          args: --all -- --check
+
+      - name: Cargo check
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --workspace --all-targets --all-features
 
       - name: Cargo Test
-        uses: actions-rs/toolchain@v1
+        uses: actions-rs/cargo@v1
         with:
-          toolchain: stable
-      - run: cargo test -- --skip session_close
+          command: test
+          args: -- --skip session_close
 
       - name: Cargo Test Session Close
-        uses: actions-rs/toolchain@v1
+        uses: actions-rs/cargo@v1
         with:
-          toolchain: stable
-      - run: cargo test -- session_close
+          command: test
+          args: -- session_close
+
+      - name: Cargo clippy
+        uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --all-features
+
+      - name: Cargo audit
+        uses: actions-rs/audit-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
