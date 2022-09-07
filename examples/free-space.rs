@@ -13,9 +13,9 @@ async fn main() -> Result<()> {
     let dir = env::var("TDIR")?;
     let mut client;
     if let (Ok(user), Ok(password)) = (env::var("TUSER"), env::var("TPWD")) {
-        client = TransClient::with_auth(&url, BasicAuth { user, password });
+        client = TransClient::with_auth(url.parse()?, BasicAuth { user, password });
     } else {
-        client = TransClient::new(&url);
+        client = TransClient::new(url.parse()?);
     }
     let response: Result<RpcResponse<FreeSpace>> = client.free_space(dir).await;
     match response {
