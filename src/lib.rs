@@ -3,7 +3,7 @@ extern crate env_logger;
 extern crate log;
 extern crate reqwest;
 
-use reqwest::header::CONTENT_TYPE;
+use reqwest::{header::CONTENT_TYPE, Url};
 use reqwest::{Client, StatusCode};
 use serde::de::DeserializeOwned;
 
@@ -36,7 +36,7 @@ impl std::fmt::Display for TransError {
 impl std::error::Error for TransError {}
 
 pub struct TransClient {
-    url: String,
+    url: Url,
     auth: Option<BasicAuth>,
     session_id: Option<String>,
     client: Client,
@@ -45,9 +45,9 @@ pub struct TransClient {
 impl TransClient {
     /// Returns HTTP(S) client with configured Basic Auth
     #[must_use]
-    pub fn with_auth(url: &str, basic_auth: BasicAuth) -> TransClient {
+    pub fn with_auth(url: Url, basic_auth: BasicAuth) -> TransClient {
         TransClient {
-            url: url.to_string(),
+            url,
             auth: Some(basic_auth),
             session_id: None,
             client: Client::new(),
@@ -56,9 +56,9 @@ impl TransClient {
 
     /// Returns HTTP(S) client
     #[must_use]
-    pub fn new(url: &str) -> TransClient {
+    pub fn new(url: Url) -> TransClient {
         TransClient {
-            url: url.to_string(),
+            url,
             auth: None,
             session_id: None,
             client: Client::new(),
@@ -69,10 +69,10 @@ impl TransClient {
     fn rpc_request(&self) -> reqwest::RequestBuilder {
         if let Some(auth) = &self.auth {
             self.client
-                .post(&self.url)
+                .post(self.url.clone())
                 .basic_auth(&auth.user, Some(&auth.password))
         } else {
-            self.client.post(&self.url)
+            self.client.post(self.url.clone())
         }
         .header(CONTENT_TYPE, "application/json")
     }
@@ -99,7 +99,7 @@ impl TransClient {
     ///     env_logger::init();
     ///     let url= env::var("TURL")?;
     ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
-    ///     let mut client = TransClient::with_auth(&url, basic_auth);
+    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<SessionGet>> = client.session_get().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -135,7 +135,7 @@ impl TransClient {
     ///     env_logger::init();
     ///     let url= env::var("TURL")?;
     ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
-    ///     let mut client = TransClient::with_auth(&url, basic_auth);
+    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<SessionStats>> = client.session_stats().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -171,7 +171,7 @@ impl TransClient {
     ///     env_logger::init();
     ///     let url= env::var("TURL")?;
     ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
-    ///     let mut client = TransClient::with_auth(&url, basic_auth);
+    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<SessionClose>> = client.session_close().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -207,7 +207,7 @@ impl TransClient {
     ///     env_logger::init();
     ///     let url= env::var("TURL")?;
     ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
-    ///     let mut client = TransClient::with_auth(&url, basic_auth);
+    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<BlocklistUpdate>> = client.blocklist_update().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -244,7 +244,7 @@ impl TransClient {
     ///     let url= env::var("TURL")?;
     ///     let dir = env::var("TDIR")?;
     ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
-    ///     let mut client = TransClient::with_auth(&url, basic_auth);
+    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<FreeSpace>> = client.free_space(dir).await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -280,7 +280,7 @@ impl TransClient {
     ///     env_logger::init();
     ///     let url= env::var("TURL")?;
     ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
-    ///     let mut client = TransClient::with_auth(&url, basic_auth);
+    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<PortTest>> = client.port_test().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -319,7 +319,7 @@ impl TransClient {
     ///     env_logger::init();
     ///     let url= env::var("TURL")?;
     ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
-    ///     let mut client = TransClient::with_auth(&url, basic_auth);
+    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
     ///
     ///     let res: RpcResponse<Torrents<Torrent>> = client.torrent_get(None, None).await?;
     ///     let names: Vec<&String> = res.arguments.torrents.iter().map(|it| it.name.as_ref().unwrap()).collect();
@@ -420,7 +420,7 @@ impl TransClient {
     ///     env_logger::init();
     ///     let url= env::var("TURL")?;
     ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
-    ///     let mut client = TransClient::with_auth(&url, basic_auth);
+    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let res1: RpcResponse<Nothing> = client.torrent_action(TorrentAction::Start, vec![Id::Id(1)]).await?;
     ///     println!("Start result: {:?}", &res1.is_ok());
     ///     let res2: RpcResponse<Nothing> = client.torrent_action(TorrentAction::Stop, vec![Id::Id(1)]).await?;
@@ -460,7 +460,7 @@ impl TransClient {
     ///     env_logger::init();
     ///     let url= env::var("TURL")?;
     ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
-    ///     let mut client = TransClient::with_auth(&url, basic_auth);
+    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let res: RpcResponse<Nothing> = client.torrent_remove(vec![Id::Id(1)], false).await?;
     ///     println!("Remove result: {:?}", &res.is_ok());
     ///
@@ -499,7 +499,7 @@ impl TransClient {
     ///     env_logger::init();
     ///     let url= env::var("TURL")?;
     ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
-    ///     let mut client = TransClient::with_auth(&url, basic_auth);
+    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let res: RpcResponse<Nothing> = client.torrent_set_location(vec![Id::Id(1)], String::from("/new/location"), Option::from(false)).await?;
     ///     println!("Set-location result: {:?}", &res.is_ok());
     ///
@@ -539,7 +539,7 @@ impl TransClient {
     ///     env_logger::init();
     ///     let url= env::var("TURL")?;
     ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
-    ///     let mut client = TransClient::with_auth(&url, basic_auth);
+    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let res: RpcResponse<TorrentRenamePath> = client.torrent_rename_path(vec![Id::Id(1)], String::from("Folder/OldFile.jpg"), String::from("NewFile.jpg")).await?;
     ///     println!("rename-path result: {:#?}", res);
     ///
@@ -579,7 +579,7 @@ impl TransClient {
     ///     env_logger::init();
     ///     let url= env::var("TURL")?;
     ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
-    ///     let mut client = TransClient::with_auth(&url, basic_auth);
+    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let add: TorrentAddArgs = TorrentAddArgs {
     ///         filename: Some("https://releases.ubuntu.com/jammy/ubuntu-22.04.1-desktop-amd64.iso.torrent".to_string()),
     ///         ..TorrentAddArgs::default()
@@ -680,9 +680,9 @@ mod tests {
         let url = env::var("TURL")?;
         let mut client;
         if let (Ok(user), Ok(password)) = (env::var("TUSER"), env::var("TPWD")) {
-            client = TransClient::with_auth(&url, BasicAuth { user, password });
+            client = TransClient::with_auth(url.parse()?, BasicAuth { user, password });
         } else {
-            client = TransClient::new(&url);
+            client = TransClient::new(url.parse()?);
         }
         info!("Client is ready!");
         let add: TorrentAddArgs = TorrentAddArgs {

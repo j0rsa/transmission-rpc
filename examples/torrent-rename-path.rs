@@ -14,7 +14,7 @@ async fn main() -> Result<()> {
         user: env::var("TUSER")?,
         password: env::var("TPWD")?,
     };
-    let mut client = TransClient::with_auth(&url, basic_auth);
+    let mut client = TransClient::with_auth(url.parse()?, basic_auth);
     let res: RpcResponse<TorrentRenamePath> = client
         .torrent_rename_path(
             vec![Id::Id(1)],
