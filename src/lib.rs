@@ -591,12 +591,12 @@ impl TransClient {
 
             let rsp: reqwest::Response = rq.send().await?;
             if matches!(rsp.status(), StatusCode::CONFLICT) {
-                let session_id = rsp
-                    .headers()
-                    .get("X-Transmission-Session-Id")
-                    .ok_or(TransError::NoSessionIdReceived)?
-                    .to_str()?;
-                self.session_id = Some(String::from(session_id));
+                    let session_id = rsp
+                        .headers()
+                        .get("X-Transmission-Session-Id")
+                        .ok_or(TransError::NoSessionIdReceived)?
+                        .to_str()?;
+                    self.session_id = Some(String::from(session_id));
 
                 info!("Got new session_id: {}. Retrying request.", session_id);
             } else {
