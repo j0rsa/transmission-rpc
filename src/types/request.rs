@@ -245,8 +245,10 @@ impl Default for TorrentAddArgs {
     }
 }
 
+// https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
 #[derive(Clone, Sequence)]
 pub enum TorrentGetField {
+    ActivityDate,
     AddedDate,
     DoneDate,
     DownloadDir,
@@ -287,6 +289,7 @@ impl TorrentGetField {
     #[must_use]
     pub fn to_str(&self) -> String {
         match self {
+            TorrentGetField::ActivityDate => "activityDate",
             TorrentGetField::AddedDate => "addedDate",
             TorrentGetField::DoneDate => "doneDate",
             TorrentGetField::DownloadDir => "downloadDir",
