@@ -66,6 +66,14 @@ impl RpcRequest {
         }
     }
 
+    pub fn torrent_set(mut args: TorrentSetArgs, ids: Option<Vec<Id>>) -> RpcRequest {
+        args.ids = ids;
+        RpcRequest {
+            method: String::from("torrent-set"),
+            arguments: Some(Args::TorrentSetArgs(args)),
+        }
+    }
+
     pub fn torrent_remove(ids: Vec<Id>, delete_local_data: bool) -> RpcRequest {
         RpcRequest {
             method: String::from("torrent-remove"),
@@ -357,4 +365,18 @@ impl TorrentAction {
         }
         .to_string()
     }
+}
+
+#[derive(Serialize, Debug, Clone, Default)]
+pub struct TorrentSetArgs {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub labels: Option<Vec<String>>,
+    #[serde(rename = "priority-low", skip_serializing_if = "Option::is_none")]
+    pub priority_low: Option<Vec<u64>>,
+    #[serde(rename = "priority-normal", skip_serializing_if = "Option::is_none")]
+    pub priority_normal: Option<Vec<u64>>,
+    #[serde(rename = "priority-high", skip_serializing_if = "Option::is_none")]
+    pub priority_high: Option<Vec<u64>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ids: Option<Vec<Id>>,
 }

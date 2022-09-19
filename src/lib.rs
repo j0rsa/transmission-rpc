@@ -294,7 +294,7 @@ impl TransClient {
     }
 
     /// Performs a torrent get call
-    /// fileds - if None then ALL fields
+    /// fields - if None then ALL fields
     /// ids - if None then All items
     ///
     /// # Errors
@@ -349,6 +349,51 @@ impl TransClient {
         ids: Option<Vec<Id>>,
     ) -> Result<RpcResponse<Torrents<Torrent>>> {
         self.call(RpcRequest::torrent_get(fields, ids)).await
+    }
+
+    /// Performs a torrent set call
+    /// args - the fields to update
+    /// ids - if None then All items
+    ///
+    /// # Errors
+    ///
+    /// Any IO Error or Deserialization error
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// extern crate transmission_rpc;
+    ///
+    /// use std::env;
+    /// use dotenv::dotenv;
+    /// use transmission_rpc::TransClient;
+    /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth};
+    /// use transmission_rpc::types::{Torrents, Torrent, TorrentSetArgs, Id};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<()> {
+    ///     dotenv().ok();
+    ///     env_logger::init();
+    ///
+    ///     let url= env::var("TURL")?;
+    ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
+    ///     let mut client = TransClient::with_auth(&url, basic_auth);
+    ///
+    ///     let args = TorrentSetArgs {
+    ///         labels: Some(vec![String::from("blue")]),
+    ///         ..Default::default(),
+    ///     };
+    ///     assert!(client.torrent_set(args, vec![Id::Id(0)]).await?.is_ok())
+    ///
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn torrent_set(
+        &mut self,
+        args: TorrentSetArgs,
+        ids: Option<Vec<Id>>,
+    ) -> Result<RpcResponse<Nothing>> {
+        self.call(RpcRequest::torrent_set(args, ids)).await
     }
 
     /// Performs a torrent action call
