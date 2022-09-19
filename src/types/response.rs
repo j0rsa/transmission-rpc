@@ -118,6 +118,8 @@ pub struct Torrent {
     pub rate_upload: Option<i64>,
     #[serde(rename = "recheckProgress")]
     pub recheck_progress: Option<f32>,
+    #[serde(rename = "secondsSeeding")]
+    pub seconds_seeding: Option<i64>,
     #[serde(rename = "seedRatioLimit")]
     pub seed_ratio_limit: Option<f32>,
     #[serde(rename = "sizeWhenDone")]
