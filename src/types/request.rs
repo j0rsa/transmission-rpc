@@ -1,4 +1,4 @@
-use enum_iterator::IntoEnumIterator;
+use enum_iterator::{all, Sequence};
 use serde::Serialize;
 
 #[derive(Serialize, Debug)]
@@ -53,7 +53,7 @@ impl RpcRequest {
 
     pub fn torrent_get(fields: Option<Vec<TorrentGetField>>, ids: Option<Vec<Id>>) -> RpcRequest {
         let string_fields = fields
-            .unwrap_or_else(TorrentGetField::all)
+            .unwrap_or(all::<TorrentGetField>().collect())
             .iter()
             .map(TorrentGetField::to_str)
             .collect();
@@ -146,9 +146,7 @@ pub struct TorrentGetArgs {
 
 impl Default for TorrentGetArgs {
     fn default() -> Self {
-        let all_fields = TorrentGetField::into_enum_iter()
-            .map(|it| it.to_str())
-            .collect();
+        let all_fields = all::<TorrentGetField>().map(|it| it.to_str()).collect();
         TorrentGetArgs {
             fields: Some(all_fields),
             ids: None,
@@ -228,7 +226,26 @@ pub struct TorrentAddArgs {
     pub priority_normal: Option<Vec<i32>>,
 }
 
-#[derive(Clone, Copy, IntoEnumIterator)]
+impl Default for TorrentAddArgs {
+    fn default() -> Self {
+        TorrentAddArgs {
+            cookies: None,
+            download_dir: None,
+            filename: None,
+            metainfo: None,
+            paused: None,
+            peer_limit: None,
+            bandwidth_priority: None,
+            files_wanted: None,
+            files_unwanted: None,
+            priority_high: None,
+            priority_low: None,
+            priority_normal: None,
+        }
+    }
+}
+
+#[derive(Clone, Sequence)]
 pub enum TorrentGetField {
     AddedDate,
     DoneDate,
@@ -264,13 +281,6 @@ pub enum TorrentGetField {
     UploadedEver,
     Wanted,
     WebseedsSendingToUs,
-}
-
-impl TorrentGetField {
-    #[must_use]
-    pub fn all() -> Vec<TorrentGetField> {
-        TorrentGetField::into_enum_iter().collect()
-    }
 }
 
 impl TorrentGetField {
