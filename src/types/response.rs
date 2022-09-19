@@ -95,6 +95,8 @@ pub struct Torrent {
     pub is_private: Option<bool>,
     #[serde(rename = "isStalled")]
     pub is_stalled: Option<bool>,
+    #[serde(rename = "labels")]
+    pub labels: Option<Vec<String>>,
     #[serde(rename = "leftUntilDone")]
     pub left_until_done: Option<i64>,
     #[serde(rename = "metadataPercentComplete")]
