@@ -74,6 +74,8 @@ impl RpcResponseArgument for PortTest {}
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct Torrent {
+    #[serde(rename = "activityDate")]
+    pub activity_date: Option<i64>,
     #[serde(rename = "addedDate")]
     pub added_date: Option<i64>,
     #[serde(rename = "doneDate")]
