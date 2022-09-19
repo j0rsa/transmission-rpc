@@ -91,6 +91,8 @@ pub struct Torrent {
     pub id: Option<i64>,
     #[serde(rename = "isFinished")]
     pub is_finished: Option<bool>,
+    #[serde(rename = "isPrivate")]
+    pub is_private: Option<bool>,
     #[serde(rename = "isStalled")]
     pub is_stalled: Option<bool>,
     #[serde(rename = "leftUntilDone")]
