@@ -82,6 +82,8 @@ pub struct Torrent {
     pub done_date: Option<i64>,
     #[serde(rename = "downloadDir")]
     pub download_dir: Option<String>,
+    #[serde(rename = "editDate")]
+    pub edit_date: Option<i64>,
     pub error: Option<i64>,
     #[serde(rename = "errorString")]
     pub error_string: Option<String>,

@@ -245,13 +245,13 @@ impl Default for TorrentAddArgs {
     }
 }
 
-// https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
 #[derive(Clone, Sequence)]
 pub enum TorrentGetField {
     ActivityDate,
     AddedDate,
     DoneDate,
     DownloadDir,
+    EditDate,
     Error,
     ErrorString,
     Eta,
@@ -293,6 +293,7 @@ impl TorrentGetField {
             TorrentGetField::AddedDate => "addedDate",
             TorrentGetField::DoneDate => "doneDate",
             TorrentGetField::DownloadDir => "downloadDir",
+            TorrentGetField::EditDate => "editDate",
             TorrentGetField::Error => "error",
             TorrentGetField::ErrorString => "errorString",
             TorrentGetField::Eta => "eta",
