@@ -4,9 +4,12 @@ Library to communicate with transmission rpc
 
 **WARNING:**
 
-It is highly encouraged to use HTTPS since the Transmission authentication is using BasicAuth which could be easily intercepted
+It is highly encouraged to use HTTPS since the Transmission authentication is
+using BasicAuth which could be easily intercepted.
 
-spec: https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
+#### Transmission RPC Spec
+
+https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
 
 #### Supported Methods
 
@@ -20,8 +23,8 @@ spec: https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
 
 ##### Torrent Mutators
 
-- [ ] torrent-set
-- [X] torrent-get
+- [X] torrent-set (some)
+- [X] torrent-get (most fields)
 - [X] torrent-add
 - [X] torrent-remove
 - [X] torrent-set-location
