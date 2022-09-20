@@ -195,7 +195,7 @@ pub enum Id {
     Hash(String),
 }
 
-#[derive(Serialize, Debug, Default, Clone)]
+#[derive(Serialize, Debug, Default, Clone, Default)]
 pub struct TorrentAddArgs {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cookies: Option<String>,
@@ -232,25 +232,8 @@ pub struct TorrentAddArgs {
     /// list of indices of files to be downloaded with normal priority
     #[serde(skip_serializing_if = "Option::is_none", rename = "priority-normal")]
     pub priority_normal: Option<Vec<i32>>,
-}
-
-impl Default for TorrentAddArgs {
-    fn default() -> Self {
-        TorrentAddArgs {
-            cookies: None,
-            download_dir: None,
-            filename: None,
-            metainfo: None,
-            paused: None,
-            peer_limit: None,
-            bandwidth_priority: None,
-            files_wanted: None,
-            files_unwanted: None,
-            priority_high: None,
-            priority_low: None,
-            priority_normal: None,
-        }
-    }
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub labels: Option<Vec<String>>,
 }
 
 #[derive(Clone, Sequence)]
