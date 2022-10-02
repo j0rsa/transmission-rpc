@@ -89,7 +89,7 @@ impl TransClient {
     /// extern crate transmission_rpc;
     ///
     /// use std::env;
-    /// use dotenv::dotenv;
+    /// use dotenvy::dotenv;
     /// use transmission_rpc::TransClient;
     /// use transmission_rpc::types::{Result, RpcResponse, SessionGet, BasicAuth};
     ///
@@ -125,7 +125,7 @@ impl TransClient {
     /// extern crate transmission_rpc;
     ///
     /// use std::env;
-    /// use dotenv::dotenv;
+    /// use dotenvy::dotenv;
     /// use transmission_rpc::TransClient;
     /// use transmission_rpc::types::{Result, RpcResponse, SessionStats, BasicAuth};
     ///
@@ -161,7 +161,7 @@ impl TransClient {
     /// extern crate transmission_rpc;
     ///
     /// use std::env;
-    /// use dotenv::dotenv;
+    /// use dotenvy::dotenv;
     /// use transmission_rpc::TransClient;
     /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth, SessionClose};
     ///
@@ -197,7 +197,7 @@ impl TransClient {
     /// extern crate transmission_rpc;
     ///
     /// use std::env;
-    /// use dotenv::dotenv;
+    /// use dotenvy::dotenv;
     /// use transmission_rpc::TransClient;
     /// use transmission_rpc::types::{Result, BlocklistUpdate, RpcResponse, BasicAuth};
     ///
@@ -233,7 +233,7 @@ impl TransClient {
     /// extern crate transmission_rpc;
     ///
     /// use std::env;
-    /// use dotenv::dotenv;
+    /// use dotenvy::dotenv;
     /// use transmission_rpc::TransClient;
     /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth, FreeSpace};
     ///
@@ -270,7 +270,7 @@ impl TransClient {
     /// extern crate transmission_rpc;
     ///
     /// use std::env;
-    /// use dotenv::dotenv;
+    /// use dotenvy::dotenv;
     /// use transmission_rpc::TransClient;
     /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth, PortTest};
     ///
@@ -308,7 +308,7 @@ impl TransClient {
     /// extern crate transmission_rpc;
     ///
     /// use std::env;
-    /// use dotenv::dotenv;
+    /// use dotenvy::dotenv;
     /// use transmission_rpc::TransClient;
     /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth};
     /// use transmission_rpc::types::{Torrents, Torrent, TorrentGetField, Id};
@@ -366,7 +366,7 @@ impl TransClient {
     /// extern crate transmission_rpc;
     ///
     /// use std::env;
-    /// use dotenv::dotenv;
+    /// use dotenvy::dotenv;
     /// use transmission_rpc::TransClient;
     /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth};
     /// use transmission_rpc::types::{Torrents, Torrent, TorrentSetArgs, Id};
@@ -409,7 +409,7 @@ impl TransClient {
     /// extern crate transmission_rpc;
     ///
     /// use std::env;
-    /// use dotenv::dotenv;
+    /// use dotenvy::dotenv;
     /// use transmission_rpc::TransClient;
     /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth};
     /// use transmission_rpc::types::{TorrentAction, Nothing, Id};
@@ -449,7 +449,7 @@ impl TransClient {
     /// extern crate transmission_rpc;
     ///
     /// use std::env;
-    /// use dotenv::dotenv;
+    /// use dotenvy::dotenv;
     /// use transmission_rpc::TransClient;
     /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth};
     /// use transmission_rpc::types::{Nothing, Id};
@@ -488,7 +488,7 @@ impl TransClient {
     /// extern crate transmission_rpc;
     ///
     /// use std::env;
-    /// use dotenv::dotenv;
+    /// use dotenvy::dotenv;
     /// use transmission_rpc::TransClient;
     /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth};
     /// use transmission_rpc::types::{Nothing, Id};
@@ -528,7 +528,7 @@ impl TransClient {
     /// extern crate transmission_rpc;
     ///
     /// use std::env;
-    /// use dotenv::dotenv;
+    /// use dotenvy::dotenv;
     /// use transmission_rpc::TransClient;
     /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth};
     /// use transmission_rpc::types::{TorrentRenamePath, Id};
@@ -568,7 +568,7 @@ impl TransClient {
     /// extern crate transmission_rpc;
     ///
     /// use std::env;
-    /// use dotenv::dotenv;
+    /// use dotenvy::dotenv;
     /// use transmission_rpc::TransClient;
     /// use transmission_rpc::types::{Result, RpcResponse, BasicAuth};
     /// use transmission_rpc::types::{TorrentAddArgs, TorrentAddedOrDuplicate};
@@ -670,7 +670,7 @@ impl BodyString for reqwest::RequestBuilder {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use dotenv::dotenv;
+    use dotenvy::dotenv;
     use std::env;
 
     #[tokio::test]
