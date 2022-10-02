@@ -22,9 +22,6 @@ jobs:
           toolchain: stable
           components: rustfmt, clippy
 
-      - name: Setup Test Enviroment
-        run: docker-compose up -d
-
       - name: Check formatting
         uses: actions-rs/cargo@v1
         with:
@@ -36,6 +33,9 @@ jobs:
         with:
           command: check
           args: --workspace --all-targets --all-features
+
+      - name: Setup Test Enviroment
+        run: docker-compose up -d
 
       - name: Cargo Test
         uses: actions-rs/cargo@v1
