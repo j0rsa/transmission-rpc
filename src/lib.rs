@@ -549,7 +549,10 @@ impl TransClient {
     /// # Panics
     /// Either metainfo or torrent filename must be set or this call will panic.
     ///
-    pub async fn torrent_add(&mut self, add: TorrentAddArgs) -> Result<RpcResponse<TorrentAddedOrDuplicate>> {
+    pub async fn torrent_add(
+        &mut self,
+        add: TorrentAddArgs,
+    ) -> Result<RpcResponse<TorrentAddedOrDuplicate>> {
         assert!(
             !(add.metainfo == None && add.filename == None),
             "Metainfo or Filename should be provided"
