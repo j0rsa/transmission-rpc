@@ -39,7 +39,7 @@ jobs:
         with:
           command: build
 
-      - name: Setup Test Enviroment
+      - name: Setup Test Environment
         run: docker-compose up -d
 
       - name: Cargo Test
