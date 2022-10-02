@@ -1,4 +1,4 @@
-use enum_iterator::IntoEnumIterator;
+use enum_iterator::{all, Sequence};
 use serde::Serialize;
 
 #[derive(Serialize, Debug)]
@@ -53,7 +53,7 @@ impl RpcRequest {
 
     pub fn torrent_get(fields: Option<Vec<TorrentGetField>>, ids: Option<Vec<Id>>) -> RpcRequest {
         let string_fields = fields
-            .unwrap_or(TorrentGetField::all())
+            .unwrap_or(all::<TorrentGetField>().collect())
             .iter()
             .map(TorrentGetField::to_str)
             .collect();
@@ -155,9 +155,7 @@ pub struct TorrentGetArgs {
 
 impl Default for TorrentGetArgs {
     fn default() -> Self {
-        let all_fields = TorrentGetField::into_enum_iter()
-            .map(|it| it.to_str())
-            .collect();
+        let all_fields = all::<TorrentGetField>().map(|it| it.to_str()).collect();
         TorrentGetArgs {
             fields: Some(all_fields),
             ids: None,
@@ -239,7 +237,7 @@ pub struct TorrentAddArgs {
     pub labels: Option<Vec<String>>,
 }
 
-#[derive(Clone, Copy, IntoEnumIterator)]
+#[derive(Clone, Copy, Sequence)]
 pub enum TorrentGetField {
     ActivityDate,
     AddedDate,
@@ -283,10 +281,6 @@ pub enum TorrentGetField {
 }
 
 impl TorrentGetField {
-    pub fn all() -> Vec<TorrentGetField> {
-        TorrentGetField::into_enum_iter().collect()
-    }
-
     #[must_use]
     pub fn to_str(&self) -> String {
         match self {
