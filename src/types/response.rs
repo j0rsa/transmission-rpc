@@ -179,7 +179,7 @@ pub struct Nothing {}
 impl RpcResponseArgument for Nothing {}
 
 #[derive(Deserialize, Debug)]
-#[serde(rename_all="kebab-case")]
+#[serde(rename_all = "kebab-case")]
 pub enum TorrentAddedOrDuplicate {
     TorrentDuplicate(Torrent),
     TorrentAdded(Torrent),
