@@ -535,7 +535,7 @@ impl TransClient {
     ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
     ///     let mut client = TransClient::with_auth(&url, basic_auth);
     ///     let add: TorrentAddArgs = TorrentAddArgs {
-    ///         filename: Some("https://releases.ubuntu.com/20.04/ubuntu-20.04-desktop-amd64.iso.torrent".to_string()),
+    ///         filename: Some("https://releases.ubuntu.com/jammy/ubuntu-22.04.1-desktop-amd64.iso.torrent".to_string()),
     ///         ..TorrentAddArgs::default()
     ///     };
     ///     let res: RpcResponse<TorrentAddedOrDuplicate> = client.torrent_add(add).await?;
@@ -641,7 +641,7 @@ mod tests {
         info!("Client is ready!");
         let add: TorrentAddArgs = TorrentAddArgs {
             filename: Some(
-                "https://releases.ubuntu.com/20.04/ubuntu-20.04-desktop-amd64.iso.torrentt"
+                "https://releases.ubuntu.com/jammy/ubuntu-22.04.1-desktop-amd64.iso.torrentt"
                     .to_string(),
             ),
             ..TorrentAddArgs::default()
