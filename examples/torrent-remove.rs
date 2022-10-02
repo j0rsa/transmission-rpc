@@ -1,6 +1,6 @@
 extern crate transmission_rpc;
 
-use dotenv::dotenv;
+use dotenvy::dotenv;
 use std::env;
 use transmission_rpc::types::{BasicAuth, Id, Nothing, Result, RpcResponse};
 use transmission_rpc::TransClient;

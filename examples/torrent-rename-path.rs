@@ -1,6 +1,6 @@
 extern crate transmission_rpc;
 
-use dotenv::dotenv;
+use dotenvy::dotenv;
 use std::env;
 use transmission_rpc::types::{BasicAuth, Id, Result, RpcResponse, TorrentRenamePath};
 use transmission_rpc::TransClient;
