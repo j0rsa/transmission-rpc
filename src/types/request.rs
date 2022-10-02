@@ -1,4 +1,4 @@
-use enum_iterator::{all, Sequence};
+use enum_iterator::IntoEnumIterator;
 use serde::Serialize;
 
 #[derive(Serialize, Debug)]
@@ -53,7 +53,7 @@ impl RpcRequest {
 
     pub fn torrent_get(fields: Option<Vec<TorrentGetField>>, ids: Option<Vec<Id>>) -> RpcRequest {
         let string_fields = fields
-            .unwrap_or(all::<TorrentGetField>().collect())
+            .unwrap_or(TorrentGetField::all())
             .iter()
             .map(TorrentGetField::to_str)
             .collect();
@@ -70,7 +70,7 @@ impl RpcRequest {
         args.ids = ids;
         RpcRequest {
             method: String::from("torrent-set"),
-            arguments: Some(Args::TorrentSetArgs(args)),
+            arguments: Some(Args::TorrentSet(args)),
         }
     }
 
@@ -135,6 +135,7 @@ pub enum Args {
     TorrentAction(TorrentActionArgs),
     TorrentRemove(TorrentRemoveArgs),
     TorrentAdd(TorrentAddArgs),
+    TorrentSet(TorrentSetArgs),
     TorrentSetLocation(TorrentSetLocationArgs),
     TorrentRenamePath(TorrentRenamePathArgs),
 }
@@ -154,7 +155,9 @@ pub struct TorrentGetArgs {
 
 impl Default for TorrentGetArgs {
     fn default() -> Self {
-        let all_fields = all::<TorrentGetField>().map(|it| it.to_str()).collect();
+        let all_fields = TorrentGetField::into_enum_iter()
+            .map(|it| it.to_str())
+            .collect();
         TorrentGetArgs {
             fields: Some(all_fields),
             ids: None,
@@ -195,7 +198,7 @@ pub enum Id {
     Hash(String),
 }
 
-#[derive(Serialize, Debug, Default, Clone, Default)]
+#[derive(Serialize, Debug, Clone, Default)]
 pub struct TorrentAddArgs {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cookies: Option<String>,
@@ -236,7 +239,7 @@ pub struct TorrentAddArgs {
     pub labels: Option<Vec<String>>,
 }
 
-#[derive(Clone, Sequence)]
+#[derive(Clone, Copy, IntoEnumIterator)]
 pub enum TorrentGetField {
     ActivityDate,
     AddedDate,
@@ -280,6 +283,10 @@ pub enum TorrentGetField {
 }
 
 impl TorrentGetField {
+    pub fn all() -> Vec<TorrentGetField> {
+        TorrentGetField::into_enum_iter().collect()
+    }
+
     #[must_use]
     pub fn to_str(&self) -> String {
         match self {

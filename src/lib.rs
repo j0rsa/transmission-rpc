@@ -12,7 +12,8 @@ pub mod types;
 use types::{
     BasicAuth, BlocklistUpdate, FreeSpace, Id, Nothing, PortTest, Result, RpcRequest, RpcResponse,
     RpcResponseArgument, SessionClose, SessionGet, SessionStats, Torrent, TorrentAction,
-    TorrentAddArgs, TorrentAddedOrDuplicate, TorrentGetField, TorrentRenamePath, Torrents,
+    TorrentAddArgs, TorrentAddedOrDuplicate, TorrentGetField, TorrentRenamePath, TorrentSetArgs,
+    Torrents,
 };
 
 const MAX_RETRIES: usize = 5;
@@ -381,9 +382,9 @@ impl TransClient {
     ///
     ///     let args = TorrentSetArgs {
     ///         labels: Some(vec![String::from("blue")]),
-    ///         ..Default::default(),
+    ///         ..Default::default()
     ///     };
-    ///     assert!(client.torrent_set(args, vec![Id::Id(0)]).await?.is_ok())
+    ///     assert!(client.torrent_set(args, Some(vec![Id::Id(0)])).await?.is_ok());
     ///
     ///     Ok(())
     /// }
@@ -636,12 +637,12 @@ impl TransClient {
 
             let rsp: reqwest::Response = rq.send().await?;
             if matches!(rsp.status(), StatusCode::CONFLICT) {
-                    let session_id = rsp
-                        .headers()
-                        .get("X-Transmission-Session-Id")
-                        .ok_or(TransError::NoSessionIdReceived)?
-                        .to_str()?;
-                    self.session_id = Some(String::from(session_id));
+                let session_id = rsp
+                    .headers()
+                    .get("X-Transmission-Session-Id")
+                    .ok_or(TransError::NoSessionIdReceived)?
+                    .to_str()?;
+                self.session_id = Some(String::from(session_id));
 
                 info!("Got new session_id: {}. Retrying request.", session_id);
             } else {
