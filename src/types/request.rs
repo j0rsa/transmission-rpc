@@ -53,7 +53,7 @@ impl RpcRequest {
 
     pub fn torrent_get(fields: Option<Vec<TorrentGetField>>, ids: Option<Vec<Id>>) -> RpcRequest {
         let string_fields = fields
-            .unwrap_or(all::<TorrentGetField>().collect())
+            .unwrap_or_else(|| all::<TorrentGetField>().collect())
             .iter()
             .map(TorrentGetField::to_str)
             .collect();
