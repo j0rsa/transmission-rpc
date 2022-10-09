@@ -376,9 +376,9 @@ impl TransClient {
     ///     dotenv().ok();
     ///     env_logger::init();
     ///
-    ///     let url= env::var("TURL")?;
+    ///     let url= env::var("TURL")?.parse()?;
     ///     let basic_auth = BasicAuth{user: env::var("TUSER")?, password: env::var("TPWD")?};
-    ///     let mut client = TransClient::with_auth(&url, basic_auth);
+    ///     let mut client = TransClient::with_auth(url, basic_auth);
     ///
     ///     let args = TorrentSetArgs {
     ///         labels: Some(vec![String::from("blue")]),
