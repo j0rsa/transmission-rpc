@@ -351,16 +351,73 @@ impl TorrentAction {
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct TrackerList(pub Vec<String>);
+
+impl Serialize for TrackerList {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.0.join("\n").serialize(serializer)
+    }
+}
+
 #[derive(Serialize, Debug, Clone, Default)]
+#[serde(rename_all = "camelCase")]
 pub struct TorrentSetArgs {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub labels: Option<Vec<String>>,
-    #[serde(rename = "priority-low", skip_serializing_if = "Option::is_none")]
-    pub priority_low: Option<Vec<u64>>,
-    #[serde(rename = "priority-normal", skip_serializing_if = "Option::is_none")]
-    pub priority_normal: Option<Vec<u64>>,
-    #[serde(rename = "priority-high", skip_serializing_if = "Option::is_none")]
-    pub priority_high: Option<Vec<u64>>,
+    pub bandwidth_priority: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub download_limit: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub download_limited: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "files-wanted")]
+    pub files_wanted: Option<Vec<i32>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "files-unwanted")]
+    pub files_unwanted: Option<Vec<i32>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub honors_session_limits: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ids: Option<Vec<Id>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub labels: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub location: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "peer-limit")]
+    pub peer_limit: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "priority-high")]
+    pub priority_high: Option<Vec<i32>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "priority-low")]
+    pub priority_low: Option<Vec<i32>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "priority-normal")]
+    pub priority_normal: Option<Vec<i32>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub queue_position: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub seed_idle_limit: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub seed_idle_mode: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub seed_ratio_limit: Option<f32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub seed_ratio_mode: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tracker_add: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tracker_list: Option<TrackerList>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tracker_remove: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tracker_replace: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub upload_limit: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub upload_limited: Option<bool>,
 }
