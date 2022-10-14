@@ -125,6 +125,8 @@ pub struct Torrent {
     #[serde(rename = "sizeWhenDone")]
     pub size_when_done: Option<i64>,
     pub status: Option<i64>,
+    #[serde(rename = "torrentFile")]
+    pub torrent_file: Option<String>,
     #[serde(rename = "totalSize")]
     pub total_size: Option<i64>,
     pub trackers: Option<Vec<Trackers>>,
