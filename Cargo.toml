@@ -17,6 +17,7 @@ reqwest = { version = "0.11.11", features = [
     "rustls-tls",
 ], default-features = false }
 serde = { version = "1.0.144", features = ["derive"] }
+serde_repr = "0.1"
 enum-iterator = "1.2.0"
 
 dotenvy = "0.15.5"
