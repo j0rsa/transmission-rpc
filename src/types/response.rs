@@ -1,4 +1,6 @@
 use serde::Deserialize;
+use serde_repr::*;
+
 #[derive(Deserialize, Debug)]
 pub struct RpcResponse<T: RpcResponseArgument> {
     pub arguments: T,
@@ -65,6 +67,18 @@ pub struct PortTest {
 }
 impl RpcResponseArgument for PortTest {}
 
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u8)]
+pub enum TorrentStatus {
+    Stopped = 0,
+    QueuedToVerify = 1,
+    Verifying = 2,
+    QueuedToDownload = 3,
+    Downloading = 4,
+    QueuedToSeed = 5,
+    Seeding = 6,
+}
+
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Torrent {
@@ -95,7 +109,7 @@ pub struct Torrent {
     pub seconds_seeding: Option<i64>,
     pub seed_ratio_limit: Option<f32>,
     pub size_when_done: Option<i64>,
-    pub status: Option<i64>,
+    pub status: Option<TorrentStatus>,
     pub torrent_file: Option<String>,
     pub total_size: Option<i64>,
     pub trackers: Option<Vec<Trackers>>,
