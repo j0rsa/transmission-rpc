@@ -67,7 +67,7 @@ pub struct PortTest {
 }
 impl RpcResponseArgument for PortTest {}
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug, Serialize_repr, Deserialize_repr)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug, Deserialize_repr)]
 #[repr(u8)]
 pub enum TorrentStatus {
     Stopped = 0,
