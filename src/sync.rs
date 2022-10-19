@@ -1,21 +1,17 @@
-#[macro_use]
-extern crate log;
+use std::{ops::Deref, sync::RwLock};
 
 use reqwest::{header::CONTENT_TYPE, Client, StatusCode, Url};
 use serde::de::DeserializeOwned;
 
-mod sync;
-pub mod types;
-
-pub use sync::SharableTransClient;
-use types::{
-    BasicAuth, BlocklistUpdate, FreeSpace, Id, Nothing, PortTest, Result, RpcRequest, RpcResponse,
-    RpcResponseArgument, SessionClose, SessionGet, SessionStats, Torrent, TorrentAction,
-    TorrentAddArgs, TorrentAddedOrDuplicate, TorrentGetField, TorrentRenamePath, TorrentSetArgs,
-    Torrents,
+use crate::{
+    types::{
+        BasicAuth, BlocklistUpdate, FreeSpace, Id, Nothing, PortTest, Result, RpcRequest,
+        RpcResponse, RpcResponseArgument, SessionClose, SessionGet, SessionStats, Torrent,
+        TorrentAction, TorrentAddArgs, TorrentAddedOrDuplicate, TorrentGetField, TorrentRenamePath,
+        TorrentSetArgs, Torrents,
+    },
+    MAX_RETRIES,
 };
-
-const MAX_RETRIES: usize = 5;
 
 #[derive(Clone, Debug)]
 enum TransError {
@@ -34,32 +30,32 @@ impl std::fmt::Display for TransError {
 
 impl std::error::Error for TransError {}
 
-pub struct TransClient {
+pub struct SharableTransClient {
     url: Url,
     auth: Option<BasicAuth>,
-    session_id: Option<String>,
+    session_id: RwLock<Option<String>>,
     client: Client,
 }
 
-impl TransClient {
+impl SharableTransClient {
     /// Returns HTTP(S) client with configured Basic Auth
     #[must_use]
-    pub fn with_auth(url: Url, basic_auth: BasicAuth) -> TransClient {
-        TransClient {
+    pub fn with_auth(url: Url, basic_auth: BasicAuth) -> SharableTransClient {
+        SharableTransClient {
             url,
             auth: Some(basic_auth),
-            session_id: None,
+            session_id: RwLock::new(None),
             client: Client::new(),
         }
     }
 
     /// Returns HTTP(S) client
     #[must_use]
-    pub fn new(url: Url) -> TransClient {
-        TransClient {
+    pub fn new(url: Url) -> SharableTransClient {
+        SharableTransClient {
             url,
             auth: None,
-            session_id: None,
+            session_id: RwLock::new(None),
             client: Client::new(),
         }
     }
@@ -283,7 +279,7 @@ impl TransClient {
     ///     Ok(())
     /// }
     /// ```
-    pub async fn free_space(&mut self, path: String) -> Result<RpcResponse<FreeSpace>> {
+    pub async fn free_space(&self, path: String) -> Result<RpcResponse<FreeSpace>> {
         self.call(RpcRequest::free_space(path)).await
     }
 
@@ -421,7 +417,7 @@ impl TransClient {
     /// }
     /// ```
     pub async fn torrent_get(
-        &mut self,
+        &self,
         fields: Option<Vec<TorrentGetField>>,
         ids: Option<Vec<Id>>,
     ) -> Result<RpcResponse<Torrents<Torrent>>> {
@@ -476,7 +472,7 @@ impl TransClient {
     /// }
     /// ```
     pub async fn torrent_set(
-        &mut self,
+        &self,
         args: TorrentSetArgs,
         ids: Option<Vec<Id>>,
     ) -> Result<RpcResponse<Nothing>> {
@@ -525,7 +521,7 @@ impl TransClient {
     /// }
     /// ```
     pub async fn torrent_action(
-        &mut self,
+        &self,
         action: TorrentAction,
         ids: Vec<Id>,
     ) -> Result<RpcResponse<Nothing>> {
@@ -568,7 +564,7 @@ impl TransClient {
     /// }
     /// ```
     pub async fn torrent_remove(
-        &mut self,
+        &self,
         ids: Vec<Id>,
         delete_local_data: bool,
     ) -> Result<RpcResponse<Nothing>> {
@@ -618,7 +614,7 @@ impl TransClient {
     /// }
     /// ```
     pub async fn torrent_set_location(
-        &mut self,
+        &self,
         ids: Vec<Id>,
         location: String,
         move_from: Option<bool>,
@@ -669,7 +665,7 @@ impl TransClient {
     /// }
     /// ```
     pub async fn torrent_rename_path(
-        &mut self,
+        &self,
         ids: Vec<Id>,
         path: String,
         name: String,
@@ -725,11 +721,11 @@ impl TransClient {
     /// # Panics
     /// Either metainfo or torrent filename must be set or this call will panic.
     pub async fn torrent_add(
-        &mut self,
+        &self,
         add: TorrentAddArgs,
     ) -> Result<RpcResponse<TorrentAddedOrDuplicate>> {
         assert!(
-            !(add.metainfo == None && add.filename == None),
+            !(add.metainfo.is_none() && add.filename.is_none()),
             "Metainfo or Filename should be provided"
         );
         self.call(RpcRequest::torrent_add(add)).await
@@ -740,7 +736,7 @@ impl TransClient {
     /// # Errors
     ///
     /// Any IO Error or Deserialization error
-    async fn call<RS>(&mut self, request: RpcRequest) -> Result<RpcResponse<RS>>
+    async fn call<RS>(&self, request: RpcRequest) -> Result<RpcResponse<RS>>
     where
         RS: RpcResponseArgument + DeserializeOwned + std::fmt::Debug,
     {
@@ -751,7 +747,7 @@ impl TransClient {
                 .ok_or(TransError::MaxRetriesReached)?;
 
             info!("Loaded auth: {:?}", &self.auth);
-            let rq = match &self.session_id {
+            let rq = match &self.session_id.read().expect("lock being poisoned").deref() {
                 None => self.rpc_request(),
                 Some(id) => self.rpc_request().header("X-Transmission-Session-Id", id),
             }
@@ -771,7 +767,8 @@ impl TransClient {
                     .get("X-Transmission-Session-Id")
                     .ok_or(TransError::NoSessionIdReceived)?
                     .to_str()?;
-                self.session_id = Some(String::from(session_id));
+                *self.session_id.write().expect("lock being poisoned") =
+                    Some(String::from(session_id));
 
                 info!("Got new session_id: {}. Retrying request.", session_id);
             } else {
@@ -811,9 +808,9 @@ mod tests {
         let url = env::var("TURL")?;
         let mut client;
         if let (Ok(user), Ok(password)) = (env::var("TUSER"), env::var("TPWD")) {
-            client = TransClient::with_auth(url.parse()?, BasicAuth { user, password });
+            client = SharableTransClient::with_auth(url.parse()?, BasicAuth { user, password });
         } else {
-            client = TransClient::new(url.parse()?);
+            client = SharableTransClient::new(url.parse()?);
         }
         info!("Client is ready!");
         let add: TorrentAddArgs = TorrentAddArgs {
