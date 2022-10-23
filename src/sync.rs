@@ -743,14 +743,14 @@ impl SharableTransClient {
                 .checked_sub(1)
                 .ok_or(TransError::MaxRetriesReached)?;
 
-            info!("Loaded auth: {:?}", &self.auth);
+            debug!("Loaded auth: {:?}", &self.auth);
             let rq = match &self.session_id.read().expect("lock being poisoned").deref() {
                 None => self.rpc_request(),
                 Some(id) => self.rpc_request().header("X-Transmission-Session-Id", id),
             }
             .json(&request);
 
-            info!(
+            debug!(
                 "Request body: {:?}",
                 rq.try_clone()
                     .expect("Unable to get the request body")
@@ -767,10 +767,10 @@ impl SharableTransClient {
                 *self.session_id.write().expect("lock being poisoned") =
                     Some(String::from(session_id));
 
-                info!("Got new session_id: {}. Retrying request.", session_id);
+                debug!("Got new session_id: {}. Retrying request.", session_id);
             } else {
                 let rpc_response: RpcResponse<RS> = rsp.json().await?;
-                info!("Response body: {:#?}", rpc_response);
+                debug!("Response body: {:#?}", rpc_response);
 
                 return Ok(rpc_response);
             }
