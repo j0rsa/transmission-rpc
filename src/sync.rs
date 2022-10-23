@@ -43,6 +43,20 @@ impl SharableTransClient {
         }
     }
 
+    #[must_use]
+    pub fn new_with_client(url: Url, client: Client) -> SharableTransClient {
+        SharableTransClient {
+            url,
+            auth: None,
+            session_id: RwLock::new(None),
+            client,
+        }
+    }
+
+    pub fn set_auth(&mut self, basic_auth: BasicAuth) {
+        self.auth = Some(basic_auth);
+    }
+
     /// Prepares a request for provided server and auth
     fn rpc_request(&self) -> reqwest::RequestBuilder {
         if let Some(auth) = &self.auth {
