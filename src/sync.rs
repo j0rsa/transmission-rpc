@@ -10,25 +10,8 @@ use crate::{
         TorrentAction, TorrentAddArgs, TorrentAddedOrDuplicate, TorrentGetField, TorrentRenamePath,
         TorrentSetArgs, Torrents,
     },
-    MAX_RETRIES,
+    BodyString, TransError, MAX_RETRIES,
 };
-
-#[derive(Clone, Debug)]
-enum TransError {
-    MaxRetriesReached,
-    NoSessionIdReceived,
-}
-
-impl std::fmt::Display for TransError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match *self {
-            TransError::MaxRetriesReached => write!(f, "Max retries reached!"),
-            TransError::NoSessionIdReceived => write!(f, "No session id received!"),
-        }
-    }
-}
-
-impl std::error::Error for TransError {}
 
 pub struct SharableTransClient {
     url: Url,
@@ -100,7 +83,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<SessionGet>> = client.session_get().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -110,7 +93,7 @@ impl SharableTransClient {
     ///     Ok(())
     /// }
     /// ```
-    pub async fn session_get(&mut self) -> Result<RpcResponse<SessionGet>> {
+    pub async fn session_get(&self) -> Result<RpcResponse<SessionGet>> {
         self.call(RpcRequest::session_get()).await
     }
 
@@ -142,7 +125,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<SessionStats>> = client.session_stats().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -152,7 +135,7 @@ impl SharableTransClient {
     ///     Ok(())
     /// }
     /// ```
-    pub async fn session_stats(&mut self) -> Result<RpcResponse<SessionStats>> {
+    pub async fn session_stats(&self) -> Result<RpcResponse<SessionStats>> {
         self.call(RpcRequest::session_stats()).await
     }
 
@@ -184,7 +167,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<SessionClose>> = client.session_close().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -194,7 +177,7 @@ impl SharableTransClient {
     ///     Ok(())
     /// }
     /// ```
-    pub async fn session_close(&mut self) -> Result<RpcResponse<SessionClose>> {
+    pub async fn session_close(&self) -> Result<RpcResponse<SessionClose>> {
         self.call(RpcRequest::session_close()).await
     }
 
@@ -226,7 +209,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<BlocklistUpdate>> = client.blocklist_update().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -236,7 +219,7 @@ impl SharableTransClient {
     ///     Ok(())
     /// }
     /// ```
-    pub async fn blocklist_update(&mut self) -> Result<RpcResponse<BlocklistUpdate>> {
+    pub async fn blocklist_update(&self) -> Result<RpcResponse<BlocklistUpdate>> {
         self.call(RpcRequest::blocklist_update()).await
     }
 
@@ -269,7 +252,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<FreeSpace>> = client.free_space(dir).await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -311,7 +294,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<PortTest>> = client.port_test().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -321,7 +304,7 @@ impl SharableTransClient {
     ///     Ok(())
     /// }
     /// ```
-    pub async fn port_test(&mut self) -> Result<RpcResponse<PortTest>> {
+    pub async fn port_test(&self) -> Result<RpcResponse<PortTest>> {
         self.call(RpcRequest::port_test()).await
     }
 
@@ -355,7 +338,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
     ///
     ///     let res: RpcResponse<Torrents<Torrent>> = client.torrent_get(None, None).await?;
     ///     let names: Vec<&String> = res
@@ -455,7 +438,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let mut client = TransClient::with_auth(url, basic_auth);
+    ///     let  client = TransClient::with_auth(url, basic_auth);
     ///
     ///     let args = TorrentSetArgs {
     ///         labels: Some(vec![String::from("blue")]),
@@ -507,7 +490,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let res1: RpcResponse<Nothing> = client
     ///         .torrent_action(TorrentAction::Start, vec![Id::Id(1)])
     ///         .await?;
@@ -556,7 +539,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let res: RpcResponse<Nothing> = client.torrent_remove(vec![Id::Id(1)], false).await?;
     ///     println!("Remove result: {:?}", &res.is_ok());
     ///
@@ -600,7 +583,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let res: RpcResponse<Nothing> = client
     ///         .torrent_set_location(
     ///             vec![Id::Id(1)],
@@ -651,7 +634,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let res: RpcResponse<TorrentRenamePath> = client
     ///         .torrent_rename_path(
     ///             vec![Id::Id(1)],
@@ -702,7 +685,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let add: TorrentAddArgs = TorrentAddArgs {
     ///         filename: Some(
     ///             "https://releases.ubuntu.com/jammy/ubuntu-22.04.1-desktop-amd64.iso.torrent"
@@ -781,18 +764,6 @@ impl SharableTransClient {
     }
 }
 
-trait BodyString {
-    fn body_string(self) -> Result<String>;
-}
-
-impl BodyString for reqwest::RequestBuilder {
-    fn body_string(self) -> Result<String> {
-        let rq = self.build()?;
-        let body = rq.body().unwrap().as_bytes().unwrap();
-        Ok(std::str::from_utf8(body)?.to_string())
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use std::env;
@@ -806,7 +777,7 @@ mod tests {
         dotenv().ok();
         env_logger::init();
         let url = env::var("TURL")?;
-        let mut client;
+        let client;
         if let (Ok(user), Ok(password)) = (env::var("TUSER"), env::var("TPWD")) {
             client = SharableTransClient::with_auth(url.parse()?, BasicAuth { user, password });
         } else {
