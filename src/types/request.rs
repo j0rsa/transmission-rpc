@@ -218,7 +218,8 @@ pub struct TorrentAddArgs {
     #[serde(skip_serializing_if = "Option::is_none", rename = "bandwidthPriority")]
     pub bandwidth_priority: Option<i64>,
     /// list of indices of files to be downloaded
-    /// to ignore some files, put their indices in files_unwanted, otherwise they will still be downloaded
+    /// to ignore some files, put their indices in files_unwanted, otherwise
+    /// they will still be downloaded
     #[serde(skip_serializing_if = "Option::is_none", rename = "files-wanted")]
     pub files_wanted: Option<Vec<i32>>,
     /// list of indices of files not to download
