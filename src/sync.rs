@@ -97,7 +97,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let client = SharableTransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<SessionGet>> = client.session_get().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -139,7 +139,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let client = SharableTransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<SessionStats>> = client.session_stats().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -181,7 +181,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let client = SharableTransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<SessionClose>> = client.session_close().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -223,7 +223,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let client = SharableTransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<BlocklistUpdate>> = client.blocklist_update().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -266,7 +266,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let client = SharableTransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<FreeSpace>> = client.free_space(dir).await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -308,7 +308,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let client = SharableTransClient::with_auth(url.parse()?, basic_auth);
     ///     let response: Result<RpcResponse<PortTest>> = client.port_test().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
@@ -352,7 +352,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let client = SharableTransClient::with_auth(url.parse()?, basic_auth);
     ///
     ///     let res: RpcResponse<Torrents<Torrent>> = client.torrent_get(None, None).await?;
     ///     let names: Vec<&String> = res
@@ -452,7 +452,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let  client = TransClient::with_auth(url, basic_auth);
+    ///     let client = SharableTransClient::with_auth(url, basic_auth);
     ///
     ///     let args = TorrentSetArgs {
     ///         labels: Some(vec![String::from("blue")]),
@@ -504,7 +504,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let client = SharableTransClient::with_auth(url.parse()?, basic_auth);
     ///     let res1: RpcResponse<Nothing> = client
     ///         .torrent_action(TorrentAction::Start, vec![Id::Id(1)])
     ///         .await?;
@@ -553,7 +553,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let client = SharableTransClient::with_auth(url.parse()?, basic_auth);
     ///     let res: RpcResponse<Nothing> = client.torrent_remove(vec![Id::Id(1)], false).await?;
     ///     println!("Remove result: {:?}", &res.is_ok());
     ///
@@ -597,7 +597,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let client = SharableTransClient::with_auth(url.parse()?, basic_auth);
     ///     let res: RpcResponse<Nothing> = client
     ///         .torrent_set_location(
     ///             vec![Id::Id(1)],
@@ -648,7 +648,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let client = SharableTransClient::with_auth(url.parse()?, basic_auth);
     ///     let res: RpcResponse<TorrentRenamePath> = client
     ///         .torrent_rename_path(
     ///             vec![Id::Id(1)],
@@ -699,7 +699,7 @@ impl SharableTransClient {
     ///         user: env::var("TUSER")?,
     ///         password: env::var("TPWD")?,
     ///     };
-    ///     let  client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let client = SharableTransClient::with_auth(url.parse()?, basic_auth);
     ///     let add: TorrentAddArgs = TorrentAddArgs {
     ///         filename: Some(
     ///             "https://releases.ubuntu.com/jammy/ubuntu-22.04.1-desktop-amd64.iso.torrent"
@@ -758,6 +758,8 @@ impl SharableTransClient {
             );
 
             let rsp: reqwest::Response = rq.send().await?;
+
+            info!("Response: {:?}", &rsp);
             if matches!(rsp.status(), StatusCode::CONFLICT) {
                 let session_id = rsp
                     .headers()

@@ -4,10 +4,13 @@ extern crate log;
 use reqwest::{header::CONTENT_TYPE, Client, StatusCode, Url};
 use serde::de::DeserializeOwned;
 
+#[cfg(feature = "sync")]
 mod sync;
-pub mod types;
-
+#[cfg(feature = "sync")]
 pub use sync::SharableTransClient;
+
+
+pub mod types;
 use types::{
     BasicAuth, BlocklistUpdate, FreeSpace, Id, Nothing, PortTest, Result, RpcRequest, RpcResponse,
     RpcResponseArgument, SessionClose, SessionGet, SessionStats, Torrent, TorrentAction,
