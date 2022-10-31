@@ -1,3 +1,9 @@
+//! Sharable version of `TransClient`.
+//!
+//! It lifted the requirement of `&mut self` on
+//! all requests methods by using a lock on inner state. This may introduce some overhead
+//! so choose as needed.
+
 use std::{ops::Deref, sync::RwLock};
 
 use reqwest::{header::CONTENT_TYPE, Client, StatusCode, Url};
