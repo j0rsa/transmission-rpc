@@ -6,9 +6,9 @@ use serde::de::DeserializeOwned;
 
 #[cfg(feature = "sync")]
 mod sync;
+
 #[cfg(feature = "sync")]
 pub use sync::SharableTransClient;
-
 
 pub mod types;
 use types::{
