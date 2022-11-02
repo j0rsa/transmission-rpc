@@ -765,7 +765,7 @@ impl SharableTransClient {
 
             let rsp: reqwest::Response = rq.send().await?;
 
-            info!("Response: {:?}", &rsp);
+            debug!("Response: {:?}", &rsp);
             if matches!(rsp.status(), StatusCode::CONFLICT) {
                 let session_id = rsp
                     .headers()
