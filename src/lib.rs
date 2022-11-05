@@ -746,7 +746,7 @@ impl TransClient {
         add: TorrentAddArgs,
     ) -> Result<RpcResponse<TorrentAddedOrDuplicate>> {
         assert!(
-            !(add.metainfo == None && add.filename == None),
+            add.metainfo.is_some() || add.filename.is_some(),
             "Metainfo or Filename should be provided"
         );
         self.call(RpcRequest::torrent_add(add)).await
