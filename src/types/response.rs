@@ -1,6 +1,8 @@
 use serde::Deserialize;
 use serde_repr::*;
 
+use crate::types::Id;
+
 #[derive(Deserialize, Debug)]
 pub struct RpcResponse<T: RpcResponseArgument> {
     pub arguments: T,
@@ -121,6 +123,16 @@ pub struct Torrent {
     /// for each file in files, their download priority (low:-1,normal:0,high:1)
     pub priorities: Option<Vec<i8>>,
     pub file_stats: Option<Vec<FileStat>>,
+}
+
+impl Torrent {
+    /// Get either the ID or the hash string if exist, which are both unique and
+    /// can be pass to the API.
+    pub fn id(&self) -> Option<Id> {
+        self.id
+            .map(Id::Id)
+            .or_else(|| self.hash_string.clone().map(Id::Hash))
+    }
 }
 
 #[derive(Deserialize, Debug, Clone)]
