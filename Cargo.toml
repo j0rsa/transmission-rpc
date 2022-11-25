@@ -26,6 +26,6 @@ enum-iterator = "1.2.0"
 log = "0.4.17"
 
 [dev-dependencies]
-env_logger = "0.9.1"
+env_logger = "0.10.0"
 dotenvy = "0.15.5"
 tokio = { version = "1.21.1", features = ["macros", "rt-multi-thread"] }
