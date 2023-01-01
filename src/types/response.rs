@@ -81,6 +81,15 @@ pub enum TorrentStatus {
     Seeding = 6,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug, Deserialize_repr)]
+#[repr(u8)]
+pub enum ErrorType {
+    Ok = 0,
+    TrackerWarning = 1,
+    TrackerError = 2,
+    LocalError = 3,
+}
+
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Torrent {
@@ -89,7 +98,7 @@ pub struct Torrent {
     pub done_date: Option<i64>,
     pub download_dir: Option<String>,
     pub edit_date: Option<i64>,
-    pub error: Option<i64>,
+    pub error: Option<ErrorType>,
     pub error_string: Option<String>,
     pub eta: Option<i64>,
     pub id: Option<i64>,
