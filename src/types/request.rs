@@ -416,7 +416,7 @@ pub struct TorrentSetArgs {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tracker_list: Option<TrackerList>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tracker_remove: Option<Vec<String>>,
+    pub tracker_remove: Option<Vec<i32>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tracker_replace: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]

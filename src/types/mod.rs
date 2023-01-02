@@ -19,4 +19,5 @@ pub(crate) use self::response::RpcResponseArgument;
 pub use self::response::{
     BlocklistUpdate, FreeSpace, Nothing, PortTest, RpcResponse, SessionClose, SessionGet,
     SessionStats, Torrent, TorrentAddedOrDuplicate, TorrentRenamePath, TorrentStatus, Torrents,
+    Tracker,
 };
