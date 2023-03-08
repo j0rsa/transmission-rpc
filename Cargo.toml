@@ -1,6 +1,6 @@
 [package]
 name = "transmission-rpc"
-version = "0.4.0"
+version = "0.4.1"
 authors = ["red <red.avtovo@gmail.com>", "George Miao <gm@miao.dev>"]
 edition = "2021"
 repository = "https://github.com/j0rsa/transmission-rpc"
