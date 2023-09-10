@@ -5,18 +5,18 @@ use reqwest::{header::CONTENT_TYPE, Client, StatusCode, Url};
 use serde::de::DeserializeOwned;
 
 #[cfg(feature = "sync")]
-mod sync;
-
-#[cfg(feature = "sync")]
 pub use sync::SharableTransClient;
-
-pub mod types;
 use types::{
     BasicAuth, BlocklistUpdate, FreeSpace, Id, Nothing, PortTest, Result, RpcRequest, RpcResponse,
-    RpcResponseArgument, SessionClose, SessionGet, SessionStats, Torrent, TorrentAction,
-    TorrentAddArgs, TorrentAddedOrDuplicate, TorrentGetField, TorrentRenamePath, TorrentSetArgs,
-    Torrents,
+    RpcResponseArgument, SessionClose, SessionGet, SessionSet, SessionSetArgs, SessionStats,
+    Torrent, TorrentAction, TorrentAddArgs, TorrentAddedOrDuplicate, TorrentGetField,
+    TorrentRenamePath, TorrentSetArgs, Torrents,
 };
+
+#[cfg(feature = "sync")]
+mod sync;
+
+pub mod types;
 
 const MAX_RETRIES: usize = 5;
 
@@ -91,6 +91,54 @@ impl TransClient {
             self.client.post(self.url.clone())
         }
         .header(CONTENT_TYPE, "application/json")
+    }
+
+    /// Performs a session set call
+    ///
+    /// # Errors
+    ///
+    /// Any IO Error or Deserialization error
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// extern crate transmission_rpc;
+    ///
+    /// use std::env;
+    ///
+    /// use dotenvy::dotenv;
+    /// use transmission_rpc::{
+    ///     types::{BasicAuth, Result, RpcResponse, SessionSet, SessionSetArgs},
+    ///     TransClient,
+    /// };
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<()> {
+    ///     dotenv().ok();
+    ///     env_logger::init();
+    ///     let url = env::var("TURL")?;
+    ///     let basic_auth = BasicAuth {
+    ///         user: env::var("TUSER")?,
+    ///         password: env::var("TPWD")?,
+    ///     };
+    ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
+    ///     let args: SessionSetArgs = SessionSetArgs {
+    ///         download_dir: Some(
+    ///             "/torrent/download".to_string(),
+    ///         ),
+    ///         ..SessionSetArgs::default()
+    ///     };
+    ///     let response: Result<RpcResponse<SessionSet>> = client.session_set(args).await;
+    ///     match response {
+    ///         Ok(_) => println!("Yay!"),
+    ///         Err(_) => panic!("Oh no!"),
+    ///     }
+    ///     println!("Rpc response is ok: {}", response?.is_ok());
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn session_set(&mut self, args: SessionSetArgs) -> Result<RpcResponse<SessionSet>> {
+        self.call(RpcRequest::session_set(args)).await
     }
 
     /// Performs a session get call

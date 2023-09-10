@@ -11,13 +11,13 @@ pub struct BasicAuth {
 
 pub(crate) use self::request::RpcRequest;
 pub use self::request::{
-    ArgumentFields, Id, TorrentAction, TorrentAddArgs, TorrentGetField, TorrentRenamePathArgs,
-    TorrentSetArgs, TrackerList,
+    ArgumentFields, Id, SessionSetArgs, TorrentAction, TorrentAddArgs, TorrentGetField,
+    TorrentRenamePathArgs, TorrentSetArgs, TrackerList,
 };
 
 pub(crate) use self::response::RpcResponseArgument;
 pub use self::response::{
     BlocklistUpdate, ErrorType, FreeSpace, Nothing, PortTest, RpcResponse, SessionClose,
-    SessionGet, SessionStats, Torrent, TorrentAddedOrDuplicate, TorrentRenamePath, TorrentStatus,
-    Torrents,
+    SessionGet, SessionSet, SessionStats, Torrent, TorrentAddedOrDuplicate, TorrentRenamePath,
+    TorrentStatus, Torrents,
 };
