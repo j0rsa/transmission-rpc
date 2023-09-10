@@ -17,6 +17,10 @@ impl<T: RpcResponseArgument> RpcResponse<T> {
 pub trait RpcResponseArgument {}
 
 #[derive(Deserialize, Debug, Clone)]
+pub struct SessionSet {}
+impl RpcResponseArgument for SessionSet {}
+
+#[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "kebab-case")]
 pub struct SessionGet {
     pub blocklist_enabled: bool,
