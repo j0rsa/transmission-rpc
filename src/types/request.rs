@@ -466,6 +466,7 @@ pub struct TorrentAddArgs {
 pub enum TorrentGetField {
     ActivityDate,
     AddedDate,
+    BandwidthPriority,
     DoneDate,
     DownloadDir,
     EditDate,
@@ -513,6 +514,7 @@ impl TorrentGetField {
         match self {
             TorrentGetField::ActivityDate => "activityDate",
             TorrentGetField::AddedDate => "addedDate",
+            TorrentGetField::BandwidthPriority => "bandwidthPriority",
             TorrentGetField::DoneDate => "doneDate",
             TorrentGetField::DownloadDir => "downloadDir",
             TorrentGetField::EditDate => "editDate",
