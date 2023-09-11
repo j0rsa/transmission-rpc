@@ -99,6 +99,7 @@ pub enum ErrorType {
 pub struct Torrent {
     pub activity_date: Option<i64>,
     pub added_date: Option<i64>,
+    pub bandwidth_priority: Option<i64>,
     pub done_date: Option<i64>,
     pub download_dir: Option<String>,
     pub edit_date: Option<i64>,
