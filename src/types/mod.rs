@@ -15,9 +15,8 @@ pub use self::request::{
     TorrentRenamePathArgs, TorrentSetArgs, TrackerList,
 };
 
-pub(crate) use self::response::RpcResponseArgument;
 pub use self::response::{
-    BlocklistUpdate, ErrorType, FreeSpace, Nothing, PortTest, RpcResponse, SessionClose,
-    SessionGet, SessionSet, SessionStats, Torrent, TorrentAddedOrDuplicate, TorrentRenamePath,
-    TorrentStatus, Torrents,
+    BlocklistUpdate, ErrorType, FreeSpace, Nothing, PortTest, RpcResponse, RpcResponseArgument,
+    SessionClose, SessionGet, SessionSet, SessionStats, Torrent, TorrentAddedOrDuplicate,
+    TorrentRenamePath, TorrentStatus, Torrents,
 };
