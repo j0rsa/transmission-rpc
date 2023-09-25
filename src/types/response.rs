@@ -132,6 +132,8 @@ pub struct Torrent {
     /// for each file in files, their download priority (low:-1,normal:0,high:1)
     pub priorities: Option<Vec<i8>>,
     pub file_stats: Option<Vec<FileStat>>,
+    #[serde(rename = "file-count")]
+    pub file_count: Option<usize>
 }
 
 impl Torrent {
