@@ -774,7 +774,7 @@ impl TransClient {
     ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let add: TorrentAddArgs = TorrentAddArgs {
     ///         filename: Some(
-    ///             "https://releases.ubuntu.com/jammy/ubuntu-22.04.1-desktop-amd64.iso.torrent"
+    ///             "https://releases.ubuntu.com/22.04/ubuntu-22.04.3-desktop-amd64.iso.torrent"
     ///                 .to_string(),
     ///         ),
     ///         ..TorrentAddArgs::default()
