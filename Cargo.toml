@@ -1,7 +1,7 @@
 [package]
 name = "transmission-rpc"
-version = "0.4.1"
-authors = ["red <red.avtovo@gmail.com>", "George Miao <gm@miao.dev>"]
+version = "0.4.2"
+authors = ["red <red.avtovo@gmail.com>"]
 edition = "2021"
 repository = "https://github.com/j0rsa/transmission-rpc"
 license = "MIT"
@@ -15,17 +15,17 @@ include = ["**/*.rs", "Cargo.toml"]
 sync = []
 
 [dependencies]
-reqwest = { version = "0.11.11", features = [
+reqwest = { version = "0.11.22", features = [
     "json",
     "rustls-tls",
 ], default-features = false }
-serde = { version = "1.0.144", features = ["derive"] }
-serde_repr = "0.1"
-enum-iterator = "1.2.0"
+serde = { version = "1.0.190", features = ["derive"] }
+serde_repr = "0.1.17"
+enum-iterator = "1.4.1"
 
-log = "0.4.17"
+log = "0.4.20"
 
 [dev-dependencies]
 env_logger = "0.10.0"
-dotenvy = "0.15.5"
-tokio = { version = "1.21.1", features = ["macros", "rt-multi-thread"] }
+dotenvy = "0.15.7"
+tokio = { version = "1.33.0", features = ["macros", "rt-multi-thread"] }

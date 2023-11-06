@@ -29,7 +29,7 @@ https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
 - [X] torrent-remove
 - [X] torrent-set-location
 - [X] torrent-rename-path
-- [ ] session-set
+- [X] session-set
 - [X] session-get
 - [X] session-stats
 - [X] blocklist-update
