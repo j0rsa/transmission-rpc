@@ -1,5 +1,6 @@
 use enum_iterator::{all, Sequence};
 use serde::Serialize;
+use serde_repr::Deserialize_repr;
 
 #[derive(Serialize, Debug)]
 pub struct RpcRequest {
@@ -420,6 +421,14 @@ pub enum Id {
     Hash(String),
 }
 
+#[derive(Serialize, Deserialize_repr, Debug, Clone, PartialEq, Eq)]
+#[repr(i8)]
+pub enum Priority {
+    Low = -1,
+    Normal = 0,
+    High = 1,
+}
+
 #[derive(Serialize, Debug, Clone, Default)]
 pub struct TorrentAddArgs {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -440,7 +449,7 @@ pub struct TorrentAddArgs {
     #[serde(skip_serializing_if = "Option::is_none", rename = "peer-limit")]
     pub peer_limit: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none", rename = "bandwidthPriority")]
-    pub bandwidth_priority: Option<i64>,
+    pub bandwidth_priority: Option<Priority>,
     /// list of indices of files to be downloaded
     /// to ignore some files, put their indices in files_unwanted, otherwise
     /// they will still be downloaded
@@ -598,7 +607,7 @@ impl Serialize for TrackerList {
 #[serde(rename_all = "camelCase")]
 pub struct TorrentSetArgs {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub bandwidth_priority: Option<i64>,
+    pub bandwidth_priority: Option<Priority>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub download_limit: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
