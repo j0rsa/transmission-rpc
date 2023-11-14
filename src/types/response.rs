@@ -1,6 +1,7 @@
 use serde::Deserialize;
 use serde_repr::*;
 
+use crate::types::request::Priority;
 use crate::types::Id;
 
 #[derive(Deserialize, Debug)]
@@ -99,7 +100,7 @@ pub enum ErrorType {
 pub struct Torrent {
     pub activity_date: Option<i64>,
     pub added_date: Option<i64>,
-    pub bandwidth_priority: Option<i64>,
+    pub bandwidth_priority: Option<Priority>,
     pub done_date: Option<i64>,
     pub download_dir: Option<String>,
     pub edit_date: Option<i64>,
@@ -134,8 +135,7 @@ pub struct Torrent {
     pub files: Option<Vec<File>>,
     /// for each file in files, whether or not they will be downloaded (0 or 1)
     pub wanted: Option<Vec<i8>>,
-    /// for each file in files, their download priority (low:-1,normal:0,high:1)
-    pub priorities: Option<Vec<i8>>,
+    pub priorities: Option<Vec<Priority>>,
     pub file_stats: Option<Vec<FileStat>>,
     #[serde(rename = "file-count")]
     pub file_count: Option<usize>,
@@ -186,8 +186,7 @@ pub struct File {
 pub struct FileStat {
     pub bytes_completed: i64,
     pub wanted: bool,
-    /// low: -1, normal: 0, high: 1
-    pub priority: i8,
+    pub priority: Priority,
 }
 
 #[derive(Deserialize, Debug)]
