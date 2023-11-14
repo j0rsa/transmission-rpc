@@ -1,6 +1,6 @@
 use enum_iterator::{all, Sequence};
 use serde::Serialize;
-use serde_repr::Deserialize_repr;
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
 #[derive(Serialize, Debug)]
 pub struct RpcRequest {
@@ -421,7 +421,7 @@ pub enum Id {
     Hash(String),
 }
 
-#[derive(Serialize, Deserialize_repr, Debug, Clone, PartialEq, Eq)]
+#[derive(Serialize_repr, Deserialize_repr, Debug, Clone, PartialEq, Eq)]
 #[repr(i8)]
 pub enum Priority {
     Low = -1,
