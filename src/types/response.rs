@@ -1,3 +1,5 @@
+use chrono::serde::ts_seconds::deserialize as from_ts;
+use chrono::{DateTime, Utc};
 use serde::Deserialize;
 use serde_repr::*;
 
@@ -204,18 +206,24 @@ pub struct TrackerStat {
     pub is_backup: bool,
     pub last_announce_peer_count: i64,
     pub last_announce_result: String,
-    pub last_announce_start_time: i64,
+    #[serde(deserialize_with = "from_ts")]
+    pub last_announce_start_time: DateTime<Utc>,
     pub last_announce_succeeded: bool,
-    pub last_announce_time: i64,
+    #[serde(deserialize_with = "from_ts")]
+    pub last_announce_time: DateTime<Utc>,
     pub last_announce_timed_out: bool,
     pub last_scrape_result: String,
-    pub last_scrape_start_time: i64,
+    #[serde(deserialize_with = "from_ts")]
+    pub last_scrape_start_time: DateTime<Utc>,
     pub last_scrape_succeeded: bool,
-    pub last_scrape_time: i64,
+    #[serde(deserialize_with = "from_ts")]
+    pub last_scrape_time: DateTime<Utc>,
     pub last_scrape_timed_out: bool,
     pub leecher_count: i64,
-    pub next_announce_time: i64,
-    pub next_scrape_time: i64,
+    #[serde(deserialize_with = "from_ts")]
+    pub next_announce_time: DateTime<Utc>,
+    #[serde(deserialize_with = "from_ts")]
+    pub next_scrape_time: DateTime<Utc>,
     pub scrape_state: TrackerState,
     pub scrape: String,
     pub seeder_count: i64,

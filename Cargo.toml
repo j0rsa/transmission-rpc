@@ -22,6 +22,7 @@ reqwest = { version = "0.11.22", features = [
 serde = { version = "1.0.190", features = ["derive"] }
 serde_repr = "0.1.17"
 enum-iterator = "1.4.1"
+chrono = {version = "0.4.31", features = ["serde"] }
 
 log = "0.4.20"
 
