@@ -130,6 +130,8 @@ pub struct Torrent {
     pub torrent_file: Option<String>,
     pub total_size: Option<i64>,
     pub trackers: Option<Vec<Trackers>>,
+    pub tracker_list: Option<String>,
+    pub tracker_stats: Option<Vec<TrackerStat>>,
     pub upload_ratio: Option<f32>,
     pub uploaded_ever: Option<i64>,
     pub files: Option<Vec<File>>,
@@ -187,6 +189,47 @@ pub struct FileStat {
     pub bytes_completed: i64,
     pub wanted: bool,
     pub priority: Priority,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct TrackerStat {
+    pub announce_state: TrackerState,
+    pub announce: String,
+    pub download_count: i64,
+    pub has_announced: bool,
+    pub has_scraped: bool,
+    pub host: String,
+    pub id: Id,
+    pub is_backup: bool,
+    pub last_announce_peer_count: i64,
+    pub last_announce_result: String,
+    pub last_announce_start_time: i64,
+    pub last_announce_succeeded: bool,
+    pub last_announce_time: i64,
+    pub last_announce_timed_out: bool,
+    pub last_scrape_result: String,
+    pub last_scrape_start_time: i64,
+    pub last_scrape_succeeded: bool,
+    pub last_scrape_time: i64,
+    pub last_scrape_timed_out: bool,
+    pub leecher_count: i64,
+    pub next_announce_time: i64,
+    pub next_scrape_time: i64,
+    pub scrape_state: TrackerState,
+    pub scrape: String,
+    pub seeder_count: i64,
+    pub sitename: String,
+    pub tier: usize,
+}
+
+#[derive(Deserialize_repr, Debug, Clone)]
+#[repr(i8)]
+pub enum TrackerState {
+    Inactive = 0,
+    Waiting = 1,
+    Queued = 2,
+    Active = 3,
 }
 
 #[derive(Deserialize, Debug)]

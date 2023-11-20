@@ -1,5 +1,5 @@
 use enum_iterator::{all, Sequence};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
 #[derive(Serialize, Debug)]
@@ -414,7 +414,7 @@ pub struct TorrentRenamePathArgs {
     name: String,
 }
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum Id {
     Id(i64),
@@ -511,6 +511,8 @@ pub enum TorrentGetField {
     TorrentFile,
     TotalSize,
     Trackers,
+    TrackerList,
+    TrackerStats,
     UploadRatio,
     UploadedEver,
     Wanted,
@@ -559,6 +561,8 @@ impl TorrentGetField {
             TorrentGetField::TorrentFile => "torrentFile",
             TorrentGetField::TotalSize => "totalSize",
             TorrentGetField::Trackers => "trackers",
+            TorrentGetField::TrackerList => "trackerList",
+            TorrentGetField::TrackerStats => "trackerStats",
             TorrentGetField::UploadRatio => "uploadRatio",
             TorrentGetField::UploadedEver => "uploadedEver",
             TorrentGetField::Wanted => "wanted",
