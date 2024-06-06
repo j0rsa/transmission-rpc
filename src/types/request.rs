@@ -421,7 +421,7 @@ pub enum Id {
     Hash(String),
 }
 
-#[derive(Serialize_repr, Deserialize_repr, Debug, Clone, PartialEq, Eq)]
+#[derive(Serialize_repr, Deserialize_repr, Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(i8)]
 pub enum Priority {
     Low = -1,
