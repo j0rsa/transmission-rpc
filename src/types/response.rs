@@ -1,5 +1,8 @@
+use std::collections::HashMap;
+
 use chrono::serde::ts_seconds::deserialize as from_ts;
 use chrono::{DateTime, Utc};
+use serde::de::Deserializer;
 use serde::Deserialize;
 use serde_repr::*;
 
@@ -244,13 +247,31 @@ pub enum TrackerState {
 pub struct Nothing {}
 impl RpcResponseArgument for Nothing {}
 
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "kebab-case")]
+#[derive(Debug)]
 pub enum TorrentAddedOrDuplicate {
     TorrentDuplicate(Torrent),
     TorrentAdded(Torrent),
+    Error,
 }
+
 impl RpcResponseArgument for TorrentAddedOrDuplicate {}
+
+impl<'de> Deserialize<'de> for TorrentAddedOrDuplicate {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, <D as Deserializer<'de>>::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let mut res: HashMap<String, Torrent> = Deserialize::deserialize(deserializer)?;
+
+        let added = res.remove("torrent-added");
+        let duplicate = res.remove("torrent-duplicate");
+        match (added, duplicate) {
+            (Some(torrent), None) => Ok(TorrentAddedOrDuplicate::TorrentAdded(torrent)),
+            (None, Some(torrent)) => Ok(TorrentAddedOrDuplicate::TorrentDuplicate(torrent)),
+            _ => Ok(TorrentAddedOrDuplicate::Error),
+        }
+    }
+}
 
 #[derive(Deserialize, Debug)]
 pub struct TorrentRenamePath {
@@ -259,3 +280,63 @@ pub struct TorrentRenamePath {
     pub id: Option<i64>,
 }
 impl RpcResponseArgument for TorrentRenamePath {}
+
+#[cfg(test)]
+mod tests {
+    use crate::types::{Result, RpcResponse, TorrentAddedOrDuplicate};
+    use serde_json;
+    use serde_json::Value;
+
+    #[test]
+    fn test_torrent_added_failure_with_torrent_added_or_duplicate() {
+        let v: RpcResponse<TorrentAddedOrDuplicate> =
+            serde_json::from_str(torrent_added_failure()).expect("Failure expected");
+        println!("{v:#?}");
+        assert!(!v.is_ok());
+    }
+
+    #[test]
+    fn test_torrent_added_success_with_torrent_added_or_duplicate() -> Result<()> {
+        let v: RpcResponse<TorrentAddedOrDuplicate> =
+            serde_json::from_str(torrent_added_success())?;
+        println!("{v:#?}");
+        Ok(())
+    }
+
+    #[test]
+    fn test_torrent_added_success_with_value() -> Result<()> {
+        let v: Value = serde_json::from_str(torrent_added_success())?;
+        println!("{v:?} {}", serde_json::to_string_pretty(&v).expect(""));
+        Ok(())
+    }
+
+    #[test]
+    fn test_torrent_added_failure_with_value() -> Result<()> {
+        let v: Value = serde_json::from_str(torrent_added_failure())?;
+        println!("{v:?} {}", serde_json::to_string_pretty(&v).expect(""));
+        Ok(())
+    }
+
+    fn torrent_added_success() -> &'static str {
+        r#"
+        {
+            "arguments": {
+                "torrent-added": {
+                    "hashString": "bbdaece7c8daa85e1619469ab25d422a612cf923",
+                    "id": 2,
+                    "name": "toto.torrent"}
+                },
+            "result": "success"
+        }
+        "#
+    }
+
+    fn torrent_added_failure() -> &'static str {
+        r#"
+        {
+            "arguments": {},
+            "result": "download directory path is not absolute"
+        }
+        "#
+    }
+}
