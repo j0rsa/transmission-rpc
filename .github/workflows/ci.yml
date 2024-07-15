@@ -54,11 +54,6 @@ jobs:
         with:
           command: test
           args: -- session_close
-
-      - name: Prepare clippy
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: clippy
       
       - name: Cargo clippy
         uses: giraffate/clippy-action@v1
