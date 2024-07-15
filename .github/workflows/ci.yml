@@ -55,11 +55,16 @@ jobs:
           command: test
           args: -- session_close
 
-      - name: Cargo clippy
-        uses: actions-rs/clippy-check@v1
+      - name: Prepare clippy
+        uses: dtolnay/rust-toolchain@stable
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all-features
+          components: clippy
+      
+      - name: Cargo clippy
+        uses: giraffate/clippy-action@v1
+        with:
+          reporter: 'github-pr-review'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cargo audit
         uses: actions-rs/audit-check@v1
