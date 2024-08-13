@@ -1,6 +1,9 @@
 mod request;
 mod response;
 
+#[cfg(test)]
+mod tests;
+
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
 #[derive(Debug)]
@@ -16,7 +19,7 @@ pub use self::request::{
 };
 
 pub use self::response::{
-    BlocklistUpdate, ErrorType, FreeSpace, Nothing, PortTest, RpcResponse, RpcResponseArgument,
-    SessionClose, SessionGet, SessionSet, SessionStats, Torrent, TorrentAddedOrDuplicate,
-    TorrentRenamePath, TorrentStatus, Torrents,
+    BlocklistUpdate, ErrorType, FreeSpace, IdleMode, Nothing, PortTest, RatioMode, RpcResponse,
+    RpcResponseArgument, SessionClose, SessionGet, SessionSet, SessionStats, Torrent,
+    TorrentAddedOrDuplicate, TorrentRenamePath, TorrentStatus, Torrents, TrackerState,
 };
