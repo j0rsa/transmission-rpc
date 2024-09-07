@@ -471,7 +471,9 @@ pub struct TorrentAddArgs {
     pub labels: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, Copy, Sequence)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Sequence)]
+#[cfg_attr(feature = "tor-get-serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "tor-get-serde", serde(rename_all = "camelCase"))]
 pub enum TorrentGetField {
     ActivityDate,
     AddedDate,
@@ -492,6 +494,7 @@ pub enum TorrentGetField {
     ErrorString,
     Eta,
     EtaIdle,
+    #[cfg_attr(feature = "tor-get-serde", serde(rename = "file-count"))]
     FileCount,
     FileStats,
     Files,
@@ -511,6 +514,7 @@ pub enum TorrentGetField {
     MaxConnectedPeers,
     MetadataPercentComplete,
     Name,
+    #[cfg_attr(feature = "tor-get-serde", serde(rename = "peer-limit"))]
     PeerLimit,
     Peers,
     PeersConnected,
@@ -523,6 +527,7 @@ pub enum TorrentGetField {
     PieceCount,
     PieceSize,
     Priorities,
+    #[cfg_attr(feature = "tor-get-serde", serde(rename = "primary-mime-type"))]
     PrimaryMimeType,
     QueuePosition,
     RateDownload,
