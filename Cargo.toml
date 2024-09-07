@@ -13,6 +13,7 @@ include = ["**/*.rs", "Cargo.toml"]
 
 [features]
 sync = []
+tor-get-serde = []
 
 [dependencies]
 reqwest = { version = "0.12.5", features = [
