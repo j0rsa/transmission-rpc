@@ -337,7 +337,7 @@ impl std::fmt::Debug for Pieces {
     }
 }
 
-#[derive(Deserialize_repr, Debug, Clone, PartialEq)]
+#[derive(Deserialize_repr, Debug, Copy, Clone, PartialEq)]
 #[repr(i8)]
 pub enum IdleMode {
     Global = 0,
@@ -345,7 +345,7 @@ pub enum IdleMode {
     Unlimited = 2,
 }
 
-#[derive(Deserialize_repr, Debug, Clone, PartialEq)]
+#[derive(Deserialize_repr, Debug, Copy, Clone, PartialEq)]
 #[repr(i8)]
 pub enum RatioMode {
     Global = 0,
