@@ -114,7 +114,10 @@ pub struct Torrent {
     pub activity_date: Option<DateTime<Utc>>,
     #[serde(deserialize_with = "from_ts_option", default)]
     pub added_date: Option<DateTime<Utc>>,
-    pub availability: Option<Vec<u16>>,
+    /// "An array of `pieceCount` numbers representing the number of connected peers that have each
+    /// piece, or -1 if we already have the piece ourselves."
+    /// Added in Transmission 4.0.0 (`rpc-version-semver`: 5.3.0, `rpc-version`: 17).
+    pub availability: Option<Vec<i16>>,
     pub bandwidth_priority: Option<Priority>,
     pub comment: Option<String>,
     pub corrupt_ever: Option<u64>,
