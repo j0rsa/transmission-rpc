@@ -11,6 +11,7 @@ use chrono::serde::ts_seconds::deserialize as from_ts;
 use chrono::{DateTime, Utc};
 use serde::de::{Error as _, Deserializer};
 use serde::Deserialize;
+use serde_json::Value;
 use serde_repr::*;
 
 use crate::types::request::Priority;
@@ -116,6 +117,7 @@ pub struct Torrent {
     pub added_date: Option<DateTime<Utc>>,
     /// "An array of `pieceCount` numbers representing the number of connected peers that have each
     /// piece, or -1 if we already have the piece ourselves."
+    ///
     /// Added in Transmission 4.0.0 (`rpc-version-semver`: 5.3.0, `rpc-version`: 17).
     pub availability: Option<Vec<i16>>,
     pub bandwidth_priority: Option<Priority>,
@@ -164,7 +166,11 @@ pub struct Torrent {
     pub peers_sending_to_us: Option<i64>,
     pub percent_complete: Option<f32>,
     pub percent_done: Option<f32>,
-    /// `Pieces` is a wrapper for `Vec<u8>`.
+    /// `Pieces` is a simple wrapper around [`Vec`]`<`[`u8`]`>`.
+    ///
+    /// "A bitfield holding `pieceCount` flags which are set to 'true' if we have the piece
+    /// matching that position. JSON doesn't allow raw binary data, so this is a base64-encoded
+    /// string."
     pub pieces: Option<Pieces>,
     pub piece_count: Option<u64>,
     pub piece_size: Option<u64>,
@@ -195,9 +201,13 @@ pub struct Torrent {
     pub upload_limit: Option<u64>, // Can this be negative?
     pub upload_limited: Option<bool>,
     pub files: Option<Vec<File>>,
-    /// for each file in files, whether or not they will be downloaded (0 or 1)
-    pub wanted: Option<Vec<i8>>, // TODO: Deserialize from bool -> i8 (or u8 maybe?) to account for
-                                 // TODO: 4.0.0 and 4.0.1
+    /// `Wanted` is a simple wrapper around [`Vec`]`<`[`bool`]`>`.
+    ///
+    /// Each element represents whether the corresponding file in [`files`] will be downloaded
+    /// (`true`) or not (`false`).
+    ///
+    /// [`files`]: Torrent::files
+    pub wanted: Option<Wanted>,
     pub webseeds: Option<Vec<String>>,
     pub webseeds_sending_to_us: Option<u16>,
     pub priorities: Option<Vec<Priority>>,
@@ -310,7 +320,7 @@ pub struct PeersFrom {
     pub from_tracker: u16,
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct Pieces {
     pub bitfield: Vec<u8>,
 }
@@ -334,9 +344,42 @@ impl std::ops::Deref for Pieces {
     }
 }
 
-impl std::fmt::Debug for Pieces {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        f.debug_list().entries(self.iter()).finish()
+#[derive(Clone, Default, PartialEq, Eq, Debug)]
+pub struct Wanted {
+    pub wanted: Vec<bool>
+}
+
+impl<'de> Deserialize<'de> for Wanted {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let unexpected = || D::Error::custom("unexpected type");
+
+        let wanted = match Deserialize::deserialize(deserializer)? {
+            Value::Array(arr) => 
+                arr.into_iter()
+                    .map(|val| match val {
+                        // transmission 5.0.0+ returns an array of booleans.
+                        Value::Bool(b) => Ok(b),
+                        // transmission 4.x.x and below returns an array of ints (1 true, 0 false).
+                        Value::Number(num) =>
+                            num.as_i64().map(|n| n == 1)
+                                .ok_or_else(unexpected),
+                        // rpc server misbehaving (got an unexpected type).
+                        _ => Err(unexpected()),
+                    }).collect::<Result<Vec<_>, _>>()?,
+            // `wanted` should be an array.
+            _ => Err(unexpected())?,
+        };
+        Ok(Self { wanted })
+    }
+}
+
+impl std::ops::Deref for Wanted {
+    type Target = Vec<bool>;
+    fn deref(&self) -> &Self::Target {
+        &self.wanted
     }
 }
 
