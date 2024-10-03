@@ -5,7 +5,7 @@ use serde_json;
 
 use crate::types::{
     request::Priority,
-    response::{IdleMode, RatioMode, Pieces, TorrentStatus, TrackerState},
+    response::{IdleMode, RatioMode, Pieces, TorrentStatus, TrackerState, Wanted},
     ErrorType, Id, Result, RpcResponse, Torrents, Torrent,
 };
 
@@ -2835,7 +2835,7 @@ fn test_torrent_get_uploaded_limited_missing() -> Result<()> {
 // ----- wanted (Wanted) --------------------
 
 #[test]
-fn test_torrent_get_wanted_success() -> Result<()> {
+fn test_torrent_get_wanted_int_success() -> Result<()> {
     let resp = serde_json::from_str(
         r#"
         {
@@ -2849,7 +2849,31 @@ fn test_torrent_get_wanted_success() -> Result<()> {
         "#
     )?;
     test_torrent_get(resp, 1, Box::new(|resp: &TorrentGetResp| {
-        assert_eq!(resp.arguments.torrents[0].wanted, Some(vec![0, 1, 0, 0, 1]));
+        let wanted = resp.arguments.torrents[0].wanted.as_ref().expect("wanted is some");
+        let expected = Wanted { wanted: vec![false, true, false, false, true] };
+        assert_eq!(wanted, &expected);
+        Ok(())
+    }))
+}
+
+#[test]
+fn test_torrent_get_wanted_bool_success() -> Result<()> {
+    let resp = serde_json::from_str(
+        r#"
+        {
+            "arguments": {
+                "torrents": [
+                    { "wanted":[true, true, false, false, true, false, true] }
+                ]
+            },
+            "result":"success"
+        }
+        "#
+    )?;
+    test_torrent_get(resp, 1, Box::new(|resp: &TorrentGetResp| {
+        let wanted = resp.arguments.torrents[0].wanted.as_ref().expect("wanted is some");
+        let expected = Wanted { wanted: vec![true, true, false, false, true, false, true] };
+        assert_eq!(wanted, &expected);
         Ok(())
     }))
 }
