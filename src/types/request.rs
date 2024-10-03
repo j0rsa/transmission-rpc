@@ -414,7 +414,7 @@ pub struct TorrentRenamePathArgs {
     name: String,
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[serde(untagged)]
 pub enum Id {
     Id(i64),
