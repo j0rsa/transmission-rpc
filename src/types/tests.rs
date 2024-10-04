@@ -5,7 +5,7 @@ use serde_json;
 
 use crate::types::{
     request::Priority,
-    response::{IdleMode, RatioMode, Pieces, TorrentStatus, TrackerState, Wanted},
+    response::{IdleMode, RatioMode, TorrentStatus, TrackerState},
     ErrorType, Id, Result, RpcResponse, Torrents, Torrent,
 };
 
@@ -1799,26 +1799,23 @@ fn test_torrent_get_pieces_success() -> Result<()> {
     )?;
     test_torrent_get(resp, 3, Box::new(|resp: &TorrentGetResp| {
         let first = resp.arguments.torrents[0].pieces.as_ref().expect("pieces should exist");
-        assert_eq!(first.len(), 15); // 120 pieces
+        assert_eq!(first.len(), 15); // 120 pieces (8 * 15 = 120)
         let bitfield: Vec<u8> = vec![
             0xFC, 0xF6, 0xF8, 0xF7, 0xF9, 0xBE, 0xF2, 0xD3,
             0xF3, 0x8B, 0xE6, 0x7F, 0x7B, 0xFD, 0xFD,
         ];
-        let expected = Pieces { bitfield };
-        assert_eq!(first.iter().zip(expected.iter()).filter(|&(v, e)| v == e).count(), 15);
+        assert_eq!(first, &bitfield);
 
         let second = resp.arguments.torrents[1].pieces.as_ref().expect("pieces should exist");
-        assert_eq!(second.len(), 86); // 686 pieces
+        assert_eq!(second.len(), 86); // 686 pieces (8 * 86 = 688 => 2 extra bits)
         let mut bitfield = vec![u8::MAX; 85];
         bitfield.push(0xFC);
-        let expected = Pieces { bitfield };
-        assert_eq!(second.iter().zip(expected.iter()).filter(|&(v, e)| v == e).count(), 86);
+        assert_eq!(second, &bitfield);
 
         let third = resp.arguments.torrents[2].pieces.as_ref().expect("pieces should exist");
-        assert_eq!(third.len(), 9); // 72 pieces
+        assert_eq!(third.len(), 9); // 72 pieces (8 * 9 = 72)
         let bitfield = vec![0u8; 9];
-        let expected = Pieces { bitfield };
-        assert_eq!(third.iter().zip(expected.iter()).filter(|&(v, e)| v == e).count(), 9);
+        assert_eq!(third, &bitfield);
         Ok(())
     }))
 }
@@ -2850,8 +2847,7 @@ fn test_torrent_get_wanted_int_success() -> Result<()> {
     )?;
     test_torrent_get(resp, 1, Box::new(|resp: &TorrentGetResp| {
         let wanted = resp.arguments.torrents[0].wanted.as_ref().expect("wanted is some");
-        let expected = Wanted { wanted: vec![false, true, false, false, true] };
-        assert_eq!(wanted, &expected);
+        assert_eq!(wanted, &vec![false, true, false, false, true]);
         Ok(())
     }))
 }
@@ -2872,8 +2868,7 @@ fn test_torrent_get_wanted_bool_success() -> Result<()> {
     )?;
     test_torrent_get(resp, 1, Box::new(|resp: &TorrentGetResp| {
         let wanted = resp.arguments.torrents[0].wanted.as_ref().expect("wanted is some");
-        let expected = Wanted { wanted: vec![true, true, false, false, true, false, true] };
-        assert_eq!(wanted, &expected);
+        assert_eq!(wanted, &vec![true, true, false, false, true, false, true]);
         Ok(())
     }))
 }
