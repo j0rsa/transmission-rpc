@@ -151,7 +151,7 @@ pub struct Torrent {
     pub labels: Option<Vec<String>>,
     pub left_until_done: Option<i64>,
     pub magnet_link: Option<String>,
-    /// `DateTime::UNIX_EPOCH` if never manually announced.
+    /// [`DateTime::UNIX_EPOCH`] if never manually announced.
     #[serde(deserialize_with = "from_ts_option", default)]
     pub manual_announce_time: Option<DateTime<Utc>>,
     pub max_connected_peers: Option<u16>,
