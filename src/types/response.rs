@@ -307,9 +307,25 @@ pub struct Trackers {
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct File {
+    /// "the total size of the file"
     pub length: i64,
+    /// "the current size of the file, i.e. how much we've downloaded"
     pub bytes_completed: i64,
+    /// "This file's name. Includes the full subpath in the torrent."
     pub name: String,
+    /// "piece index where this file starts"
+    ///
+    /// Should be `Some(_)` if the Transmission version >= `4.1.0`, `None` if the version is less
+    /// than `4.1.0`.
+    ///
+    /// Added in Transmission `4.1.0` (`rpc-version-semver` 5.4.0, `rpc-version`: 18).
+    pub begin_piece: Option<u64>,
+    /// "piece index where this file ends (exclusive)"
+    ///
+    /// See [`begin_piece`](File::begin_piece).
+    ///
+    /// Added in Transmission `4.1.0` (`rpc-version-semver` 5.4.0, `rpc-version`: 18).
+    pub end_piece: Option<u64>,
 }
 
 #[derive(Deserialize, Debug, Clone)]

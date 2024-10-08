@@ -751,8 +751,10 @@ fn test_torrent_get_file_count_missing() -> Result<()> {
 
 // ----- files (Files) --------------------
 
+/// Pre- rpc-version `18` (transmission `4.1.0`) test where the `File`s will contain neither
+/// `begin_piece` nor `end_piece`.
 #[test]
-fn test_torrent_get_files_success() -> Result<()> {
+fn test_torrent_get_files_success_pre_rpc_ver_18() -> Result<()> {
     let resp = serde_json::from_str(
         r#"
         {
@@ -787,14 +789,69 @@ fn test_torrent_get_files_success() -> Result<()> {
         assert_eq!(first[0].length, 3994091520);
         assert_eq!(first[0].bytes_completed, 172415250);
         assert_eq!(first[0].name, "debian-12.6.0-amd64-DVD-1.iso");
+        assert_eq!(first[0].begin_piece, None);
+        assert_eq!(first[0].end_piece, None);
         let second = resp.arguments.torrents[1].files.as_ref().expect("files should exist");
         assert_eq!(second.len(), 2);
         assert_eq!(second[0].length, 1229);
         assert_eq!(second[0].bytes_completed, 0);
         assert_eq!(second[0].name, "Fedora-Server-40-1.14-x86_64-CHECKSUM");
+        assert_eq!(second[0].begin_piece, None);
+        assert_eq!(second[0].end_piece, None);
         assert_eq!(second[1].length, 2612854784);
         assert_eq!(second[1].bytes_completed, 0);
         assert_eq!(second[1].name, "Fedora-Server-dvd-x86_64-40-1.14.iso");
+        assert_eq!(second[1].begin_piece, None);
+        assert_eq!(second[1].end_piece, None);
+        Ok(())
+    }))
+}
+
+/// Post- rpc-version `18` (transmission `4.1.0`) test where the `File`s **will** contain both
+/// `begin_piece` and `end_piece`.
+#[test]
+fn test_torrent_get_files_success_post_rpc_ver_18() -> Result<()> {
+    let resp = serde_json::from_str(
+        r#"
+        {
+            "arguments": {
+                "torrents": [
+                    { "files":[
+                        {
+                            "bytesCompleted":0,
+                            "length":1229,
+                            "name":"Fedora-Server-40-1.14-x86_64-CHECKSUM",
+                            "beginPiece": 0,
+                            "endPiece": 123456
+                        },
+                        {
+                            "bytesCompleted":0,
+                            "length":2612854784,
+                            "name":"Fedora-Server-dvd-x86_64-40-1.14.iso",
+                            "beginPiece": 123456,
+                            "endPiece": 234567
+                        }
+                    ] }
+                ]
+            },
+            "result":"success"
+        }
+        "#
+    )?;
+    test_torrent_get(resp, 1, Box::new(|resp: &TorrentGetResp| {
+        let files = resp.arguments.torrents[0].files.as_ref().expect("files should exist");
+        assert_eq!(files.len(), 2);
+        assert_eq!(files[0].length, 1229);
+        assert_eq!(files[0].bytes_completed, 0);
+        assert_eq!(files[0].name, "Fedora-Server-40-1.14-x86_64-CHECKSUM");
+        assert_eq!(files[0].begin_piece, Some(0));
+        assert_eq!(files[0].end_piece, Some(123456));
+
+        assert_eq!(files[1].length, 2612854784);
+        assert_eq!(files[1].bytes_completed, 0);
+        assert_eq!(files[1].name, "Fedora-Server-dvd-x86_64-40-1.14.iso");
+        assert_eq!(files[1].begin_piece, Some(123456));
+        assert_eq!(files[1].end_piece, Some(234567));
         Ok(())
     }))
 }
