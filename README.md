@@ -1,11 +1,13 @@
 [![Crates badge](https://badge-cache.kominick.com/crates/v/transmission-rpc.svg?label=transmission-rpc)](https://crates.io/crates/transmission-rpc)
 
-Library to communicate with transmission rpc
+Library to communicate with [transmission
+rpc](https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md)
 
 **WARNING:**
 
 It is highly encouraged to use HTTPS since the Transmission authentication is
-using BasicAuth which could be easily intercepted.
+using [BasicAuth](https://wikipedia.org/wiki/Basic_access_authentication) which
+could be easily intercepted.
 
 #### Transmission RPC Spec
 
@@ -24,7 +26,7 @@ https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
 ##### Torrent Mutators
 
 - [X] torrent-set (some)
-- [X] torrent-get (most fields)
+- [X] torrent-get
 - [X] torrent-add
 - [X] torrent-remove
 - [X] torrent-set-location
@@ -36,6 +38,13 @@ https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
 - [X] port-test
 - [X] session-close
 - [X] free-space
+
+##### Feature Flags
+
+- `sync`: Enables a thread-safe version of `TransClient`.
+- `tor-get-serde`: Enables serde of `TorrentGetField`s.
+
+-----
 
 Support the project: [![Donate button](https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=H337RKJSC4YG4&source=url)
 
