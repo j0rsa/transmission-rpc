@@ -6,7 +6,7 @@ mod tests;
 
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BasicAuth {
     pub user: String,
     pub password: String,
@@ -19,8 +19,12 @@ pub use self::request::{
 };
 
 pub use self::response::{
-    BlocklistUpdate, ErrorType, File, FileStat, FreeSpace, IdleMode, Nothing, Peer, PeersFrom,
-    PortTest, RatioMode, RpcResponse, RpcResponseArgument, SessionClose, SessionGet, SessionSet,
-    SessionStats, Torrent, TorrentAddedOrDuplicate, TorrentRenamePath, TorrentStatus, Torrents,
-    Trackers, TrackerStat, TrackerState,
+    BlocklistUpdate, ErrorType, FreeSpace, IdleMode, Nothing, PortTest, RatioMode, RpcResponse,
+    RpcResponseArgument, SessionClose, SessionGet, SessionSet, SessionStats, Torrent,
+    TorrentAddedOrDuplicate, TorrentRenamePath, TorrentStatus, Torrents, TrackerState,
+};
+
+/// [`Torrent`] field sub-type. You probably won't need to interact with this directly.
+pub use self::response::{
+    File, FileStat, Peer, PeersFrom, Trackers, TrackerStat, 
 };
