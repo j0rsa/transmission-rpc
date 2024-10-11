@@ -2,6 +2,8 @@ use enum_iterator::{all, Sequence};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
+mod torrent_set;
+
 #[derive(Serialize, Debug)]
 pub struct RpcRequest {
     method: String,
@@ -678,6 +680,82 @@ impl Serialize for TrackerList {
     }
 }
 
+/// Defines request arguments for the [`torrent_set`] method.
+///
+/// # Constructors
+///
+/// * [`TorrentSetArgs::default`] creates a new [`TorrentSetArgs`] instance with all fields set to
+/// their default value (`None`).
+/// * [`TorrentSetArgs::new`] is an alias for [`TorrentSetArgs::default`].
+///
+/// # Setters
+///
+/// These methods are fluent setters, returning a new [`TorrentSetArgs`] instance modifying only
+/// the corresponding field while leaving all other fields untouched.
+///
+/// * [`TorrentSetArgs::bandwidth_priority`]: The torrents' bandwidth [`Priority`].
+/// * [`TorrentSetArgs::download_limit`]: Maximum download speed (`KBps`).
+/// * [`TorrentSetArgs::download_limited`]: `true` to honor `download_limit`.
+/// * [`TorrentSetArgs::files_wanted`]: Indices of file(s) to download.
+/// * [`TorrentSetArgs::files_unwanted`]: Indices of file(s) to skip (ie, not download).
+/// * [`TorrentSetArgs::honors_session_limits`]: `true` to honor the session's upload limits.
+/// * [`TorrentSetArgs::labels`]: A `Vec` of `String` labels to set on the torrent(s).
+///     > Added in Transmission 3.00 (`rpc-version-semver` 5.2.0, `rpc-version`: 16).
+/// * [`TorrentSetArgs::location`]: The new location of the torrents' content.
+/// * [`TorrentSetArgs::peer_limit`]: Maximum number of peers.
+/// * [`TorrentSetArgs::priority_high`]: Indices of [`Priority::High`] file(s).
+/// * [`TorrentSetArgs::priority_low`]: Indices of [`Priority::Low`] file(s).
+/// * [`TorrentSetArgs::priority_normal`]: Indices of [`Priority::Normal`] file(s).
+/// * [`TorrentSetArgs::queue_position`]: The new queue position of this torrent `[0..n)`.
+/// * [`TorrentSetArgs::seed_idle_limit`]: Torrent-level number of minutes of seeding inactivity
+/// before it considered `stalled`.
+/// * [`TorrentSetArgs::seed_idle_mode`]: Which seeding inactivity mode to use.
+/// * [`TorrentSetArgs::seed_ratio_limit`]: Torrent-level seeding ratio.
+/// * [`TorrentSetArgs::seed_ratio_mode`]: Which ratio mode to use.
+/// * [`TorrentSetArgs::tracker_add`]: Add a new tracker url in its own new tier.
+///     * *NOTE:* This documentation may be incorrect. The rpc-spec itself is unclear.
+///     > ⚠ Deprecated in Transmission 4.0.0 (`rpc-version-semver` 5.3.0, `rpc-version`: 17);
+///     > prefer `tracker_list` if possible.
+/// * [`TorrentSetArgs::tracker_list`]: `TrackerList` of announce urls with an empty element
+/// between [tiers](https://www.bittorrent.org/beps/bep_0012.html).
+///     > Added in Transmission 4.0.0 (`rpc-version-semver` 5.3.0, `rpc-version`: 17).
+/// * [`TorrentSetArgs::tracker_remove`]: [`Trackers::id`] of trackers to remove.
+///     * *NOTE:* This documentation may be incorrect. The rpc-spec itself is unclear.
+///     > ⚠ Deprecated in Transmission 4.0.0 (`rpc-version-semver` 5.3.0, `rpc-version`: 17);
+///     > prefer `tracker_list` if possible.
+/// * [`TorrentSetArgs::tracker_replace`]: Pairs of <[`Trackers::id`]/new announce urls>.
+///     * *NOTE:* This documentation may be incorrect. The rpc-spec itself is unclear.
+///     * See: transmission/transmission
+///     [#3226](https://github.com/transmission/transmission/issues/3226#issuecomment-1411899883).
+///     > ⚠ Deprecated in Transmission 4.0.0 (`rpc-version-semver` 5.3.0, `rpc-version`: 17);
+///     > prefer `tracker_list` if possible.
+/// * [`TorrentSetArgs::upload_limit`]: Maximum upload speed (`KBps`).
+/// * [`TorrentSetArgs::upload_limited`]: `true` to honor `upload_limit`.
+///
+/// # Examples
+///
+/// With fluent setters:
+/// ```
+/// use transmission_rpc::types::TorrentSetArgs;
+///
+/// let args = TorrentSetArgs()::default()
+///                .seed_ratio_limit(12.34)
+///                .labels(vec!["foo", "bar"])
+///                .locations("/a/b/c/d");
+/// ```
+///
+/// Directly setting struct fields:
+/// ```
+/// use transmission_rpc::types::TorrentSetArgs;
+///
+/// let mut args = TorrentSetArgs()::default();
+/// args.seed_ratio_limit = Some(12.34);
+/// args.labels = Some(vec!["foo", "bar"]);
+/// args.locations = Some("/a/b/c/d");
+/// ```
+///
+/// [`torrent_set`]: crate::TransClient::torrent_set
+/// [`Trackers::id`]: super::Trackers::id
 #[derive(Serialize, Debug, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct TorrentSetArgs {
