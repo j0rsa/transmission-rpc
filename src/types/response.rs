@@ -8,7 +8,7 @@ use serde::Deserialize;
 use serde_json::Value;
 use serde_repr::*;
 
-use crate::types::request::Priority;
+use crate::types::request::{IdleMode, Priority, RatioMode};
 use crate::types::Id;
 
 #[derive(Deserialize, Debug)]
@@ -363,22 +363,6 @@ pub struct PeersFrom {
     pub from_ltep: u16,
     pub from_pex: u16,
     pub from_tracker: u16,
-}
-
-#[derive(Deserialize_repr, Debug, Copy, Clone, PartialEq)]
-#[repr(i8)]
-pub enum IdleMode {
-    Global = 0,
-    Single = 1,
-    Unlimited = 2,
-}
-
-#[derive(Deserialize_repr, Debug, Copy, Clone, PartialEq)]
-#[repr(i8)]
-pub enum RatioMode {
-    Global = 0,
-    Single = 1,
-    Unlimited = 2,
 }
 
 #[derive(Deserialize, Debug, Clone)]

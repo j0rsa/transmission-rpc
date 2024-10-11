@@ -3,9 +3,9 @@ use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 use chrono::DateTime;
 use serde_json;
 
-use crate::types::{
-    request::Priority,
-    response::{IdleMode, RatioMode, TorrentStatus, TrackerState},
+use super::{
+    Priority,
+    IdleMode, RatioMode, TorrentStatus, TrackerState,
     ErrorType, Id, Result, RpcResponse, Torrent, Torrents,
 };
 

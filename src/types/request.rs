@@ -431,6 +431,22 @@ pub enum Priority {
     High = 1,
 }
 
+#[derive(Serialize_repr, Deserialize_repr, Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[repr(i8)]
+pub enum IdleMode {
+    Global = 0,
+    Single = 1,
+    Unlimited = 2,
+}
+
+#[derive(Serialize_repr, Deserialize_repr, Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[repr(i8)]
+pub enum RatioMode {
+    Global = 0,
+    Single = 1,
+    Unlimited = 2,
+}
+
 #[derive(Serialize, Debug, Clone, Default)]
 pub struct TorrentAddArgs {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -709,9 +725,9 @@ impl Serialize for TrackerList {
 /// * [`TorrentSetArgs::queue_position`]: The new queue position of this torrent `[0..n)`.
 /// * [`TorrentSetArgs::seed_idle_limit`]: Torrent-level number of minutes of seeding inactivity
 /// before it considered `stalled`.
-/// * [`TorrentSetArgs::seed_idle_mode`]: Which seeding inactivity mode to use.
+/// * [`TorrentSetArgs::seed_idle_mode`]: Which seeding inactivity mode ([`IdleMode`]) to use.
 /// * [`TorrentSetArgs::seed_ratio_limit`]: Torrent-level seeding ratio.
-/// * [`TorrentSetArgs::seed_ratio_mode`]: Which ratio mode to use.
+/// * [`TorrentSetArgs::seed_ratio_mode`]: Which [`RatioMode`] to use.
 /// * [`TorrentSetArgs::tracker_add`]: Add a new tracker url in its own new tier.
 ///     * *NOTE:* This documentation may be incorrect. The rpc-spec itself is unclear.
 ///     > ⚠ Deprecated in Transmission 4.0.0 (`rpc-version-semver` 5.3.0, `rpc-version`: 17);
@@ -762,15 +778,15 @@ pub struct TorrentSetArgs {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bandwidth_priority: Option<Priority>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub download_limit: Option<i32>,
+    pub download_limit: Option<usize>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub download_limited: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "files-wanted")]
-    pub files_wanted: Option<Vec<i32>>,
+    pub files_wanted: Option<Vec<usize>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "files-unwanted")]
-    pub files_unwanted: Option<Vec<i32>>,
+    pub files_unwanted: Option<Vec<usize>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub honors_session_limits: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -781,26 +797,28 @@ pub struct TorrentSetArgs {
     pub location: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "peer-limit")]
-    pub peer_limit: Option<i64>,
+    pub peer_limit: Option<u16>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "priority-high")]
-    pub priority_high: Option<Vec<i32>>,
+    pub priority_high: Option<Vec<usize>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "priority-low")]
-    pub priority_low: Option<Vec<i32>>,
+    pub priority_low: Option<Vec<usize>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "priority-normal")]
-    pub priority_normal: Option<Vec<i32>>,
+    pub priority_normal: Option<Vec<usize>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub queue_position: Option<i32>,
+    pub queue_position: Option<usize>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub seed_idle_limit: Option<i32>,
+    pub seed_idle_limit: Option<u16>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub seed_idle_mode: Option<i32>,
+    pub seed_idle_mode: Option<IdleMode>,
+
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub seed_ratio_limit: Option<f32>,
+    pub seed_ratio_limit: Option<f64>,
+
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub seed_ratio_mode: Option<i32>,
+    pub seed_ratio_mode: Option<RatioMode>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tracker_add: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -810,7 +828,7 @@ pub struct TorrentSetArgs {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tracker_replace: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub upload_limit: Option<i32>,
+    pub upload_limit: Option<usize>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub upload_limited: Option<bool>,
 }
