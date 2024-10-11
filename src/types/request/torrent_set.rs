@@ -24,12 +24,6 @@ impl TorrentSetArgs {
         self.files_unwanted = Some(files_unwanted);
         self
     }
-
-    pub fn ids(mut self, ids: Vec<Id>) -> Self {
-        self.ids = Some(ids);
-        self
-    }
-
     pub fn honors_session_limits(mut self, honors_session_limits: bool) -> Self {
         self.honors_session_limits = Some(honors_session_limits);
         self

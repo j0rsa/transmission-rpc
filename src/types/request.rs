@@ -789,8 +789,11 @@ pub struct TorrentSetArgs {
     pub files_unwanted: Option<Vec<usize>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub honors_session_limits: Option<bool>,
+
+    // Don't expose the `ids` field as it is blindly overwritten by `torrent_set`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub ids: Option<Vec<Id>>,
+    ids: Option<Vec<Id>>,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub labels: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
