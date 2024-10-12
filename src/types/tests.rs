@@ -4,9 +4,8 @@ use chrono::DateTime;
 use serde_json;
 
 use super::{
-    Priority,
-    IdleMode, RatioMode, TorrentStatus, TrackerState,
-    ErrorType, Id, Result, RpcResponse, Torrent, Torrents,
+    ErrorType, Id, IdleMode, Priority, RatioMode, Result, RpcResponse, Torrent, TorrentStatus,
+    Torrents, TrackerState,
 };
 
 type TorrentGetResp = RpcResponse<Torrents<Torrent>>;

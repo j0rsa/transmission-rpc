@@ -1,8 +1,10 @@
-use super::{Id, TorrentSetArgs, IdleMode, Priority, RatioMode, TrackerList};
+use super::{IdleMode, Priority, RatioMode, TorrentSetArgs, TrackerList};
 
 impl TorrentSetArgs {
     /// Creates a new [`TorrentSetArgs`] with all fields set to `None`.
-    pub fn new() -> Self { Self::default() }
+    pub fn new() -> Self {
+        Self::default()
+    }
 
     pub fn bandwidth_priority(mut self, bandwidth_priority: Priority) -> Self {
         self.bandwidth_priority = Some(bandwidth_priority);
