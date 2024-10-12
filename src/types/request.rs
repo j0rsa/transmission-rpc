@@ -714,6 +714,8 @@ impl Serialize for TrackerList {
 /// * [`TorrentSetArgs::download_limited`]: `true` to honor `download_limit`.
 /// * [`TorrentSetArgs::files_wanted`]: Indices of file(s) to download.
 /// * [`TorrentSetArgs::files_unwanted`]: Indices of file(s) to skip (ie, not download).
+/// * [`TorrentSetArgs::group`]: The name of the torrents' bandwidth group.
+///     > Added in Transmission 4.0.0 (`rpc-version-semver` 5.3.0, `rpc-version`: 17).
 /// * [`TorrentSetArgs::honors_session_limits`]: `true` to honor the session's upload limits.
 /// * [`TorrentSetArgs::labels`]: A `Vec` of `String` labels to set on the torrent(s).
 ///     > Added in Transmission 3.00 (`rpc-version-semver` 5.2.0, `rpc-version`: 16).
@@ -728,6 +730,8 @@ impl Serialize for TrackerList {
 /// * [`TorrentSetArgs::seed_idle_mode`]: Which seeding inactivity mode ([`IdleMode`]) to use.
 /// * [`TorrentSetArgs::seed_ratio_limit`]: Torrent-level seeding ratio.
 /// * [`TorrentSetArgs::seed_ratio_mode`]: Which [`RatioMode`] to use.
+/// * [`TorrentSetArgs::sequential_download`]: `true` to download the torrent pieces sequentially.
+///     > Added in Transmission 4.1.0 (`rpc-version-semver` 5.4.0, `rpc-version`: 18).
 /// * [`TorrentSetArgs::tracker_add`]: Add a new tracker url in its own new tier.
 ///     * *NOTE:* This documentation may be incorrect. The rpc-spec itself is unclear.
 ///     > ⚠ Deprecated in Transmission 4.0.0 (`rpc-version-semver` 5.3.0, `rpc-version`: 17);
@@ -788,6 +792,8 @@ pub struct TorrentSetArgs {
     #[serde(rename = "files-unwanted")]
     pub files_unwanted: Option<Vec<usize>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub group: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub honors_session_limits: Option<bool>,
 
     // Don't expose the `ids` field as it is blindly overwritten by `torrent_set`.
@@ -822,6 +828,8 @@ pub struct TorrentSetArgs {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub seed_ratio_mode: Option<RatioMode>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sequential_download: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tracker_add: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]

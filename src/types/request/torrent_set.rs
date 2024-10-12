@@ -24,6 +24,10 @@ impl TorrentSetArgs {
         self.files_unwanted = Some(files_unwanted);
         self
     }
+    pub fn group(mut self, group: String) -> Self {
+        self.group = Some(group);
+        self
+    }
     pub fn honors_session_limits(mut self, honors_session_limits: bool) -> Self {
         self.honors_session_limits = Some(honors_session_limits);
         self
@@ -72,6 +76,10 @@ impl TorrentSetArgs {
         self.seed_ratio_mode = Some(seed_ratio_mode);
         self
     }
+    pub fn sequential_download(mut self, sequential_download: bool) -> Self {
+        self.sequential_download = Some(sequential_download);
+        self
+    }
     pub fn tracker_add(mut self, tracker_add: Vec<String>) -> Self {
         self.tracker_add = Some(tracker_add);
         self
@@ -95,5 +103,33 @@ impl TorrentSetArgs {
     pub fn upload_limited(mut self, upload_limited: bool) -> Self {
         self.upload_limited = Some(upload_limited);
         self
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::TorrentSetArgs;
+
+    #[test]
+    fn torrent_set_args_setter_group() {
+        let args = TorrentSetArgs::default();
+        assert_eq!(args.bandwidth_priority, None);
+        assert_eq!(args.group, None);
+        let args = args.group("test group".to_string());
+        assert_eq!(args.bandwidth_priority, None);
+        assert_eq!(args.group, Some("test group".to_string()));
+    }
+
+    #[test]
+    fn torrent_set_args_setter_sequential_download() {
+        let args = TorrentSetArgs::default();
+        assert_eq!(args.group, None);
+        assert_eq!(args.sequential_download, None);
+        let args = args.sequential_download(false);
+        assert_eq!(args.group, None);
+        assert_eq!(args.sequential_download, Some(false));
+        let args = args.sequential_download(true);
+        assert_eq!(args.group, None);
+        assert_eq!(args.sequential_download, Some(true));
     }
 }
