@@ -1,15 +1,9 @@
-use std::{
-    collections::HashMap,
-    net::IpAddr,
-};
+use std::{collections::HashMap, net::IpAddr};
 
-use base64::{
-    Engine as _,
-    engine::general_purpose::STANDARD as base64,
-};
+use base64::{engine::general_purpose::STANDARD as base64, Engine as _};
 use chrono::serde::ts_seconds::deserialize as from_ts;
 use chrono::{DateTime, Utc};
-use serde::de::{Error as _, Deserializer};
+use serde::de::{Deserializer, Error as _};
 use serde::Deserialize;
 use serde_json::Value;
 use serde_repr::*;
@@ -247,18 +241,17 @@ where
     let unexpected = || D::Error::custom("unexpected type");
 
     let wanted = match Deserialize::deserialize(deserializer)? {
-        Value::Array(arr) => 
-            arr.into_iter()
-                .map(|val| match val {
-                    // transmission 5.0.0+ returns an array of booleans.
-                    Value::Bool(b) => Ok(b),
-                    // transmission 4.x.x and below returns an array of ints (1 true, 0 false).
-                    Value::Number(num) =>
-                        num.as_i64().map(|n| n == 1)
-                            .ok_or_else(unexpected),
-                    // rpc server misbehaving (got an unexpected type).
-                    _ => Err(unexpected()),
-                }).collect::<Result<Vec<_>, _>>()?,
+        Value::Array(arr) => arr
+            .into_iter()
+            .map(|val| match val {
+                // transmission 5.0.0+ returns an array of booleans.
+                Value::Bool(b) => Ok(b),
+                // transmission 4.x.x and below returns an array of ints (1 true, 0 false).
+                Value::Number(num) => num.as_i64().map(|n| n == 1).ok_or_else(unexpected),
+                // rpc server misbehaving (got an unexpected type).
+                _ => Err(unexpected()),
+            })
+            .collect::<Result<Vec<_>, _>>()?,
         // `wanted` should be an array.
         _ => Err(unexpected())?,
     };
@@ -339,8 +332,9 @@ pub struct FileStat {
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Peer {
-    pub address: IpAddr, // FIXME? serde doesn't like simplified ipv6 addresses
-                         // FIXME? (does transmission emit simplified ipv6? eg. "::1")
+    // FIXME? serde doesn't like simplified ipv6 addresses
+    // FIXME- (does transmission emit simplified ipv6? eg. "::1")
+    pub address: IpAddr,
     pub client_name: String,
     pub client_is_choked: bool,
     pub client_is_interested: bool,
@@ -356,7 +350,7 @@ pub struct Peer {
     pub port: u16,
     pub progress: f32,
     pub rate_to_client: u64, // (B/s)
-    pub rate_to_peer: u64, // (B/s)
+    pub rate_to_peer: u64,   // (B/s)
 }
 
 #[derive(Deserialize, Debug, Clone)]
