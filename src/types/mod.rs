@@ -25,6 +25,4 @@ pub use self::response::{
 };
 
 /// [`Torrent`] field sub-type. You probably won't need to interact with this directly.
-pub use self::response::{
-    File, FileStat, Peer, PeersFrom, Trackers, TrackerStat, 
-};
+pub use self::response::{File, FileStat, Peer, PeersFrom, TrackerStat, Trackers};
