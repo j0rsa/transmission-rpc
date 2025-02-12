@@ -582,10 +582,9 @@ impl TransClient {
     ///     };
     ///     let mut client = TransClient::with_auth(url, basic_auth);
     ///
-    ///     let args = TorrentSetArgs {
-    ///         labels: Some(vec![String::from("blue")]),
-    ///         ..Default::default()
-    ///     };
+    ///     let mut args = TorrentSetArgs::default();
+    ///     args.labels = Some(vec![String::from("blue")]);
+    /// 
     ///     assert!(
     ///         client
     ///             .torrent_set(args, Some(vec![Id::Id(0)]))

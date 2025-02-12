@@ -758,20 +758,20 @@ impl Serialize for TrackerList {
 /// ```
 /// use transmission_rpc::types::TorrentSetArgs;
 ///
-/// let args = TorrentSetArgs()::default()
+/// let args = TorrentSetArgs::default()
 ///                .seed_ratio_limit(12.34)
-///                .labels(vec!["foo", "bar"])
-///                .locations("/a/b/c/d");
+///                .labels(vec![String::from("foo"), String::from("bar")])
+///                .location(String::from("/a/b/c/d"));
 /// ```
 ///
 /// Directly setting struct fields:
 /// ```
 /// use transmission_rpc::types::TorrentSetArgs;
 ///
-/// let mut args = TorrentSetArgs()::default();
+/// let mut args = TorrentSetArgs::default();
 /// args.seed_ratio_limit = Some(12.34);
-/// args.labels = Some(vec!["foo", "bar"]);
-/// args.locations = Some("/a/b/c/d");
+/// args.labels = Some(vec![String::from("foo"), String::from("bar")]);
+/// args.location = Some(String::from("/a/b/c/d"));
 /// ```
 ///
 /// [`torrent_set`]: crate::TransClient::torrent_set

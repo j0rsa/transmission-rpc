@@ -4,8 +4,8 @@ use chrono::DateTime;
 use serde_json;
 
 use crate::types::{
-    request::Priority,
-    response::{IdleMode, RatioMode, TorrentStatus, TrackerState},
+    request::{IdleMode, Priority, RatioMode},
+    response::{TorrentStatus, TrackerState},
     ErrorType, Id, Result, RpcResponse, Torrent, Torrents,
 };
 
