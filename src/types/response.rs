@@ -2,12 +2,12 @@ use std::collections::HashMap;
 
 use chrono::serde::ts_seconds::deserialize as from_ts;
 use chrono::{DateTime, Utc};
-use serde::de::Deserializer;
 use serde::Deserialize;
+use serde::de::Deserializer;
 use serde_repr::*;
 
-use crate::types::request::Priority;
 use crate::types::Id;
+use crate::types::request::Priority;
 
 #[derive(Deserialize, Debug)]
 pub struct RpcResponse<T: RpcResponseArgument> {

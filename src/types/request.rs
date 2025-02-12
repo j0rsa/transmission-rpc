@@ -1,4 +1,4 @@
-use enum_iterator::{all, Sequence};
+use enum_iterator::{Sequence, all};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 

@@ -2,10 +2,10 @@ extern crate transmission_rpc;
 
 use dotenvy::dotenv;
 use std::env;
+use transmission_rpc::TransClient;
 use transmission_rpc::types::{
     BasicAuth, Id, Result, RpcResponse, Torrent, TorrentGetField, Torrents,
 };
-use transmission_rpc::TransClient;
 
 #[tokio::main]
 async fn main() -> Result<()> {

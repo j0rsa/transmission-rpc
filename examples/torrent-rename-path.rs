@@ -2,8 +2,8 @@ extern crate transmission_rpc;
 
 use dotenvy::dotenv;
 use std::env;
-use transmission_rpc::types::{BasicAuth, Id, Result, RpcResponse, TorrentRenamePath};
 use transmission_rpc::TransClient;
+use transmission_rpc::types::{BasicAuth, Id, Result, RpcResponse, TorrentRenamePath};
 
 #[tokio::main]
 async fn main() -> Result<()> {

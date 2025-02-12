@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate log;
 
-use reqwest::{header::CONTENT_TYPE, Client, StatusCode, Url};
+use reqwest::{Client, StatusCode, Url, header::CONTENT_TYPE};
 use serde::de::DeserializeOwned;
 
 #[cfg(feature = "sync")]
@@ -108,8 +108,8 @@ impl TransClient {
     ///
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
-    ///     types::{BasicAuth, Result, RpcResponse, SessionSet, SessionSetArgs},
     ///     TransClient,
+    ///     types::{BasicAuth, Result, RpcResponse, SessionSet, SessionSetArgs},
     /// };
     ///
     /// #[tokio::main]
@@ -123,9 +123,7 @@ impl TransClient {
     ///     };
     ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
     ///     let args: SessionSetArgs = SessionSetArgs {
-    ///         download_dir: Some(
-    ///             "/torrent/download".to_string(),
-    ///         ),
+    ///         download_dir: Some("/torrent/download".to_string()),
     ///         ..SessionSetArgs::default()
     ///     };
     ///     let response: Result<RpcResponse<SessionSet>> = client.session_set(args).await;
@@ -156,8 +154,8 @@ impl TransClient {
     ///
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
-    ///     types::{BasicAuth, Result, RpcResponse, SessionGet},
     ///     TransClient,
+    ///     types::{BasicAuth, Result, RpcResponse, SessionGet},
     /// };
     ///
     /// #[tokio::main]
@@ -198,8 +196,8 @@ impl TransClient {
     ///
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
-    ///     types::{BasicAuth, Result, RpcResponse, SessionStats},
     ///     TransClient,
+    ///     types::{BasicAuth, Result, RpcResponse, SessionStats},
     /// };
     ///
     /// #[tokio::main]
@@ -240,8 +238,8 @@ impl TransClient {
     ///
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
-    ///     types::{BasicAuth, Result, RpcResponse, SessionClose},
     ///     TransClient,
+    ///     types::{BasicAuth, Result, RpcResponse, SessionClose},
     /// };
     ///
     /// #[tokio::main]
@@ -282,8 +280,8 @@ impl TransClient {
     ///
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
-    ///     types::{BasicAuth, BlocklistUpdate, Result, RpcResponse},
     ///     TransClient,
+    ///     types::{BasicAuth, BlocklistUpdate, Result, RpcResponse},
     /// };
     ///
     /// #[tokio::main]
@@ -324,8 +322,8 @@ impl TransClient {
     ///
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
-    ///     types::{BasicAuth, FreeSpace, Result, RpcResponse},
     ///     TransClient,
+    ///     types::{BasicAuth, FreeSpace, Result, RpcResponse},
     /// };
     ///
     /// #[tokio::main]
@@ -367,8 +365,8 @@ impl TransClient {
     ///
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
-    ///     types::{BasicAuth, PortTest, Result, RpcResponse},
     ///     TransClient,
+    ///     types::{BasicAuth, PortTest, Result, RpcResponse},
     /// };
     ///
     /// #[tokio::main]
@@ -411,8 +409,8 @@ impl TransClient {
     ///
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
-    ///     types::{BasicAuth, Id, Result, RpcResponse, Torrent, TorrentGetField, Torrents},
     ///     TransClient,
+    ///     types::{BasicAuth, Id, Result, RpcResponse, Torrent, TorrentGetField, Torrents},
     /// };
     ///
     /// #[tokio::main]
@@ -510,8 +508,8 @@ impl TransClient {
     ///
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
-    ///     types::{BasicAuth, Id, Result, RpcResponse, Torrent, TorrentSetArgs, Torrents},
     ///     TransClient,
+    ///     types::{BasicAuth, Id, Result, RpcResponse, Torrent, TorrentSetArgs, Torrents},
     /// };
     ///
     /// #[tokio::main]
@@ -563,8 +561,8 @@ impl TransClient {
     ///
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
-    ///     types::{BasicAuth, Id, Nothing, Result, RpcResponse, TorrentAction},
     ///     TransClient,
+    ///     types::{BasicAuth, Id, Nothing, Result, RpcResponse, TorrentAction},
     /// };
     ///
     /// #[tokio::main]
@@ -612,8 +610,8 @@ impl TransClient {
     ///
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
-    ///     types::{BasicAuth, Id, Nothing, Result, RpcResponse},
     ///     TransClient,
+    ///     types::{BasicAuth, Id, Nothing, Result, RpcResponse},
     /// };
     ///
     /// #[tokio::main]
@@ -656,8 +654,8 @@ impl TransClient {
     ///
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
-    ///     types::{BasicAuth, Id, Nothing, Result, RpcResponse},
     ///     TransClient,
+    ///     types::{BasicAuth, Id, Nothing, Result, RpcResponse},
     /// };
     ///
     /// #[tokio::main]
@@ -707,8 +705,8 @@ impl TransClient {
     ///
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
-    ///     types::{BasicAuth, Id, Result, RpcResponse, TorrentRenamePath},
     ///     TransClient,
+    ///     types::{BasicAuth, Id, Result, RpcResponse, TorrentRenamePath},
     /// };
     ///
     /// #[tokio::main]
@@ -758,8 +756,8 @@ impl TransClient {
     ///
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
-    ///     types::{BasicAuth, Result, RpcResponse, TorrentAddArgs, TorrentAddedOrDuplicate},
     ///     TransClient,
+    ///     types::{BasicAuth, Result, RpcResponse, TorrentAddArgs, TorrentAddedOrDuplicate},
     /// };
     ///
     /// #[tokio::main]
