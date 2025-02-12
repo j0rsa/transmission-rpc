@@ -8,7 +8,7 @@ use serde::Deserialize;
 use serde_json::Value;
 use serde_repr::*;
 
-use crate::types::request::Priority;
+use crate::types::request::{IdleMode, Priority, RatioMode};
 use crate::types::Id;
 
 #[derive(Deserialize, Debug)]

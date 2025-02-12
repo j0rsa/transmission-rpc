@@ -23,19 +23,25 @@
 //!
 //! ##### Torrent Mutators
 //!
-//! - [X] torrent-set (some)
+//! - [X] torrent-set
 //! - [X] torrent-get
 //! - [X] torrent-add
 //! - [X] torrent-remove
 //! - [X] torrent-set-location
 //! - [X] torrent-rename-path
+//!
+//! ##### Session Requests
+//!
 //! - [X] session-set
 //! - [X] session-get
 //! - [X] session-stats
 //! - [X] blocklist-update
 //! - [X] port-test
+//! - [ ] queue-move-top, queue-move-up, queue-move-down, queue-move-bottom
 //! - [X] session-close
 //! - [X] free-space
+//! - [ ] group-set
+//! - [ ] group-get
 //!
 //! ##### Feature Flags
 //!

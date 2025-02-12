@@ -14,8 +14,8 @@ pub struct BasicAuth {
 
 pub(crate) use self::request::RpcRequest;
 pub use self::request::{
-    ArgumentFields, Id, Priority, SessionSetArgs, TorrentAction, TorrentAddArgs, TorrentGetField,
-    TorrentRenamePathArgs, TorrentSetArgs, TrackerList,
+    ArgumentFields, Id, IdleMode, Priority, RatioMode, SessionSetArgs, TorrentAction,
+    TorrentAddArgs, TorrentGetField, TorrentRenamePathArgs, TorrentSetArgs, TrackerList,
 };
 
 pub use self::response::{
