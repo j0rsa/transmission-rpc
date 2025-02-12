@@ -365,6 +365,22 @@ pub struct PeersFrom {
     pub from_tracker: u16,
 }
 
+#[derive(Deserialize_repr, Debug, Copy, Clone, PartialEq)]
+#[repr(i8)]
+pub enum IdleMode {
+    Global = 0,
+    Single = 1,
+    Unlimited = 2,
+}
+
+#[derive(Deserialize_repr, Debug, Copy, Clone, PartialEq)]
+#[repr(i8)]
+pub enum RatioMode {
+    Global = 0,
+    Single = 1,
+    Unlimited = 2,
+}
+
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TrackerStat {

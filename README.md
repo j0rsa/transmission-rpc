@@ -52,6 +52,13 @@ https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
 
 -----
 
+##### Feature Flags
+
+- `sync`: Enables a thread-safe version of `TransClient`.
+- `tor-get-serde`: Enables serde of `TorrentGetField`s.
+
+-----
+
 Support the project: [![Donate button](https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=H337RKJSC4YG4&source=url)
 
 <a href="https://www.buymeacoffee.com/j0rsa" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
