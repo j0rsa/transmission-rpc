@@ -32,6 +32,7 @@ pub struct SessionGet {
     pub blocklist_enabled: bool,
     pub download_dir: String,
     pub encryption: String,
+    pub peer_port: i32,
     pub rpc_version: i32,
     pub rpc_version_minimum: i32,
     pub version: String,
