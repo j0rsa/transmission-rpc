@@ -584,7 +584,7 @@ impl TransClient {
     ///
     ///     let mut args = TorrentSetArgs::default();
     ///     args.labels = Some(vec![String::from("blue")]);
-    /// 
+    ///
     ///     assert!(
     ///         client
     ///             .torrent_set(args, Some(vec![Id::Id(0)]))
