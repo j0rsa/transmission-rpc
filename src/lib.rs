@@ -77,7 +77,7 @@ pub mod types;
 const MAX_RETRIES: usize = 5;
 
 #[derive(Clone, Debug)]
-enum TransError {
+pub enum TransError {
     MaxRetriesReached,
     NoSessionIdReceived,
 }
