@@ -41,7 +41,7 @@ jobs:
           command: build
 
       - name: Setup Test Environment
-        run: docker-compose up -d
+        run: docker compose up -d
 
       - name: Cargo Test
         uses: actions-rs/cargo@v1
