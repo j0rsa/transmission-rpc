@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright (c) 2020 J0rsa and contributors
+// SPDX-License-Identifier: MIT
+
 use std::{collections::HashMap, net::IpAddr};
 
 use base64::{engine::general_purpose::STANDARD as base64, Engine as _};

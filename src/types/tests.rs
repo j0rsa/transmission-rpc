@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright (c) 2020 J0rsa and contributors
+// SPDX-License-Identifier: MIT
+
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 
 use chrono::DateTime;

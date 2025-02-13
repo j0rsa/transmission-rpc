@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright (c) 2020 J0rsa and contributors
+// SPDX-License-Identifier: MIT
+
 use crate::types::{IdleMode, Priority, RatioMode};
 
 use super::{TorrentSetArgs, TrackerList};
