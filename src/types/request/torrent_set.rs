@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright (c) 2020 J0rsa and contributors
+// SPDX-License-Identifier: MIT
+
 use super::{IdleMode, Priority, RatioMode, TorrentSetArgs, TrackerList};
 
 impl TorrentSetArgs {

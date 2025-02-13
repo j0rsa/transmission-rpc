@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright (c) 2020 J0rsa and contributors
+// SPDX-License-Identifier: MIT
+
 //! Sharable version of `TransClient`.
 //!
 //! It lifted the requirement of `&mut self` on

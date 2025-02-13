@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright (c) 2020 J0rsa and contributors
+// SPDX-License-Identifier: MIT
+
 //! Library to communicate with [transmission
 //! rpc](https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md).
 //!
