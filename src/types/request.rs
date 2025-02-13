@@ -62,17 +62,14 @@ impl RpcRequest {
     }
 
     pub fn torrent_get(fields: Option<Vec<TorrentGetField>>, ids: Option<Vec<Id>>) -> RpcRequest {
-        let string_fields = fields
-            .unwrap_or_else(|| all::<TorrentGetField>().collect())
-            .iter()
-            .map(TorrentGetField::to_str)
-            .collect();
+        let fields = fields.unwrap_or_else(|| all::<TorrentGetField>().collect());
+        let args = TorrentGetArgs {
+            fields: fields.into(),
+            ids,
+        };
         RpcRequest {
             method: String::from("torrent-get"),
-            arguments: Some(Args::TorrentGet(TorrentGetArgs {
-                fields: Some(string_fields),
-                ids,
-            })),
+            arguments: Args::TorrentGet(args).into(),
         }
     }
 
@@ -375,16 +372,15 @@ pub struct SessionSetArgs {
 #[derive(Serialize, Debug, Clone)]
 pub struct TorrentGetArgs {
     #[serde(skip_serializing_if = "Option::is_none")]
-    fields: Option<Vec<String>>,
+    fields: Option<Vec<TorrentGetField>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     ids: Option<Vec<Id>>,
 }
 
 impl Default for TorrentGetArgs {
     fn default() -> Self {
-        let all_fields = all::<TorrentGetField>().map(|it| it.to_str()).collect();
         TorrentGetArgs {
-            fields: Some(all_fields),
+            fields: all::<TorrentGetField>().collect::<Vec<_>>().into(),
             ids: None,
         }
     }
@@ -489,9 +485,8 @@ pub struct TorrentAddArgs {
     pub labels: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Sequence)]
-#[cfg_attr(feature = "tor-get-serde", derive(Serialize, Deserialize))]
-#[cfg_attr(feature = "tor-get-serde", serde(rename_all = "camelCase"))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Sequence, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub enum TorrentGetField {
     ActivityDate,
     AddedDate,
@@ -512,7 +507,7 @@ pub enum TorrentGetField {
     ErrorString,
     Eta,
     EtaIdle,
-    #[cfg_attr(feature = "tor-get-serde", serde(rename = "file-count"))]
+    #[serde(rename = "file-count")]
     FileCount,
     FileStats,
     Files,
@@ -532,7 +527,7 @@ pub enum TorrentGetField {
     MaxConnectedPeers,
     MetadataPercentComplete,
     Name,
-    #[cfg_attr(feature = "tor-get-serde", serde(rename = "peer-limit"))]
+    #[serde(rename = "peer-limit")]
     PeerLimit,
     Peers,
     PeersConnected,
@@ -545,7 +540,7 @@ pub enum TorrentGetField {
     PieceCount,
     PieceSize,
     Priorities,
-    #[cfg_attr(feature = "tor-get-serde", serde(rename = "primary-mime-type"))]
+    #[serde(rename = "primary-mime-type")]
     PrimaryMimeType,
     QueuePosition,
     RateDownload,
@@ -573,92 +568,6 @@ pub enum TorrentGetField {
     Wanted,
     Webseeds,
     WebseedsSendingToUs,
-}
-
-impl TorrentGetField {
-    #[must_use]
-    pub fn to_str(&self) -> String {
-        match self {
-            TorrentGetField::ActivityDate => "activityDate",
-            TorrentGetField::AddedDate => "addedDate",
-            TorrentGetField::Availability => "availability",
-            TorrentGetField::BandwidthPriority => "bandwidthPriority",
-            TorrentGetField::Comment => "comment",
-            TorrentGetField::CorruptEver => "corruptEver",
-            TorrentGetField::Creator => "creator",
-            TorrentGetField::DateCreated => "dateCreated",
-            TorrentGetField::DesiredAvailable => "desiredAvailable",
-            TorrentGetField::DoneDate => "doneDate",
-            TorrentGetField::DownloadDir => "downloadDir",
-            TorrentGetField::DownloadedEver => "downloadedEver",
-            TorrentGetField::DownloadLimit => "downloadLimit",
-            TorrentGetField::DownloadLimited => "downloadLimited",
-            TorrentGetField::EditDate => "editDate",
-            TorrentGetField::Error => "error",
-            TorrentGetField::ErrorString => "errorString",
-            TorrentGetField::Eta => "eta",
-            TorrentGetField::EtaIdle => "etaIdle",
-            TorrentGetField::FileCount => "file-count",
-            TorrentGetField::FileStats => "fileStats",
-            TorrentGetField::Files => "files",
-            TorrentGetField::Group => "group",
-            TorrentGetField::HashString => "hashString",
-            TorrentGetField::HaveUnchecked => "haveUnchecked",
-            TorrentGetField::HaveValid => "haveValid",
-            TorrentGetField::HonorsSessionLimits => "honorsSessionLimits",
-            TorrentGetField::Id => "id",
-            TorrentGetField::IsFinished => "isFinished",
-            TorrentGetField::IsPrivate => "isPrivate",
-            TorrentGetField::IsStalled => "isStalled",
-            TorrentGetField::Labels => "labels",
-            TorrentGetField::LeftUntilDone => "leftUntilDone",
-            TorrentGetField::MagnetLink => "magnetLink",
-            TorrentGetField::ManualAnnounceTime => "manualAnnounceTime",
-            TorrentGetField::MaxConnectedPeers => "maxConnectedPeers",
-            TorrentGetField::MetadataPercentComplete => "metadataPercentComplete",
-            TorrentGetField::Name => "name",
-            TorrentGetField::PeerLimit => "peer-limit",
-            TorrentGetField::Peers => "peers",
-            TorrentGetField::PeersConnected => "peersConnected",
-            TorrentGetField::PeersFrom => "peersFrom",
-            TorrentGetField::PeersGettingFromUs => "peersGettingFromUs",
-            TorrentGetField::PeersSendingToUs => "peersSendingToUs",
-            TorrentGetField::PercentComplete => "percentComplete",
-            TorrentGetField::PercentDone => "percentDone",
-            TorrentGetField::Pieces => "pieces",
-            TorrentGetField::PieceCount => "pieceCount",
-            TorrentGetField::PieceSize => "pieceSize",
-            TorrentGetField::Priorities => "priorities",
-            TorrentGetField::PrimaryMimeType => "primary-mime-type",
-            TorrentGetField::QueuePosition => "queuePosition",
-            TorrentGetField::RateDownload => "rateDownload",
-            TorrentGetField::RateUpload => "rateUpload",
-            TorrentGetField::RecheckProgress => "recheckProgress",
-            TorrentGetField::SecondsDownloading => "secondsDownloading",
-            TorrentGetField::SecondsSeeding => "secondsSeeding",
-            TorrentGetField::SeedIdleLimit => "seedIdleLimit",
-            TorrentGetField::SeedIdleMode => "seedIdleMode",
-            TorrentGetField::SeedRatioLimit => "seedRatioLimit",
-            TorrentGetField::SeedRatioMode => "seedRatioMode",
-            TorrentGetField::SequentialDownload => "sequentialDownload",
-            TorrentGetField::SizeWhenDone => "sizeWhenDone",
-            TorrentGetField::StartDate => "startDate",
-            TorrentGetField::Status => "status",
-            TorrentGetField::TorrentFile => "torrentFile",
-            TorrentGetField::TotalSize => "totalSize",
-            TorrentGetField::Trackers => "trackers",
-            TorrentGetField::TrackerList => "trackerList",
-            TorrentGetField::TrackerStats => "trackerStats",
-            TorrentGetField::UploadRatio => "uploadRatio",
-            TorrentGetField::UploadedEver => "uploadedEver",
-            TorrentGetField::UploadLimit => "uploadLimit",
-            TorrentGetField::UploadLimited => "uploadLimited",
-            TorrentGetField::Wanted => "wanted",
-            TorrentGetField::Webseeds => "webseeds",
-            TorrentGetField::WebseedsSendingToUs => "webseedsSendingToUs",
-        }
-        .to_string()
-    }
 }
 
 #[derive(Clone, Copy, Debug)]
