@@ -3,9 +3,13 @@ name: CI
 on:
   push:
   pull_request:
-    types: [ assigned, opened, labeled, reopened ]
+    types: [ assigned, opened, labeled, reopened, synchronize ]
     branches:
       - main
+
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
   build_and_test:
