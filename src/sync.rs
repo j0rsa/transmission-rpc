@@ -91,7 +91,7 @@ impl SharableTransClient {
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
     ///     types::{BasicAuth, Result, RpcResponse, SessionGet},
-    ///     TransClient,
+    ///     SharableTransClient,
     /// };
     ///
     /// #[tokio::main]
@@ -133,7 +133,7 @@ impl SharableTransClient {
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
     ///     types::{BasicAuth, Result, RpcResponse, SessionStats},
-    ///     TransClient,
+    ///     SharableTransClient,
     /// };
     ///
     /// #[tokio::main]
@@ -175,7 +175,7 @@ impl SharableTransClient {
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
     ///     types::{BasicAuth, Result, RpcResponse, SessionClose},
-    ///     TransClient,
+    ///     SharableTransClient,
     /// };
     ///
     /// #[tokio::main]
@@ -217,7 +217,7 @@ impl SharableTransClient {
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
     ///     types::{BasicAuth, BlocklistUpdate, Result, RpcResponse},
-    ///     TransClient,
+    ///     SharableTransClient,
     /// };
     ///
     /// #[tokio::main]
@@ -259,7 +259,7 @@ impl SharableTransClient {
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
     ///     types::{BasicAuth, FreeSpace, Result, RpcResponse},
-    ///     TransClient,
+    ///     SharableTransClient,
     /// };
     ///
     /// #[tokio::main]
@@ -302,7 +302,7 @@ impl SharableTransClient {
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
     ///     types::{BasicAuth, PortTest, Result, RpcResponse},
-    ///     TransClient,
+    ///     SharableTransClient,
     /// };
     ///
     /// #[tokio::main]
@@ -346,7 +346,7 @@ impl SharableTransClient {
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
     ///     types::{BasicAuth, Id, Result, RpcResponse, Torrent, TorrentGetField, Torrents},
-    ///     TransClient,
+    ///     SharableTransClient,
     /// };
     ///
     /// #[tokio::main]
@@ -445,7 +445,7 @@ impl SharableTransClient {
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
     ///     types::{BasicAuth, Id, Result, RpcResponse, Torrent, TorrentSetArgs, Torrents},
-    ///     TransClient,
+    ///     SharableTransClient,
     /// };
     ///
     /// #[tokio::main]
@@ -460,10 +460,8 @@ impl SharableTransClient {
     ///     };
     ///     let client = SharableTransClient::with_auth(url, basic_auth);
     ///
-    ///     let args = TorrentSetArgs {
-    ///         labels: Some(vec![String::from("blue")]),
-    ///         ..Default::default()
-    ///     };
+    ///     let mut args = TorrentSetArgs::default();
+    ///     args.labels = Some(vec![String::from("blue")]);
     ///     assert!(
     ///         client
     ///             .torrent_set(args, Some(vec![Id::Id(0)]))
@@ -498,7 +496,7 @@ impl SharableTransClient {
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
     ///     types::{BasicAuth, Id, Nothing, Result, RpcResponse, TorrentAction},
-    ///     TransClient,
+    ///     SharableTransClient,
     /// };
     ///
     /// #[tokio::main]
@@ -547,7 +545,7 @@ impl SharableTransClient {
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
     ///     types::{BasicAuth, Id, Nothing, Result, RpcResponse},
-    ///     TransClient,
+    ///     SharableTransClient,
     /// };
     ///
     /// #[tokio::main]
@@ -591,7 +589,7 @@ impl SharableTransClient {
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
     ///     types::{BasicAuth, Id, Nothing, Result, RpcResponse},
-    ///     TransClient,
+    ///     SharableTransClient,
     /// };
     ///
     /// #[tokio::main]
@@ -642,7 +640,7 @@ impl SharableTransClient {
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
     ///     types::{BasicAuth, Id, Result, RpcResponse, TorrentRenamePath},
-    ///     TransClient,
+    ///     SharableTransClient,
     /// };
     ///
     /// #[tokio::main]
@@ -693,7 +691,7 @@ impl SharableTransClient {
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
     ///     types::{BasicAuth, Result, RpcResponse, TorrentAddArgs, TorrentAddedOrDuplicate},
-    ///     TransClient,
+    ///     SharableTransClient,
     /// };
     ///
     /// #[tokio::main]
