@@ -39,7 +39,7 @@ https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
 - [X] session-stats
 - [X] blocklist-update
 - [X] port-test
-- [ ] queue-move-top, queue-move-up, queue-move-down, queue-move-bottom
+- [X] queue-move-top, queue-move-up, queue-move-down, queue-move-bottom
 - [X] session-close
 - [X] free-space
 - [ ] group-set
