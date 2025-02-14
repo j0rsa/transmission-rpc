@@ -63,10 +63,10 @@ use serde::de::DeserializeOwned;
 #[cfg(feature = "sync")]
 pub use sync::SharableTransClient;
 use types::{
-    BasicAuth, BlocklistUpdate, FreeSpace, Id, Nothing, PortTest, Result, RpcRequest, RpcResponse,
-    RpcResponseArgument, SessionClose, SessionGet, SessionSet, SessionSetArgs, SessionStats,
-    Torrent, TorrentAction, TorrentAddArgs, TorrentAddedOrDuplicate, TorrentGetField,
-    TorrentRenamePath, TorrentSetArgs, Torrents,
+    BandwidthGroup, BandwidthGroups, BasicAuth, BlocklistUpdate, FreeSpace, Id, Nothing, PortTest,
+    Result, RpcRequest, RpcResponse, RpcResponseArgument, SessionClose, SessionGet, SessionSet,
+    SessionSetArgs, SessionStats, Torrent, TorrentAction, TorrentAddArgs, TorrentAddedOrDuplicate,
+    TorrentGetField, TorrentRenamePath, TorrentSetArgs, Torrents,
 };
 
 #[cfg(feature = "sync")]
@@ -448,6 +448,96 @@ impl TransClient {
     /// ```
     pub async fn port_test(&mut self) -> Result<RpcResponse<PortTest>> {
         self.call(RpcRequest::port_test()).await
+    }
+
+    /// Set/Add a named bandwidth group values.
+    ///
+    /// # Errors
+    ///
+    /// Any IO Error or Deserialization error
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use dotenvy::dotenv;
+    /// use std::env;
+    /// use transmission_rpc::types::{BandwidthGroup, BasicAuth, Result};
+    /// use transmission_rpc::TransClient;
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<()> {
+    ///     dotenv()?;
+    ///     env_logger::init();
+    ///     let url = env::var("TURL")?;
+    ///     let mut client = if let (Ok(user), Ok(password)) = (env::var("TUSER"), env::var("TPWD")) {
+    ///         TransClient::with_auth(url.parse()?, BasicAuth { user, password })
+    ///     } else {
+    ///         TransClient::new(url.parse()?)
+    ///     };
+    ///     let group = BandwidthGroup {
+    ///         honors_session_limits: true,
+    ///         name: "group_abc".to_string(),
+    ///         speed_limit_down_enabled: true,
+    ///         speed_limit_down: 1000,
+    ///         speed_limit_up_enabled: true,
+    ///         speed_limit_up: 2000,
+    ///     };
+    ///     let response = client.bandwidth_group_set(group).await?;
+    ///     if response.is_ok() {
+    ///         println!("Ok!");
+    ///     } else {
+    ///         println!("Err: {}", response.result);
+    ///     }
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn bandwidth_group_set(
+        &mut self,
+        group: BandwidthGroup,
+    ) -> Result<RpcResponse<Nothing>> {
+        self.call(RpcRequest::bandwidth_group_set(group)).await
+    }
+
+    /// Get bandwidth group(s) values.
+    ///
+    /// # Errors
+    ///
+    /// Any IO Error or Deserialization error
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use dotenvy::dotenv;
+    /// use std::env;
+    /// use transmission_rpc::types::{BasicAuth, Result};
+    /// use transmission_rpc::TransClient;
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<()> {
+    ///     dotenv()?;
+    ///     env_logger::init();
+    ///     let url = env::var("TURL")?;
+    ///     let mut client = if let (Ok(user), Ok(password)) = (env::var("TUSER"), env::var("TPWD")) {
+    ///         TransClient::with_auth(url.parse()?, BasicAuth { user, password })
+    ///     } else {
+    ///         TransClient::new(url.parse()?)
+    ///     };
+    ///     let response = client.bandwidth_group_get(None).await?;
+    ///     if response.arguments.group.is_empty() {
+    ///         println!("No bandwidth groups!");
+    ///     } else {
+    ///         for g in response.arguments.group {
+    ///             println!("{g:?}");
+    ///         }
+    ///     }
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn bandwidth_group_get(
+        &mut self,
+        group: Option<Vec<String>>,
+    ) -> Result<RpcResponse<BandwidthGroups>> {
+        self.call(RpcRequest::bandwidth_group_get(group)).await
     }
 
     /// Performs a torrent get call

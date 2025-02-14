@@ -2,6 +2,8 @@ use enum_iterator::{all, Sequence};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
+use super::BandwidthGroup;
+
 mod torrent_set;
 
 #[derive(Serialize, Debug)]
@@ -58,6 +60,22 @@ impl RpcRequest {
         RpcRequest {
             method: String::from("port-test"),
             arguments: None,
+        }
+    }
+
+    pub fn bandwidth_group_set(group: BandwidthGroup) -> Self {
+        Self {
+            method: String::from("group-set"),
+            arguments: Some(Args::BandwidthGroupSet(group)),
+        }
+    }
+
+    pub fn bandwidth_group_get(group: Option<Vec<String>>) -> Self {
+        Self {
+            method: String::from("group-get"),
+            arguments: Some(Args::BandwidthGroupGet(BandwidthGroupGetArgs {
+                group: group.unwrap_or_default(),
+            })),
         }
     }
 
@@ -140,6 +158,8 @@ impl ArgumentFields for TorrentGetField {}
 #[derive(Serialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum Args {
+    BandwidthGroupSet(BandwidthGroup),
+    BandwidthGroupGet(BandwidthGroupGetArgs),
     FreeSpace(FreeSpaceArgs),
     SessionSet(SessionSetArgs),
     TorrentGet(TorrentGetArgs),
@@ -370,6 +390,11 @@ pub struct SessionSetArgs {
 
     #[serde(skip_serializing_if = "Option::is_none", rename = "utp-enabled")]
     pub utp_enabled: Option<bool>,
+}
+
+#[derive(Serialize, Debug, Clone)]
+pub struct BandwidthGroupGetArgs {
+    group: Vec<String>,
 }
 
 #[derive(Serialize, Debug, Clone)]

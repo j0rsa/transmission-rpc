@@ -12,6 +12,8 @@ pub struct BasicAuth {
     pub password: String,
 }
 
+use serde::{Deserialize, Serialize};
+
 pub(crate) use self::request::RpcRequest;
 pub use self::request::{
     ArgumentFields, Id, IdleMode, Priority, RatioMode, SessionSetArgs, TorrentAction,
@@ -19,10 +21,22 @@ pub use self::request::{
 };
 
 pub use self::response::{
-    BlocklistUpdate, ErrorType, FreeSpace, Nothing, PortTest, RpcResponse, RpcResponseArgument,
-    SessionClose, SessionGet, SessionSet, SessionStats, Torrent, TorrentAddedOrDuplicate,
-    TorrentRenamePath, TorrentStatus, Torrents, TrackerState,
+    BandwidthGroups, BlocklistUpdate, ErrorType, FreeSpace, Nothing, PortTest, RpcResponse,
+    RpcResponseArgument, SessionClose, SessionGet, SessionSet, SessionStats, Torrent,
+    TorrentAddedOrDuplicate, TorrentRenamePath, TorrentStatus, Torrents, TrackerState,
 };
 
 /// [`Torrent`] field sub-type. You probably won't need to interact with this directly.
 pub use self::response::{File, FileStat, Peer, PeersFrom, TrackerStat, Trackers};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub struct BandwidthGroup {
+    #[serde(rename = "honorsSessionLimits")]
+    pub honors_session_limits: bool,
+    pub name: String,
+    pub speed_limit_down_enabled: bool,
+    pub speed_limit_down: u64,
+    pub speed_limit_up_enabled: bool,
+    pub speed_limit_up: u64,
+}
