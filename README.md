@@ -42,8 +42,8 @@ https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
 - [ ] queue-move-top, queue-move-up, queue-move-down, queue-move-bottom
 - [X] session-close
 - [X] free-space
-- [ ] group-set
-- [ ] group-get
+- [X] group-set
+- [X] group-get
 
 ##### Feature Flags
 
