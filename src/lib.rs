@@ -927,7 +927,7 @@ mod tests {
     #[tokio::test]
     pub async fn test_malformed_url() -> Result<()> {
         dotenv().ok();
-        env_logger::init();
+        let _ = env_logger::try_init();
         let url = env::var("TURL")?;
 
         let mut client;

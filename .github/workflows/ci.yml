@@ -47,13 +47,13 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: -- --skip session_close
+          args: --all-features -- --skip session_close
 
       - name: Cargo Test Session Close
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: -- session_close
+          args: --all-features -- session_close
       
       - name: Cargo clippy
         uses: giraffate/clippy-action@v1
