@@ -450,6 +450,154 @@ impl TransClient {
         self.call(RpcRequest::port_test()).await
     }
 
+    /// Move torrents with IDs specified in `ids` to the top of the download queue.
+    ///
+    /// # Errors
+    ///
+    /// Any IO Error or Deserialization error
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use dotenvy::dotenv;
+    /// use std::env;
+    /// use transmission_rpc::types::{BasicAuth, Id, Result};
+    /// use transmission_rpc::TransClient;
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<()> {
+    ///     dotenv()?;
+    ///     env_logger::init();
+    ///     let url = env::var("TURL")?;
+    ///     let mut client = if let (Ok(user), Ok(password)) = (env::var("TUSER"), env::var("TPWD")) {
+    ///         TransClient::with_auth(url.parse()?, BasicAuth { user, password })
+    ///     } else {
+    ///         TransClient::new(url.parse()?)
+    ///     };
+    ///     let response = client.queue_move_top(vec![Id::Id(1)]).await?;
+    ///     if response.is_ok() {
+    ///         println!("Ok!");
+    ///     } else {
+    ///         println!("Err: {}", response.result);
+    ///     }
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn queue_move_top(&mut self, ids: Vec<Id>) -> Result<RpcResponse<Nothing>> {
+        self.call(RpcRequest::queue_move_top(ids)).await
+    }
+
+    /// Move torrents with IDs specified in `ids` up in the download queue.
+    ///
+    /// # Errors
+    ///
+    /// Any IO Error or Deserialization error
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use dotenvy::dotenv;
+    /// use std::env;
+    /// use transmission_rpc::types::{BasicAuth, Id, Result};
+    /// use transmission_rpc::TransClient;
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<()> {
+    ///     dotenv()?;
+    ///     env_logger::init();
+    ///     let url = env::var("TURL")?;
+    ///     let mut client = if let (Ok(user), Ok(password)) = (env::var("TUSER"), env::var("TPWD")) {
+    ///         TransClient::with_auth(url.parse()?, BasicAuth { user, password })
+    ///     } else {
+    ///         TransClient::new(url.parse()?)
+    ///     };
+    ///     let response = client.queue_move_up(vec![Id::Id(1)]).await?;
+    ///     if response.is_ok() {
+    ///         println!("Ok!");
+    ///     } else {
+    ///         println!("Err: {}", response.result);
+    ///     }
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn queue_move_up(&mut self, ids: Vec<Id>) -> Result<RpcResponse<Nothing>> {
+        self.call(RpcRequest::queue_move_up(ids)).await
+    }
+
+    /// Move torrents with IDs specified in `ids` down in the download queue.
+    ///
+    /// # Errors
+    ///
+    /// Any IO Error or Deserialization error
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use dotenvy::dotenv;
+    /// use std::env;
+    /// use transmission_rpc::types::{BasicAuth, Id, Result};
+    /// use transmission_rpc::TransClient;
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<()> {
+    ///     dotenv()?;
+    ///     env_logger::init();
+    ///     let url = env::var("TURL")?;
+    ///     let mut client = if let (Ok(user), Ok(password)) = (env::var("TUSER"), env::var("TPWD")) {
+    ///         TransClient::with_auth(url.parse()?, BasicAuth { user, password })
+    ///     } else {
+    ///         TransClient::new(url.parse()?)
+    ///     };
+    ///     let response = client.queue_move_down(vec![Id::Id(1)]).await?;
+    ///     if response.is_ok() {
+    ///         println!("Ok!");
+    ///     } else {
+    ///         println!("Err: {}", response.result);
+    ///     }
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn queue_move_down(&mut self, ids: Vec<Id>) -> Result<RpcResponse<Nothing>> {
+        self.call(RpcRequest::queue_move_down(ids)).await
+    }
+
+    /// Move torrents with IDs specified in `ids` to the bottom of the download queue.
+    ///
+    /// # Errors
+    ///
+    /// Any IO Error or Deserialization error
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use dotenvy::dotenv;
+    /// use std::env;
+    /// use transmission_rpc::types::{BasicAuth, Id, Result};
+    /// use transmission_rpc::TransClient;
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> Result<()> {
+    ///     dotenv()?;
+    ///     env_logger::init();
+    ///     let url = env::var("TURL")?;
+    ///     let mut client = if let (Ok(user), Ok(password)) = (env::var("TUSER"), env::var("TPWD")) {
+    ///         TransClient::with_auth(url.parse()?, BasicAuth { user, password })
+    ///     } else {
+    ///         TransClient::new(url.parse()?)
+    ///     };
+    ///     let response = client.queue_move_bottom(vec![Id::Id(1)]).await?;
+    ///     if response.is_ok() {
+    ///         println!("Ok!");
+    ///     } else {
+    ///         println!("Err: {}", response.result);
+    ///     }
+    ///     Ok(())
+    /// }
+    /// ```
+    pub async fn queue_move_bottom(&mut self, ids: Vec<Id>) -> Result<RpcResponse<Nothing>> {
+        self.call(RpcRequest::queue_move_bottom(ids)).await
+    }
+
     /// Performs a torrent get call
     /// fields - if None then ALL fields
     /// ids - if None then All items
