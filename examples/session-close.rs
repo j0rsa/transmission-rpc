@@ -2,7 +2,7 @@ extern crate transmission_rpc;
 
 use dotenvy::dotenv;
 use std::env;
-use transmission_rpc::types::{BasicAuth, Result, RpcResponse, SessionClose};
+use transmission_rpc::types::{BasicAuth, Result};
 use transmission_rpc::TransClient;
 
 #[tokio::main]
@@ -16,7 +16,7 @@ async fn main() -> Result<()> {
     } else {
         client = TransClient::new(url.parse()?);
     }
-    let response: Result<RpcResponse<SessionClose>> = client.session_close().await;
+    let response = client.session_close().await;
     match response {
         Ok(_) => println!("Yay!"),
         Err(_) => panic!("Oh no!"),
