@@ -64,28 +64,28 @@ impl RpcRequest {
 
     pub fn queue_move_top(ids: Vec<Id>) -> RpcRequest {
         RpcRequest {
-            method: String::from("queue-move-top"),
+            method: Method::QueueMoveTop,
             arguments: Args::QueueMove(ids.into()).into(),
         }
     }
 
     pub fn queue_move_up(ids: Vec<Id>) -> RpcRequest {
         RpcRequest {
-            method: String::from("queue-move-up"),
+            method: Method::QueueMoveUp,
             arguments: Args::QueueMove(ids.into()).into(),
         }
     }
 
     pub fn queue_move_down(ids: Vec<Id>) -> RpcRequest {
         RpcRequest {
-            method: String::from("queue-move-down"),
+            method: Method::QueueMoveDown,
             arguments: Args::QueueMove(ids.into()).into(),
         }
     }
 
     pub fn queue_move_bottom(ids: Vec<Id>) -> RpcRequest {
         RpcRequest {
-            method: String::from("queue-move-bottom"),
+            method: Method::QueueMoveBottom,
             arguments: Args::QueueMove(ids.into()).into(),
         }
     }
@@ -177,6 +177,10 @@ enum Method {
     TorrentAction(TorrentAction),
     TorrentSetLocation,
     TorrentRenamePath,
+    QueueMoveUp,
+    QueueMoveDown,
+    QueueMoveTop,
+    QueueMoveBottom,
 }
 
 impl Method {
@@ -198,6 +202,10 @@ impl Method {
             M::TorrentAction(action) => action.as_str(),
             M::TorrentSetLocation => "torrent-set-location",
             M::TorrentRenamePath => "torrent-rename-path",
+            M::QueueMoveUp => "queue-move-up",
+            M::QueueMoveDown => "queue-move-down",
+            M::QueueMoveTop => "queue-move-top",
+            M::QueueMoveBottom => "queue-move-bottom",
         }
     }
 }
