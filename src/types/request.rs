@@ -1,7 +1,6 @@
-use enum_iterator::{all, Sequence};
 use super::{Id, IdleMode, Priority, RatioMode};
-use serde::{Deserialize, Serialize, Serializer};
-use serde_repr::{Deserialize_repr, Serialize_repr};
+use enum_iterator::{all, Sequence};
+use serde::{Serialize, Serializer};
 use serde_with::skip_serializing_none;
 
 mod torrent_set;
