@@ -12,6 +12,7 @@ use crate::types::{
 type TorrentGetResp = RpcResponse<Torrents<Torrent>>;
 
 /// torrent-get test helper to consolidate unit test boilerplate assertions.
+#[allow(clippy::type_complexity)]
 fn test_torrent_get(
     resp: TorrentGetResp,
     expected_len: usize,
@@ -1159,20 +1160,20 @@ fn test_torrent_get_file_stats_success() -> Result<()> {
             assert_eq!(first.len(), 3);
             assert_eq!(first[0].bytes_completed, 2972771);
             assert_eq!(first[0].priority, Priority::Normal);
-            assert_eq!(first[0].wanted, true);
+            assert!(first[0].wanted);
             assert_eq!(first[1].bytes_completed, 17662350);
             assert_eq!(first[1].priority, Priority::High);
-            assert_eq!(first[1].wanted, true);
+            assert!(first[1].wanted);
             assert_eq!(first[2].bytes_completed, 0);
             assert_eq!(first[2].priority, Priority::Low);
-            assert_eq!(first[2].wanted, false);
+            assert!(!first[2].wanted);
             let second = resp.arguments.torrents[1]
                 .file_stats
                 .as_ref()
                 .expect("file_stats should exist");
             assert_eq!(second[0].bytes_completed, 0);
             assert_eq!(second[0].priority, Priority::High);
-            assert_eq!(second[0].wanted, false);
+            assert!(!second[0].wanted);
             Ok(())
         }),
     )
@@ -1987,16 +1988,16 @@ fn test_torrent_get_peers_success() -> Result<()> {
             assert_eq!(second.len(), 2);
             assert_eq!(second[0].address, IpAddr::V4(Ipv4Addr::new(10, 0, 0, 100)));
             assert_eq!(second[0].client_name, "µTorrent 3.5.5".to_string());
-            assert_eq!(second[0].client_is_choked, false);
-            assert_eq!(second[0].client_is_interested, true);
+            assert!(!second[0].client_is_choked);
+            assert!(second[0].client_is_interested);
             assert_eq!(second[0].flag_str, "dUEI".to_string());
-            assert_eq!(second[0].is_downloading_from, false);
-            assert_eq!(second[0].is_encrypted, true);
-            assert_eq!(second[0].is_incoming, true);
-            assert_eq!(second[0].is_uploading_to, true);
-            assert_eq!(second[0].is_utp, false);
-            assert_eq!(second[0].peer_is_choked, false);
-            assert_eq!(second[0].peer_is_interested, true);
+            assert!(!second[0].is_downloading_from);
+            assert!(second[0].is_encrypted);
+            assert!(second[0].is_incoming);
+            assert!(second[0].is_uploading_to);
+            assert!(!second[0].is_utp);
+            assert!(!second[0].peer_is_choked);
+            assert!(second[0].peer_is_interested);
             assert_eq!(second[0].port, 55555);
             assert_eq!(second[0].progress, 0.2641);
             assert_eq!(second[0].rate_to_client, 0);
@@ -2006,16 +2007,16 @@ fn test_torrent_get_peers_success() -> Result<()> {
                 IpAddr::V6(Ipv6Addr::new(8193, 3512, 34211, 0, 0, 35374, 880, 29492))
             );
             assert_eq!(second[1].client_name, "qBittorrent 4.6.5".to_string());
-            assert_eq!(second[1].client_is_choked, false);
-            assert_eq!(second[1].client_is_interested, true);
+            assert!(!second[1].client_is_choked);
+            assert!(second[1].client_is_interested);
             assert_eq!(second[1].flag_str, "TDI".to_string());
-            assert_eq!(second[1].is_downloading_from, true);
-            assert_eq!(second[1].is_encrypted, false);
-            assert_eq!(second[1].is_incoming, true);
-            assert_eq!(second[1].is_uploading_to, false);
-            assert_eq!(second[1].is_utp, true);
-            assert_eq!(second[1].peer_is_choked, true);
-            assert_eq!(second[1].peer_is_interested, false);
+            assert!(second[1].is_downloading_from);
+            assert!(!second[1].is_encrypted);
+            assert!(second[1].is_incoming);
+            assert!(!second[1].is_uploading_to);
+            assert!(second[1].is_utp);
+            assert!(second[1].peer_is_choked);
+            assert!(!second[1].peer_is_interested);
             assert_eq!(second[1].port, 36667);
             assert_eq!(second[1].progress, 1.);
             assert_eq!(second[1].rate_to_client, 8000);
@@ -3424,34 +3425,34 @@ fn test_torrent_get_tracker_stats_success() -> Result<()> {
                 "https://example.com/announce".to_string()
             );
             assert_eq!(first[0].download_count, 245);
-            assert_eq!(first[0].has_announced, true);
-            assert_eq!(first[0].has_scraped, true);
+            assert!(first[0].has_announced);
+            assert!(first[0].has_scraped);
             assert_eq!(first[0].host, "https://example.com:8080");
             assert!(matches!(first[0].id, Id::Id(0)));
-            assert_eq!(first[0].is_backup, false);
+            assert!(!first[0].is_backup);
             assert_eq!(first[0].last_announce_peer_count, 86);
             assert_eq!(first[0].last_announce_result, "Success".to_string());
             assert_eq!(
                 first[0].last_announce_start_time,
                 DateTime::parse_from_rfc3339("2024-08-14T05:54:25Z")?.to_utc(),
             );
-            assert_eq!(first[0].last_announce_succeeded, true);
+            assert!(first[0].last_announce_succeeded);
             assert_eq!(
                 first[0].last_announce_time,
                 DateTime::parse_from_rfc3339("2024-08-14T05:54:25Z")?.to_utc(),
             );
-            assert_eq!(first[0].last_announce_timed_out, false);
+            assert!(!first[0].last_announce_timed_out);
             assert_eq!(
                 first[0].last_scrape_result,
                 "Could not connect to tracker".to_string()
             );
             assert_eq!(first[0].last_scrape_start_time, DateTime::UNIX_EPOCH);
-            assert_eq!(first[0].last_scrape_succeeded, false);
+            assert!(!first[0].last_scrape_succeeded);
             assert_eq!(
                 first[0].last_scrape_time,
                 DateTime::parse_from_rfc3339("2024-08-14T05:54:25Z")?.to_utc(),
             );
-            assert_eq!(first[0].last_scrape_timed_out, false);
+            assert!(!first[0].last_scrape_timed_out);
             assert_eq!(first[0].leecher_count, 9);
             assert_eq!(
                 first[0].next_announce_time,
