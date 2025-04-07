@@ -46,7 +46,6 @@
 //! ##### Feature Flags
 //!
 //! - `sync`: Enables a thread-safe version of `TransClient`.
-//! - `tor-get-serde`: Enables serde of `TorrentGetField`s.
 //!
 //! -----
 //!
