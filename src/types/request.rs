@@ -62,6 +62,34 @@ impl RpcRequest {
         }
     }
 
+    pub fn queue_move_top(ids: Vec<Id>) -> RpcRequest {
+        RpcRequest {
+            method: String::from("queue-move-top"),
+            arguments: Args::QueueMove(ids.into()).into(),
+        }
+    }
+
+    pub fn queue_move_up(ids: Vec<Id>) -> RpcRequest {
+        RpcRequest {
+            method: String::from("queue-move-up"),
+            arguments: Args::QueueMove(ids.into()).into(),
+        }
+    }
+
+    pub fn queue_move_down(ids: Vec<Id>) -> RpcRequest {
+        RpcRequest {
+            method: String::from("queue-move-down"),
+            arguments: Args::QueueMove(ids.into()).into(),
+        }
+    }
+
+    pub fn queue_move_bottom(ids: Vec<Id>) -> RpcRequest {
+        RpcRequest {
+            method: String::from("queue-move-bottom"),
+            arguments: Args::QueueMove(ids.into()).into(),
+        }
+    }
+
     pub fn torrent_get(fields: Option<Vec<TorrentGetField>>, ids: Option<Vec<Id>>) -> RpcRequest {
         let fields = fields.unwrap_or_else(|| all::<TorrentGetField>().collect());
         let args = TorrentGetArgs {
@@ -193,6 +221,7 @@ impl ArgumentFields for TorrentGetField {}
 pub enum Args {
     FreeSpace(FreeSpaceArgs),
     SessionSet(SessionSetArgs),
+    QueueMove(QueueMoveArgs),
     TorrentGet(TorrentGetArgs),
     TorrentAction(TorrentActionArgs),
     TorrentRemove(TorrentRemoveArgs),
@@ -264,6 +293,17 @@ pub struct SessionSetArgs {
 }
 
 #[skip_serializing_none]
+#[derive(Serialize, Debug, Clone)]
+pub struct QueueMoveArgs {
+    ids: Vec<Id>,
+}
+
+impl From<Vec<Id>> for QueueMoveArgs {
+    fn from(ids: Vec<Id>) -> Self {
+        Self { ids }
+    }
+}
+
 #[derive(Serialize, Debug, Clone)]
 pub struct TorrentGetArgs {
     fields: Option<Vec<TorrentGetField>>,
