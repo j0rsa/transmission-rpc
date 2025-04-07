@@ -1,6 +1,6 @@
+use super::{Id, IdleMode, Priority, RatioMode};
 use enum_iterator::{all, Sequence};
-use serde::{Deserialize, Serialize, Serializer};
-use serde_repr::{Deserialize_repr, Serialize_repr};
+use serde::{Serialize, Serializer};
 use serde_with::skip_serializing_none;
 
 mod torrent_set;
@@ -304,37 +304,6 @@ pub struct TorrentRenamePathArgs {
     ids: Vec<Id>,
     path: String,
     name: String,
-}
-
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[serde(untagged)]
-pub enum Id {
-    Id(i64),
-    Hash(String),
-}
-
-#[derive(Serialize_repr, Deserialize_repr, Debug, Clone, Copy, PartialEq, Eq)]
-#[repr(i8)]
-pub enum Priority {
-    Low = -1,
-    Normal = 0,
-    High = 1,
-}
-
-#[derive(Serialize_repr, Deserialize_repr, Debug, Copy, Clone, PartialEq, Eq, Hash)]
-#[repr(i8)]
-pub enum IdleMode {
-    Global = 0,
-    Single = 1,
-    Unlimited = 2,
-}
-
-#[derive(Serialize_repr, Deserialize_repr, Debug, Copy, Clone, PartialEq, Eq, Hash)]
-#[repr(i8)]
-pub enum RatioMode {
-    Global = 0,
-    Single = 1,
-    Unlimited = 2,
 }
 
 #[skip_serializing_none]

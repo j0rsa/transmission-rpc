@@ -1,4 +1,6 @@
-use super::{IdleMode, Priority, RatioMode, TorrentSetArgs, TrackerList};
+use crate::types::{IdleMode, Priority, RatioMode};
+
+use super::{TorrentSetArgs, TrackerList};
 
 impl TorrentSetArgs {
     /// Creates a new [`TorrentSetArgs`] with all fields set to `None`.

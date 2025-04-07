@@ -8,8 +8,7 @@ use serde::Deserialize;
 use serde_json::Value;
 use serde_repr::*;
 
-use crate::types::request::{IdleMode, Priority, RatioMode};
-use crate::types::Id;
+use super::{Id, IdleMode, Priority, RatioMode};
 
 #[derive(Deserialize, Debug)]
 pub struct RpcResponse<T: RpcResponseArgument> {
