@@ -70,10 +70,7 @@ impl RpcRequest {
         };
         RpcRequest {
             method: Method::TorrentGet,
-            arguments: Some(Args::TorrentGet(TorrentGetArgs {
-                fields: Some(string_fields),
-                ids,
-            })),
+            arguments: Some(Args::TorrentGet(args)),
         }
     }
 
