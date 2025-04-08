@@ -12,8 +12,8 @@ use serde::de::DeserializeOwned;
 use crate::{
     types::{
         BasicAuth, BlocklistUpdate, FreeSpace, Id, Nothing, PortTest, Result, RpcRequest,
-        RpcResponse, RpcResponseArgument, SessionClose, SessionGet, SessionStats, Torrent,
-        TorrentAction, TorrentAddArgs, TorrentAddedOrDuplicate, TorrentGetField, TorrentRenamePath,
+        RpcResponse, RpcResponseArgument, SessionGet, SessionStats, Torrent, TorrentAction,
+        TorrentAddArgs, TorrentAddedOrDuplicate, TorrentGetField, TorrentRenamePath,
         TorrentSetArgs, Torrents,
     },
     BodyString, TransError, MAX_RETRIES,
@@ -174,7 +174,7 @@ impl SharableTransClient {
     ///
     /// use dotenvy::dotenv;
     /// use transmission_rpc::{
-    ///     types::{BasicAuth, Result, RpcResponse, SessionClose},
+    ///     types::{BasicAuth, Nothing, Result, RpcResponse},
     ///     SharableTransClient,
     /// };
     ///
@@ -188,7 +188,7 @@ impl SharableTransClient {
     ///         password: env::var("TPWD")?,
     ///     };
     ///     let client = SharableTransClient::with_auth(url.parse()?, basic_auth);
-    ///     let response: Result<RpcResponse<SessionClose>> = client.session_close().await;
+    ///     let response: Result<RpcResponse<Nothing>> = client.session_close().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
     ///         Err(_) => panic!("Oh no!"),
@@ -197,7 +197,7 @@ impl SharableTransClient {
     ///     Ok(())
     /// }
     /// ```
-    pub async fn session_close(&self) -> Result<RpcResponse<SessionClose>> {
+    pub async fn session_close(&self) -> Result<RpcResponse<Nothing>> {
         self.call(RpcRequest::session_close()).await
     }
 

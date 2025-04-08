@@ -63,9 +63,9 @@ use serde::de::DeserializeOwned;
 pub use sync::SharableTransClient;
 use types::{
     BasicAuth, BlocklistUpdate, FreeSpace, Id, Nothing, PortTest, Result, RpcRequest, RpcResponse,
-    RpcResponseArgument, SessionClose, SessionGet, SessionSet, SessionSetArgs, SessionStats,
-    Torrent, TorrentAction, TorrentAddArgs, TorrentAddedOrDuplicate, TorrentGetField,
-    TorrentRenamePath, TorrentSetArgs, Torrents,
+    RpcResponseArgument, SessionGet, SessionSetArgs, SessionStats, Torrent, TorrentAction,
+    TorrentAddArgs, TorrentAddedOrDuplicate, TorrentGetField, TorrentRenamePath, TorrentSetArgs,
+    Torrents,
 };
 
 #[cfg(feature = "sync")]
@@ -162,10 +162,8 @@ impl TransClient {
     /// use std::env;
     ///
     /// use dotenvy::dotenv;
-    /// use transmission_rpc::{
-    ///     types::{BasicAuth, Result, RpcResponse, SessionSet, SessionSetArgs},
-    ///     TransClient,
-    /// };
+    /// use transmission_rpc::types::{BasicAuth, Result, SessionSetArgs};
+    /// use transmission_rpc::TransClient;
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<()> {
@@ -183,7 +181,7 @@ impl TransClient {
     ///         ),
     ///         ..SessionSetArgs::default()
     ///     };
-    ///     let response: Result<RpcResponse<SessionSet>> = client.session_set(args).await;
+    ///     let response = client.session_set(args).await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
     ///         Err(_) => panic!("Oh no!"),
@@ -192,7 +190,7 @@ impl TransClient {
     ///     Ok(())
     /// }
     /// ```
-    pub async fn session_set(&mut self, args: SessionSetArgs) -> Result<RpcResponse<SessionSet>> {
+    pub async fn session_set(&mut self, args: SessionSetArgs) -> Result<RpcResponse<Nothing>> {
         self.call(RpcRequest::session_set(args)).await
     }
 
@@ -294,10 +292,8 @@ impl TransClient {
     /// use std::env;
     ///
     /// use dotenvy::dotenv;
-    /// use transmission_rpc::{
-    ///     types::{BasicAuth, Result, RpcResponse, SessionClose},
-    ///     TransClient,
-    /// };
+    /// use transmission_rpc::types::{BasicAuth, Result};
+    /// use transmission_rpc::TransClient;
     ///
     /// #[tokio::main]
     /// async fn main() -> Result<()> {
@@ -309,7 +305,7 @@ impl TransClient {
     ///         password: env::var("TPWD")?,
     ///     };
     ///     let mut client = TransClient::with_auth(url.parse()?, basic_auth);
-    ///     let response: Result<RpcResponse<SessionClose>> = client.session_close().await;
+    ///     let response = client.session_close().await;
     ///     match response {
     ///         Ok(_) => println!("Yay!"),
     ///         Err(_) => panic!("Oh no!"),
@@ -318,7 +314,7 @@ impl TransClient {
     ///     Ok(())
     /// }
     /// ```
-    pub async fn session_close(&mut self) -> Result<RpcResponse<SessionClose>> {
+    pub async fn session_close(&mut self) -> Result<RpcResponse<Nothing>> {
         self.call(RpcRequest::session_close()).await
     }
 
