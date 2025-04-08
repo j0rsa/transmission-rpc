@@ -24,10 +24,6 @@ impl<T: RpcResponseArgument> RpcResponse<T> {
 pub trait RpcResponseArgument {}
 
 #[derive(Deserialize, Debug, Clone)]
-pub struct SessionSet {}
-impl RpcResponseArgument for SessionSet {}
-
-#[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "kebab-case")]
 pub struct SessionGet {
     pub blocklist_enabled: bool,
@@ -54,10 +50,6 @@ pub struct SessionStats {
     pub cumulative_stats: Stats,
 }
 impl RpcResponseArgument for SessionStats {}
-
-#[derive(Deserialize, Debug, Clone)]
-pub struct SessionClose {}
-impl RpcResponseArgument for SessionClose {}
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "kebab-case")]
