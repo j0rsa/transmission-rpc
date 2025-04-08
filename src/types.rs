@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright (c) 2020 J0rsa and contributors
+// SPDX-License-Identifier: MIT
+
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright (c) 2020 J0rsa and contributors
+// SPDX-License-Identifier: MIT
+
 use super::{Id, IdleMode, Priority, RatioMode};
 use enum_iterator::{all, Sequence};
 use serde::{Serialize, Serializer};
