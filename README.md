@@ -49,6 +49,21 @@ https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
 
 - `sync`: Enables a thread-safe version of `TransClient`.
 
+#### Development
+
+When running tests, ensure to start a clean instance of transmission with RPC ("Allow Remote Access") enabled. `session_close` should be run separately since all tests share the same session.
+
+
+```
+cargo test -- --skip session_close && cargo test -- session_close
+```
+
+If transmission is crashing with segmentation fault, try running the tests sequentially.
+
+```
+cargo test -- --test-threads=1 --skip session_close
+```
+
 -----
 
 Support the project: [![Donate button](https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=H337RKJSC4YG4&source=url)
