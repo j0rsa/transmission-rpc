@@ -3808,3 +3808,56 @@ fn test_torrent_get_webseeds_sending_to_us_missing() -> Result<()> {
         }),
     )
 }
+
+// ----- SessionGet deserialization sanity check --------------------------
+
+#[test]
+fn test_session_get_kebab_minimal() -> Result<()> {
+    use crate::types::SessionGet;
+    let json = r#"{
+        "blocklist-enabled": false,
+        "download-dir": "/down_dir",
+        "encryption": "preferred",
+        "peer-port": 51413,
+        "rpc-version": 18,
+        "rpc-version-minimum": 1,
+        "version": "4.0.5"
+    }"#;
+    let s: SessionGet = serde_json::from_str(json)?;
+    assert_eq!(s.download_dir, "/down_dir");
+    assert!(
+        s.cache_size_mb.is_none(),
+        "Unsupported server fields shouldn't exist"
+    );
+    Ok(())
+}
+
+#[test]
+fn test_session_get_kebab_full() -> Result<()> {
+    use crate::types::SessionGet;
+    let json = r#"{
+        "blocklist-enabled": false,
+        "download-dir": "/d",
+        "encryption": "preferred",
+        "peer-port": 51413,
+        "rpc-version": 18,
+        "rpc-version-minimum": 1,
+        "version": "4.0.5",
+        "incomplete-dir-enabled": true,
+        "incomplete-dir": "/incomplete_dir",
+        "script-torrent-done-enabled": false,
+        "script-torrent-done-filename": "",
+        "cache-size-mb": 4,
+        "rename-partial-files": true,
+        "trash-original-torrent-files": false,
+        "start-added-torrents": true
+    }"#;
+    let s: SessionGet = serde_json::from_str(json)?;
+    assert_eq!(s.cache_size_mb, Some(4));
+    assert_eq!(
+        s.incomplete_dir.as_deref(),
+        Some("/incomplete_dir"),
+        "New fields return a usable Option"
+    );
+    Ok(())
+}

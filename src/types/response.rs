@@ -36,6 +36,25 @@ pub struct SessionGet {
     pub rpc_version: i32,
     pub rpc_version_minimum: i32,
     pub version: String,
+
+    // Fields below are optional to remain compatible with older daemons
+    // that may not include them in the session-get response.
+    #[serde(default)]
+    pub incomplete_dir_enabled: Option<bool>,
+    #[serde(default)]
+    pub incomplete_dir: Option<String>,
+    #[serde(default)]
+    pub script_torrent_done_enabled: Option<bool>,
+    #[serde(default)]
+    pub script_torrent_done_filename: Option<String>,
+    #[serde(default)]
+    pub cache_size_mb: Option<i32>,
+    #[serde(default)]
+    pub rename_partial_files: Option<bool>,
+    #[serde(default)]
+    pub trash_original_torrent_files: Option<bool>,
+    #[serde(default)]
+    pub start_added_torrents: Option<bool>,
 }
 impl RpcResponseArgument for SessionGet {}
 

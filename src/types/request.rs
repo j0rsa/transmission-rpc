@@ -317,7 +317,9 @@ impl From<Vec<Id>> for QueueMoveArgs {
 
 #[derive(Serialize, Debug, Clone)]
 pub struct TorrentGetArgs {
+    #[serde(skip_serializing_if = "Option::is_none")]
     fields: Option<Vec<TorrentGetField>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     ids: Option<Vec<Id>>,
 }
 
