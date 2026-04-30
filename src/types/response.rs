@@ -29,32 +29,122 @@ pub trait RpcResponseArgument {}
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "kebab-case")]
 pub struct SessionGet {
+    // Fields without `#[serde(default)]` are required to deserialize.
+    // All others fall back to `T::default()` if the daemon omits them
+    // (Transmission v4+ always emits them).
+    //
+    // Fields with `rename`/`alias` attributes are because the v4
+    // api-compat layer maps them to camelCase / canonical snake_case
+    // rather than the default kebab-case spelling.
+    #[serde(default)]
+    pub alt_speed_down: i32,
+    #[serde(default)]
+    pub alt_speed_enabled: bool,
+    #[serde(default)]
+    pub alt_speed_time_begin: i32,
+    #[serde(default)]
+    pub alt_speed_time_day: i32,
+    #[serde(default)]
+    pub alt_speed_time_enabled: bool,
+    #[serde(default)]
+    pub alt_speed_time_end: i32,
+    #[serde(default)]
+    pub alt_speed_up: i32,
+    #[serde(default)]
+    pub anti_brute_force_enabled: bool,
     pub blocklist_enabled: bool,
+    #[serde(default)]
+    pub blocklist_size: i32,
+    #[serde(default)]
+    pub blocklist_url: String,
+    #[serde(default)]
+    pub cache_size_mb: i32,
+    #[serde(default)]
+    pub config_dir: String,
+    #[serde(default)]
+    pub default_trackers: String,
+    #[serde(default)]
+    pub dht_enabled: bool,
     pub download_dir: String,
+    #[serde(default)]
+    pub download_queue_enabled: bool,
+    #[serde(default)]
+    pub download_queue_size: i32,
     pub encryption: String,
+    #[serde(default)]
+    pub idle_seeding_limit: i32,
+    #[serde(default)]
+    pub idle_seeding_limit_enabled: bool,
+    #[serde(default)]
+    pub incomplete_dir: String,
+    #[serde(default)]
+    pub incomplete_dir_enabled: bool,
+    #[serde(default)]
+    pub lpd_enabled: bool,
+    #[serde(default)]
+    pub peer_limit_global: i32,
+    #[serde(default)]
+    pub peer_limit_per_torrent: i32,
     pub peer_port: i32,
+    #[serde(default)]
+    pub peer_port_random_on_start: bool,
+    #[serde(default)]
+    pub pex_enabled: bool,
+    #[serde(default)]
+    pub port_forwarding_enabled: bool,
+    #[serde(default, rename = "preferred_transports")]
+    pub preferred_transports: Vec<String>,
+    #[serde(default)]
+    pub queue_stalled_enabled: bool,
+    #[serde(default)]
+    pub queue_stalled_minutes: i32,
+    #[serde(default)]
+    pub rename_partial_files: bool,
+    #[serde(default)]
+    pub reqq: i32,
     pub rpc_version: i32,
     pub rpc_version_minimum: i32,
+    #[serde(default)]
+    pub rpc_version_semver: String,
+    #[serde(default)]
+    pub script_torrent_added_enabled: bool,
+    #[serde(default)]
+    pub script_torrent_added_filename: String,
+    #[serde(default)]
+    pub script_torrent_done_enabled: bool,
+    #[serde(default)]
+    pub script_torrent_done_filename: String,
+    #[serde(default)]
+    pub script_torrent_done_seeding_enabled: bool,
+    #[serde(default)]
+    pub script_torrent_done_seeding_filename: String,
+    #[serde(default)]
+    pub seed_queue_enabled: bool,
+    #[serde(default)]
+    pub seed_queue_size: i32,
+    #[serde(default, rename = "seed_ratio_limit", alias = "seedRatioLimit")]
+    pub seed_ratio_limit: f64,
+    #[serde(default, rename = "seed_ratio_limited", alias = "seedRatioLimited")]
+    pub seed_ratio_limited: bool,
+    #[serde(default, rename = "sequential_download")]
+    pub sequential_download: bool,
+    #[serde(default)]
+    pub session_id: String,
+    #[serde(default)]
+    pub speed_limit_down: i32,
+    #[serde(default)]
+    pub speed_limit_down_enabled: bool,
+    #[serde(default)]
+    pub speed_limit_up: i32,
+    #[serde(default)]
+    pub speed_limit_up_enabled: bool,
+    #[serde(default)]
+    pub start_added_torrents: bool,
+    #[serde(default)]
+    pub trash_original_torrent_files: bool,
+    #[serde(default)]
+    pub utp_enabled: bool,
     pub version: String,
-
-    // Fields below are optional to remain compatible with older daemons
-    // that may not include them in the session-get response.
-    #[serde(default)]
-    pub incomplete_dir_enabled: Option<bool>,
-    #[serde(default)]
-    pub incomplete_dir: Option<String>,
-    #[serde(default)]
-    pub script_torrent_done_enabled: Option<bool>,
-    #[serde(default)]
-    pub script_torrent_done_filename: Option<String>,
-    #[serde(default)]
-    pub cache_size_mb: Option<i32>,
-    #[serde(default)]
-    pub rename_partial_files: Option<bool>,
-    #[serde(default)]
-    pub trash_original_torrent_files: Option<bool>,
-    #[serde(default)]
-    pub start_added_torrents: Option<bool>,
 }
 impl RpcResponseArgument for SessionGet {}
 

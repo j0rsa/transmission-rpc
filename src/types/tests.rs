@@ -3825,9 +3825,9 @@ fn test_session_get_kebab_minimal() -> Result<()> {
     }"#;
     let s: SessionGet = serde_json::from_str(json)?;
     assert_eq!(s.download_dir, "/down_dir");
-    assert!(
-        s.cache_size_mb.is_none(),
-        "Unsupported server fields shouldn't exist"
+    assert_eq!(
+        s.cache_size_mb, 0,
+        "Missing fields fall back to their type's Default"
     );
     Ok(())
 }
@@ -3853,11 +3853,53 @@ fn test_session_get_kebab_full() -> Result<()> {
         "start-added-torrents": true
     }"#;
     let s: SessionGet = serde_json::from_str(json)?;
-    assert_eq!(s.cache_size_mb, Some(4));
+    assert_eq!(s.cache_size_mb, 4);
     assert_eq!(
-        s.incomplete_dir.as_deref(),
-        Some("/incomplete_dir"),
-        "New fields return a usable Option"
+        s.incomplete_dir, "/incomplete_dir",
+        "New fields hydrate from the response"
     );
+    Ok(())
+}
+
+#[test]
+fn test_session_get_seed_ratio_camel_v4_apicompat() -> Result<()> {
+    use crate::types::SessionGet;
+    // Transmission v4 daemons running the legacy (non-jsonrpc) API style
+    // convert the canonical key `seed_ratio_limit{,ed}` back to camelCase
+    // for backwards compatibility (see libtransmission/api-compat.cc).
+    let json = r#"{
+        "blocklist-enabled": false,
+        "download-dir": "/d",
+        "encryption": "preferred",
+        "peer-port": 51413,
+        "rpc-version": 18,
+        "rpc-version-minimum": 1,
+        "version": "4.2.0",
+        "seedRatioLimit": 1.5,
+        "seedRatioLimited": true
+    }"#;
+    let s: SessionGet = serde_json::from_str(json)?;
+    assert_eq!(s.seed_ratio_limit, 1.5);
+    assert!(s.seed_ratio_limited);
+    Ok(())
+}
+
+#[test]
+fn test_session_get_seed_ratio_snake_v4_canonical() -> Result<()> {
+    use crate::types::SessionGet;
+    let json = r#"{
+        "blocklist-enabled": false,
+        "download-dir": "/d",
+        "encryption": "preferred",
+        "peer-port": 51413,
+        "rpc-version": 18,
+        "rpc-version-minimum": 1,
+        "version": "4.2.0",
+        "seed_ratio_limit": 2.0,
+        "seed_ratio_limited": false
+    }"#;
+    let s: SessionGet = serde_json::from_str(json)?;
+    assert_eq!(s.seed_ratio_limit, 2.0);
+    assert!(!s.seed_ratio_limited);
     Ok(())
 }
