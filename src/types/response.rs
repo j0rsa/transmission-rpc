@@ -11,7 +11,7 @@ use serde::Deserialize;
 use serde_json::Value;
 use serde_repr::*;
 
-use super::{BandwidthGroup, Id, IdleMode, Priority, RatioMode};
+use super::{BandwidthGroup, Encryption, Id, IdleMode, Priority, RatioMode};
 
 #[derive(Deserialize, Debug)]
 pub struct RpcResponse<T: RpcResponseArgument> {
@@ -70,7 +70,7 @@ pub struct SessionGet {
     pub download_queue_enabled: bool,
     #[serde(default)]
     pub download_queue_size: i32,
-    pub encryption: String,
+    pub encryption: Encryption,
     #[serde(default)]
     pub idle_seeding_limit: i32,
     #[serde(default)]
