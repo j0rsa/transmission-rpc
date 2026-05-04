@@ -55,10 +55,10 @@ When running tests, ensure to start a clean instance of transmission with RPC ("
 
 
 ```
-cargo test -- --skip session_close && cargo test -- session_close
+cargo clean && cargo test -- --skip session_close && cargo test -- session_close
 ```
 
-If transmission is crashing with segmentation fault, try running the tests sequentially.
+If Transmission is crashing with segmentation fault, try running the tests sequentially.
 
 ```
 cargo test -- --test-threads=1 --skip session_close
