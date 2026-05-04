@@ -27,10 +27,31 @@ mod tests;
 
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub struct BandwidthGroup {
+    #[serde(rename = "honorsSessionLimits")]
+    pub honors_session_limits: bool,
+    pub name: String,
+    pub speed_limit_down_enabled: bool,
+    pub speed_limit_down: u64,
+    pub speed_limit_up_enabled: bool,
+    pub speed_limit_up: u64,
+}
+
 #[derive(Debug, Clone)]
 pub struct BasicAuth {
     pub user: String,
     pub password: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, PartialEq, Eq, Hash, Default)]
+#[serde(rename_all = "lowercase")]
+pub enum Encryption {
+    #[default]
+    Preferred,
+    Required,
+    Tolerated,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -62,16 +83,4 @@ pub enum RatioMode {
     Global = 0,
     Single = 1,
     Unlimited = 2,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "kebab-case")]
-pub struct BandwidthGroup {
-    #[serde(rename = "honorsSessionLimits")]
-    pub honors_session_limits: bool,
-    pub name: String,
-    pub speed_limit_down_enabled: bool,
-    pub speed_limit_down: u64,
-    pub speed_limit_up_enabled: bool,
-    pub speed_limit_up: u64,
 }

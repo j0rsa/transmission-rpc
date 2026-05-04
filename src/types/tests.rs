@@ -3825,6 +3825,7 @@ fn test_session_get_kebab_minimal() -> Result<()> {
     }"#;
     let s: SessionGet = serde_json::from_str(json)?;
     assert_eq!(s.download_dir, "/down_dir");
+    assert_eq!(s.encryption, crate::types::Encryption::Preferred);
     assert_eq!(
         s.cache_size_mb, 0,
         "Missing fields fall back to their type's Default"
@@ -3837,7 +3838,7 @@ fn test_session_get_kebab_full() -> Result<()> {
     use crate::types::SessionGet;
     let json = r#"{
         "blocklist-enabled": false,
-        "download-dir": "/d",
+        "download-dir": "/down-dir",
         "encryption": "preferred",
         "peer-port": 51413,
         "rpc-version": 18,
@@ -3869,7 +3870,7 @@ fn test_session_get_seed_ratio_camel_v4_apicompat() -> Result<()> {
     // for backwards compatibility (see libtransmission/api-compat.cc).
     let json = r#"{
         "blocklist-enabled": false,
-        "download-dir": "/d",
+        "download-dir": "/down-dir",
         "encryption": "preferred",
         "peer-port": 51413,
         "rpc-version": 18,
@@ -3889,7 +3890,7 @@ fn test_session_get_seed_ratio_snake_v4_canonical() -> Result<()> {
     use crate::types::SessionGet;
     let json = r#"{
         "blocklist-enabled": false,
-        "download-dir": "/d",
+        "download-dir": "/down-dir",
         "encryption": "preferred",
         "peer-port": 51413,
         "rpc-version": 18,
@@ -3901,5 +3902,38 @@ fn test_session_get_seed_ratio_snake_v4_canonical() -> Result<()> {
     let s: SessionGet = serde_json::from_str(json)?;
     assert_eq!(s.seed_ratio_limit, 2.0);
     assert!(!s.seed_ratio_limited);
+    Ok(())
+}
+
+#[test]
+fn test_session_get_encryption_variants() -> Result<()> {
+    use crate::types::{Encryption, SessionGet};
+
+    fn parse(value: &str) -> Encryption {
+        let json = format!(
+            r#"{{"blocklist-enabled":false,"download-dir":"/down-dir","encryption":"{value}","peer-port":51413,"rpc-version":18,"rpc-version-minimum":1,"version":"4.0.5"}}"#
+        );
+        let s: SessionGet = serde_json::from_str(&json).unwrap();
+        s.encryption
+    }
+
+    assert_eq!(parse("preferred"), Encryption::Preferred);
+    assert_eq!(parse("required"), Encryption::Required);
+    assert_eq!(parse("tolerated"), Encryption::Tolerated);
+
+    // round-trip: Encryption serializes back to the same lowercase string
+    assert_eq!(
+        serde_json::to_string(&Encryption::Preferred).unwrap(),
+        r#""preferred""#
+    );
+    assert_eq!(
+        serde_json::to_string(&Encryption::Required).unwrap(),
+        r#""required""#
+    );
+    assert_eq!(
+        serde_json::to_string(&Encryption::Tolerated).unwrap(),
+        r#""tolerated""#
+    );
+
     Ok(())
 }

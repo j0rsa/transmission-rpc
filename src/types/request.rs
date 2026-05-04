@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 J0rsa and contributors
 // SPDX-License-Identifier: MIT
 
-use super::{Id, IdleMode, Priority, RatioMode};
+use super::{Encryption, Id, IdleMode, Priority, RatioMode};
 use enum_iterator::{all, Sequence};
 use serde::{Serialize, Serializer};
 use serde_with::skip_serializing_none;
@@ -291,7 +291,7 @@ pub struct SessionSetArgs {
     pub download_dir_free_space: Option<i32>,
     pub download_queue_enabled: Option<bool>,
     pub download_queue_size: Option<i32>,
-    pub encryption: Option<String>,
+    pub encryption: Option<Encryption>,
     pub idle_seeding_limit_enabled: Option<bool>,
     pub idle_seeding_limit: Option<i32>,
     pub incomplete_dir_enabled: Option<bool>,
