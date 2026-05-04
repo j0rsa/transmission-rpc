@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 J0rsa and contributors
 // SPDX-License-Identifier: MIT
 
+use std::fmt;
+
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
@@ -45,13 +47,18 @@ pub struct BasicAuth {
     pub password: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Copy, Clone, PartialEq, Eq, Hash, Default)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Encryption {
-    #[default]
     Preferred,
     Required,
     Tolerated,
+}
+
+impl fmt::Display for Encryption {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&format!("{self:?}").to_lowercase())
+    }
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]

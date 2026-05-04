@@ -36,7 +36,7 @@ async fn main() -> Result<()> {
                 s.trash_original_torrent_files
             );
             println!("start-added-torrents: {}", s.start_added_torrents);
-            println!("encryption: {:?}", s.encryption);
+            println!("encryption: {}", s.encryption);
             println!("cache-size-mb: {}", s.cache_size_mb);
             println!("default-trackers: {}", s.default_trackers);
 
