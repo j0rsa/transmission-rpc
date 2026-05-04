@@ -13,14 +13,24 @@ async fn main() -> Result<()> {
     } else {
         TransClient::new(url.parse()?)
     };
-    // FIXME Transmission doesn't recognize specified group names
     let response = client
-        .bandwidth_group_get(vec!["group2".to_string()].into())
+        .bandwidth_group_get(vec!["group_abc".to_string()].into())
         .await?;
+    if response.arguments.group.is_empty() {
+        println!("No bandwidth group \"group_abc\"!");
+    } else {
+        for g in &response.arguments.group {
+            println!("Fetched \"{}\": {:?}", g.name, g);
+        }
+    }
+
+    println!("-----------");
+    println!("All groups:");
+    let response = client.bandwidth_group_get(None).await?;
     if response.arguments.group.is_empty() {
         println!("No bandwidth groups!");
     } else {
-        for g in response.arguments.group {
+        for g in &response.arguments.group {
             println!("{g:?}");
         }
     }

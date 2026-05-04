@@ -21,9 +21,9 @@ async fn main() -> Result<()> {
         speed_limit_up_enabled: true,
         speed_limit_up: 2000,
     };
-    let response = client.bandwidth_group_set(group).await?;
+    let response = client.bandwidth_group_set(group.clone()).await?;
     if response.is_ok() {
-        println!("Ok!");
+        println!("Ok! Created: {group:?}");
     } else {
         println!("Err: {}", response.result);
     }

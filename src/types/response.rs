@@ -11,9 +11,7 @@ use serde::Deserialize;
 use serde_json::Value;
 use serde_repr::*;
 
-use super::{Id, IdleMode, Priority, RatioMode};
-
-use super::BandwidthGroup;
+use super::{BandwidthGroup, Id, IdleMode, Priority, RatioMode};
 
 #[derive(Deserialize, Debug)]
 pub struct RpcResponse<T: RpcResponseArgument> {

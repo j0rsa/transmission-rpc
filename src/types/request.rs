@@ -69,14 +69,14 @@ impl RpcRequest {
 
     pub fn bandwidth_group_set(group: BandwidthGroup) -> Self {
         Self {
-            method: String::from("group-set"),
+            method: Method::GroupSet,
             arguments: Some(Args::BandwidthGroupSet(group)),
         }
     }
 
     pub fn bandwidth_group_get(group: Option<Vec<String>>) -> Self {
         Self {
-            method: String::from("group-get"),
+            method: Method::GroupGet,
             arguments: Some(Args::BandwidthGroupGet(BandwidthGroupGetArgs {
                 name: group.unwrap_or_default(),
             })),
@@ -84,6 +84,9 @@ impl RpcRequest {
     }
 
     pub fn queue_move_top(ids: Vec<Id>) -> RpcRequest {
+        RpcRequest {
+            method: Method::QueueMoveTop,
+            arguments: Args::QueueMove(ids.into()).into(),
         }
     }
 
@@ -199,6 +202,8 @@ enum Method {
     QueueMoveDown,
     QueueMoveTop,
     QueueMoveBottom,
+    GroupSet,
+    GroupGet,
 }
 
 impl Method {
@@ -224,6 +229,8 @@ impl Method {
             M::QueueMoveDown => "queue-move-down",
             M::QueueMoveTop => "queue-move-top",
             M::QueueMoveBottom => "queue-move-bottom",
+            M::GroupSet => "group-set",
+            M::GroupGet => "group-get",
         }
     }
 }
@@ -334,7 +341,8 @@ impl From<Vec<Id>> for QueueMoveArgs {
 
 #[derive(Serialize, Debug, Clone)]
 pub struct BandwidthGroupGetArgs {
-    group: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    name: Vec<String>,
 }
 
 #[derive(Serialize, Debug, Clone)]
