@@ -6,6 +6,8 @@ use enum_iterator::{all, Sequence};
 use serde::{Serialize, Serializer};
 use serde_with::skip_serializing_none;
 
+use super::BandwidthGroup;
+
 mod torrent_set;
 
 #[skip_serializing_none]
@@ -62,6 +64,22 @@ impl RpcRequest {
         RpcRequest {
             method: Method::PortTest,
             arguments: None,
+        }
+    }
+
+    pub fn bandwidth_group_set(group: BandwidthGroup) -> Self {
+        Self {
+            method: Method::GroupSet,
+            arguments: Some(Args::BandwidthGroupSet(group)),
+        }
+    }
+
+    pub fn bandwidth_group_get(group: Option<Vec<String>>) -> Self {
+        Self {
+            method: Method::GroupGet,
+            arguments: Some(Args::BandwidthGroupGet(BandwidthGroupGetArgs {
+                name: group.unwrap_or_default(),
+            })),
         }
     }
 
@@ -184,6 +202,8 @@ enum Method {
     QueueMoveDown,
     QueueMoveTop,
     QueueMoveBottom,
+    GroupSet,
+    GroupGet,
 }
 
 impl Method {
@@ -209,6 +229,8 @@ impl Method {
             M::QueueMoveDown => "queue-move-down",
             M::QueueMoveTop => "queue-move-top",
             M::QueueMoveBottom => "queue-move-bottom",
+            M::GroupSet => "group-set",
+            M::GroupGet => "group-get",
         }
     }
 }
@@ -230,6 +252,8 @@ impl ArgumentFields for TorrentGetField {}
 #[derive(Serialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum Args {
+    BandwidthGroupSet(BandwidthGroup),
+    BandwidthGroupGet(BandwidthGroupGetArgs),
     FreeSpace(FreeSpaceArgs),
     SessionSet(SessionSetArgs),
     QueueMove(QueueMoveArgs),
@@ -313,6 +337,12 @@ impl From<Vec<Id>> for QueueMoveArgs {
     fn from(ids: Vec<Id>) -> Self {
         Self { ids }
     }
+}
+
+#[derive(Serialize, Debug, Clone)]
+pub struct BandwidthGroupGetArgs {
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    name: Vec<String>,
 }
 
 #[derive(Serialize, Debug, Clone)]

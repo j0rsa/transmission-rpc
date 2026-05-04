@@ -11,7 +11,7 @@ use serde::Deserialize;
 use serde_json::Value;
 use serde_repr::*;
 
-use super::{Id, IdleMode, Priority, RatioMode};
+use super::{BandwidthGroup, Id, IdleMode, Priority, RatioMode};
 
 #[derive(Deserialize, Debug)]
 pub struct RpcResponse<T: RpcResponseArgument> {
@@ -184,6 +184,12 @@ pub struct PortTest {
     pub port_is_open: bool,
 }
 impl RpcResponseArgument for PortTest {}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct BandwidthGroups {
+    pub group: Vec<BandwidthGroup>,
+}
+impl RpcResponseArgument for BandwidthGroups {}
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Debug, Deserialize_repr)]
 #[repr(u8)]
