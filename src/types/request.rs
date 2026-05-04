@@ -6,6 +6,8 @@ use enum_iterator::{all, Sequence};
 use serde::{Serialize, Serializer};
 use serde_with::skip_serializing_none;
 
+use super::BandwidthGroup;
+
 mod torrent_set;
 
 #[skip_serializing_none]
@@ -65,10 +67,23 @@ impl RpcRequest {
         }
     }
 
+    pub fn bandwidth_group_set(group: BandwidthGroup) -> Self {
+        Self {
+            method: String::from("group-set"),
+            arguments: Some(Args::BandwidthGroupSet(group)),
+        }
+    }
+
+    pub fn bandwidth_group_get(group: Option<Vec<String>>) -> Self {
+        Self {
+            method: String::from("group-get"),
+            arguments: Some(Args::BandwidthGroupGet(BandwidthGroupGetArgs {
+                name: group.unwrap_or_default(),
+            })),
+        }
+    }
+
     pub fn queue_move_top(ids: Vec<Id>) -> RpcRequest {
-        RpcRequest {
-            method: Method::QueueMoveTop,
-            arguments: Args::QueueMove(ids.into()).into(),
         }
     }
 
@@ -230,6 +245,8 @@ impl ArgumentFields for TorrentGetField {}
 #[derive(Serialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum Args {
+    BandwidthGroupSet(BandwidthGroup),
+    BandwidthGroupGet(BandwidthGroupGetArgs),
     FreeSpace(FreeSpaceArgs),
     SessionSet(SessionSetArgs),
     QueueMove(QueueMoveArgs),
@@ -313,6 +330,11 @@ impl From<Vec<Id>> for QueueMoveArgs {
     fn from(ids: Vec<Id>) -> Self {
         Self { ids }
     }
+}
+
+#[derive(Serialize, Debug, Clone)]
+pub struct BandwidthGroupGetArgs {
+    group: Vec<String>,
 }
 
 #[derive(Serialize, Debug, Clone)]
