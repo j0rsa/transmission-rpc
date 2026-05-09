@@ -391,6 +391,10 @@ pub struct Stats {
 #[derive(Deserialize, Debug)]
 pub struct Torrents<T> {
     pub torrents: Vec<T>,
+    /// Populated only by `torrent-get` calls with `ids = "recently-active"`.
+    /// Lists ids of torrents that have been removed since the previous call.
+    #[serde(default)]
+    pub removed: Vec<i64>,
 }
 impl RpcResponseArgument for Torrents<Torrent> {}
 

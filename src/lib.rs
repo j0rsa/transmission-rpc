@@ -785,6 +785,18 @@ impl TransClient {
         self.call(RpcRequest::torrent_get(fields, ids)).await
     }
 
+    /// Like [`Self::torrent_get`] but uses the Transmission `"recently-active"`
+    /// id sentinel: the daemon returns only torrents whose state has changed
+    /// since the previous recently-active call, plus a `removed` list of ids
+    /// that have been deleted in the meantime.
+    pub async fn torrent_get_recently_active(
+        &mut self,
+        fields: Option<Vec<TorrentGetField>>,
+    ) -> Result<RpcResponse<Torrents<Torrent>>> {
+        self.call(RpcRequest::torrent_get_recently_active(fields))
+            .await
+    }
+
     /// Performs a torrent set call
     /// args - the fields to update
     /// ids - if None then All items
