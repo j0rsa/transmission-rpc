@@ -112,6 +112,20 @@ impl RpcRequest {
     }
 
     pub fn torrent_get(fields: Option<Vec<TorrentGetField>>, ids: Option<Vec<Id>>) -> RpcRequest {
+        Self::torrent_get_with(fields, ids.map(TorrentGetIds::Ids))
+    }
+
+    /// Like [`Self::torrent_get`] but instructs the daemon to return only
+    /// torrents whose state has changed since the previous "recently-active"
+    /// call. The response also includes a `removed` array of torrent ids.
+    pub fn torrent_get_recently_active(fields: Option<Vec<TorrentGetField>>) -> RpcRequest {
+        Self::torrent_get_with(fields, Some(TorrentGetIds::RecentlyActive))
+    }
+
+    fn torrent_get_with(
+        fields: Option<Vec<TorrentGetField>>,
+        ids: Option<TorrentGetIds>,
+    ) -> RpcRequest {
         let fields = fields.unwrap_or_else(|| all::<TorrentGetField>().collect());
         let args = TorrentGetArgs {
             fields: fields.into(),
@@ -345,12 +359,39 @@ pub struct BandwidthGroupGetArgs {
     name: Vec<String>,
 }
 
+#[derive(Debug, Clone)]
+pub enum TorrentGetIds {
+    /// One or more explicit torrent ids/hashes.
+    Ids(Vec<Id>),
+    /// The Transmission RPC sentinel `"recently-active"` — match torrents whose
+    /// state has changed since the previous `torrent-get` recently-active call.
+    RecentlyActive,
+}
+
+impl Serialize for TorrentGetIds {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        match self {
+            TorrentGetIds::Ids(ids) => ids.serialize(serializer),
+            TorrentGetIds::RecentlyActive => serializer.serialize_str("recently-active"),
+        }
+    }
+}
+
+impl From<Vec<Id>> for TorrentGetIds {
+    fn from(ids: Vec<Id>) -> Self {
+        TorrentGetIds::Ids(ids)
+    }
+}
+
 #[derive(Serialize, Debug, Clone)]
 pub struct TorrentGetArgs {
     #[serde(skip_serializing_if = "Option::is_none")]
     fields: Option<Vec<TorrentGetField>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    ids: Option<Vec<Id>>,
+    ids: Option<TorrentGetIds>,
 }
 
 impl Default for TorrentGetArgs {
