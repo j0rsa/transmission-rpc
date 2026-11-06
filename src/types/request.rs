@@ -6,9 +6,9 @@ use super::{Encryption, Id, IdleMode, Priority, RatioMode};
 use enum_iterator::{all, Sequence};
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use serde_with::skip_serializing_none;
-use std::fmt;
 use std::marker::PhantomData;
 use std::str::FromStr;
+use std::{fmt, mem};
 
 mod torrent_set;
 
@@ -834,14 +834,31 @@ impl TorrentAction {
 }
 
 #[derive(Debug, Clone, Default, PartialEq)]
-pub struct TrackerList(pub Vec<String>);
+pub struct TrackerList(pub Vec<Vec<String>>);
 
 impl Serialize for TrackerList {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
-        self.0.join("\n").serialize(serializer)
+        let mut joined = String::new();
+        let mut tiers = self.0.iter().peekable();
+        while let Some(tier) = tiers.next() {
+            let mut tier = tier.iter().peekable();
+            while let Some(tracker) = tier.next() {
+                if tier.peek().is_none() {
+                    joined.push_str(tracker);
+                } else {
+                    joined.push_str(tracker);
+                    joined.push('\n');
+                }
+            }
+            if tiers.peek().is_some() {
+                // Blank line between tiers
+                joined.push_str("\n\n");
+            }
+        }
+        serializer.serialize_str(&joined)
     }
 }
 
@@ -860,7 +877,17 @@ impl<'de> Deserialize<'de> for TrackerList {
             where
                 E: de::Error,
             {
-                Ok(TrackerList(v.split('\n').map(ToOwned::to_owned).collect()))
+                let mut tiers = Vec::new();
+                let mut tier = Vec::new();
+                for line in v.lines() {
+                    if line.is_empty() {
+                        tiers.push(mem::take(&mut tier));
+                        continue;
+                    }
+                    tier.push(line.to_owned());
+                }
+                tiers.push(tier);
+                Ok(TrackerList(tiers))
             }
         }
         deserializer.deserialize_str(Visitor)
@@ -1019,5 +1046,28 @@ mod tests {
             assert_eq!(request.method, Method::TorrentGet);
             assert_eq!(request.arguments, Some(args));
         }
+    }
+
+    #[test]
+    fn test_tracker_list_ser() {
+        let source = TrackerList(vec![
+            vec!["a".to_string(), "b".to_string(), "c".to_string()],
+            vec!["d".to_string()],
+        ]);
+        let value = serde_json::to_value(&source).unwrap();
+        assert_eq!(value, json!("a\nb\nc\n\nd"));
+    }
+
+    #[test]
+    fn test_tracker_list_de() {
+        let source = json!("a\nb\nc\n\nd");
+        let list: TrackerList = from_value(source).unwrap();
+        assert_eq!(
+            list.0,
+            vec![
+                vec!["a".to_string(), "b".to_string(), "c".to_string()],
+                vec!["d".to_string()]
+            ]
+        );
     }
 }
