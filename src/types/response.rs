@@ -447,7 +447,7 @@ pub struct TrackerStat {
     pub has_announced: bool,
     pub has_scraped: bool,
     pub host: String,
-    pub id: Id,
+    pub id: i32,
     pub is_backup: bool,
     pub last_announce_peer_count: i64,
     pub last_announce_result: String,

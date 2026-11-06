@@ -3428,7 +3428,7 @@ fn test_torrent_get_tracker_stats_success() -> Result<()> {
             assert!(first[0].has_announced);
             assert!(first[0].has_scraped);
             assert_eq!(first[0].host, "https://example.com:8080");
-            assert!(matches!(first[0].id, Id::Id(0)));
+            assert_eq!(first[0].id, 0);
             assert!(!first[0].is_backup);
             assert_eq!(first[0].last_announce_peer_count, 86);
             assert_eq!(first[0].last_announce_result, "Success".to_string());
