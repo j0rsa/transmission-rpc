@@ -59,8 +59,8 @@
 #[macro_use]
 extern crate log;
 
+use ::serde::de::DeserializeOwned;
 use reqwest::{header::CONTENT_TYPE, Client, StatusCode, Url};
-use serde::de::DeserializeOwned;
 
 #[cfg(feature = "sync")]
 pub use sync::SharableTransClient;
@@ -71,6 +71,7 @@ use types::{
     TorrentRenamePath, TorrentSetArgs, Torrents,
 };
 
+mod serde;
 #[cfg(feature = "sync")]
 mod sync;
 

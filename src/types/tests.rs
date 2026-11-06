@@ -7,9 +7,7 @@ use chrono::DateTime;
 use serde_json;
 
 use crate::types::response::{TorrentStatus, TrackerState};
-use crate::types::{
-    ErrorType, Id, IdleMode, Priority, RatioMode, Result, RpcResponse, Torrent, Torrents,
-};
+use crate::types::*;
 
 type TorrentGetResp = RpcResponse<Torrents<Torrent>>;
 
@@ -3430,7 +3428,7 @@ fn test_torrent_get_tracker_stats_success() -> Result<()> {
             assert!(first[0].has_announced);
             assert!(first[0].has_scraped);
             assert_eq!(first[0].host, "https://example.com:8080");
-            assert!(matches!(first[0].id, Id::Id(0)));
+            assert_eq!(first[0].id, 0);
             assert!(!first[0].is_backup);
             assert_eq!(first[0].last_announce_peer_count, 86);
             assert_eq!(first[0].last_announce_result, "Success".to_string());
@@ -3936,4 +3934,12 @@ fn test_session_get_encryption_variants() -> Result<()> {
     );
 
     Ok(())
+}
+
+#[test]
+fn test_sched_day_serde() {
+    let days = SchedDay::Monday | SchedDay::Sunday;
+    let ser = serde_json::to_value(&days).unwrap();
+    let de: SchedDay = serde_json::from_value(ser).unwrap();
+    assert_eq!(de, days);
 }

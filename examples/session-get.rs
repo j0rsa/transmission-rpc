@@ -71,7 +71,7 @@ async fn main() -> Result<()> {
             println!("alt-speed-time-enabled: {}", s.alt_speed_time_enabled);
             println!("alt-speed-time-begin: {}", s.alt_speed_time_begin);
             println!("alt-speed-time-end: {}", s.alt_speed_time_end);
-            println!("alt-speed-time-day: {}", s.alt_speed_time_day);
+            println!("alt-speed-time-day: {:?}", s.alt_speed_time_day);
 
             // Queue / idle.
             println!("download-queue-enabled: {}", s.download_queue_enabled);

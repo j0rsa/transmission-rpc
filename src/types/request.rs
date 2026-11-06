@@ -1,20 +1,22 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 J0rsa and contributors
 // SPDX-License-Identifier: MIT
 
+use super::BandwidthGroup;
 use super::{Encryption, Id, IdleMode, Priority, RatioMode};
 use enum_iterator::{all, Sequence};
-use serde::{Serialize, Serializer};
+use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use serde_with::skip_serializing_none;
-
-use super::BandwidthGroup;
+use std::marker::PhantomData;
+use std::str::FromStr;
+use std::{fmt, mem};
 
 mod torrent_set;
 
 #[skip_serializing_none]
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, PartialEq)]
 pub struct RpcRequest {
-    method: Method,
-    arguments: Option<Args>,
+    pub method: Method,
+    pub arguments: Option<Args>,
 }
 
 impl RpcRequest {
@@ -129,6 +131,7 @@ impl RpcRequest {
         let fields = fields.unwrap_or_else(|| all::<TorrentGetField>().collect());
         let args = TorrentGetArgs {
             fields: fields.into(),
+            format: Default::default(),
             ids,
         };
         RpcRequest {
@@ -196,8 +199,90 @@ impl RpcRequest {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
-enum Method {
+impl<'de> Deserialize<'de> for RpcRequest {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &["method", "arguments"];
+        deserializer.deserialize_struct("RpcRequest", FIELDS, RpcRequestVisitor::<D::Error>::new())
+    }
+}
+
+impl<E> TryFrom<RpcRequestVisitor<E>> for RpcRequest
+where
+    E: de::Error,
+{
+    type Error = E;
+
+    fn try_from(value: RpcRequestVisitor<E>) -> Result<Self, Self::Error> {
+        let method = value.method.ok_or_else(|| E::missing_field("method"))?;
+        let arguments = Args::parse(method, value.args)
+            .map_err(|err| E::custom(format!("Invalid or missing args: {err}")))?;
+        Ok(Self { method, arguments })
+    }
+}
+
+#[derive(Default)]
+struct RpcRequestVisitor<E> {
+    method: Option<Method>,
+    args: Option<serde_json::Value>,
+    #[allow(unused)]
+    error: PhantomData<E>,
+}
+
+impl<E> RpcRequestVisitor<E> {
+    fn new() -> Self {
+        Self {
+            method: None,
+            args: None,
+            error: Default::default(),
+        }
+    }
+
+    fn collect<'de, A>(&mut self, mut map: A) -> Result<(), A::Error>
+    where
+        A: de::MapAccess<'de>,
+    {
+        #[derive(Deserialize)]
+        #[serde(field_identifier, rename_all = "lowercase")]
+        enum Fields {
+            Method,
+            Arguments,
+        }
+        while let Some(key) = map.next_key()? {
+            match key {
+                Fields::Method if self.method.is_none() => self.method = Some(map.next_value()?),
+                Fields::Method => return Err(de::Error::duplicate_field("method")),
+                Fields::Arguments if self.args.is_none() => self.args = Some(map.next_value()?),
+                Fields::Arguments => return Err(de::Error::duplicate_field("arguments")),
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<'de, E> de::Visitor<'de> for RpcRequestVisitor<E>
+where
+    E: de::Error,
+{
+    type Value = RpcRequest;
+
+    fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str("RPC request struct")
+    }
+
+    fn visit_map<A>(mut self, map: A) -> Result<Self::Value, A::Error>
+    where
+        A: de::MapAccess<'de>,
+    {
+        self.collect(map)?;
+        Self::Value::try_from(self).map_err(de::Error::custom)
+    }
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub enum Method {
     SessionSet,
     SessionGet,
     SessionStats,
@@ -221,7 +306,7 @@ enum Method {
 }
 
 impl Method {
-    fn as_str(&self) -> &'static str {
+    pub fn as_str(&self) -> &'static str {
         use Method as M;
 
         match self {
@@ -249,6 +334,44 @@ impl Method {
     }
 }
 
+impl FromStr for Method {
+    type Err = ParseMethodError;
+
+    #[rustfmt::skip]
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        use Method as M;
+        use TorrentAction as A;
+
+        Ok(match s {
+            "session-set"           => M::SessionSet,
+            "session-get"           => M::SessionGet,
+            "session-stats"         => M::SessionStats,
+            "session-close"         => M::SessionClose,
+            "blocklist-update"      => M::BlocklistUpdate,
+            "free-space"            => M::FreeSpace,
+            "port-test"             => M::PortTest,
+            "torrent-get"           => M::TorrentGet,
+            "torrent-set"           => M::TorrentSet,
+            "torrent-remove"        => M::TorrentRemove,
+            "torrent-add"           => M::TorrentAdd,
+            "torrent-start"         => M::TorrentAction(A::Start),
+            "torrent-stop"          => M::TorrentAction(A::Stop),
+            "torrent-start-now"     => M::TorrentAction(A::StartNow),
+            "torrent-verify"        => M::TorrentAction(A::Verify),
+            "torrent-reannounce"    => M::TorrentAction(A::Reannounce),
+            "torrent-set-location"  => M::TorrentSetLocation,
+            "torrent-rename-path"   => M::TorrentRenamePath,
+            "queue-move-up"         => M::QueueMoveUp,
+            "queue-move-down"       => M::QueueMoveDown,
+            "queue-move-top"        => M::QueueMoveTop,
+            "queue-move-bottom"     => M::QueueMoveBottom,
+            "group-set"             => M::GroupSet,
+            "group-get"             => M::GroupGet,
+            _ => return Err(ParseMethodError::UnknownMethod(s.to_owned())),
+        })
+    }
+}
+
 // Manually implement [Serialize] for [Method] because serde doesn't support flattening of
 // tuple struct variant of enums, [Method::TorrentAction(_)] in this case.
 impl Serialize for Method {
@@ -260,10 +383,38 @@ impl Serialize for Method {
     }
 }
 
+impl<'de> Deserialize<'de> for Method {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct Visitor;
+        impl de::Visitor<'_> for Visitor {
+            type Value = Method;
+            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                f.write_str("method name")
+            }
+            #[rustfmt::skip]
+            fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                v.parse().map_err(|err| E::custom(format!("{err:?}")))
+            }
+        }
+        deserializer.deserialize_str(Visitor)
+    }
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub enum ParseMethodError {
+    UnknownMethod(String),
+}
+
 pub trait ArgumentFields {}
 impl ArgumentFields for TorrentGetField {}
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Serialize, Debug, Clone, PartialEq)]
 #[serde(untagged)]
 pub enum Args {
     BandwidthGroupSet(BandwidthGroup),
@@ -280,13 +431,46 @@ pub enum Args {
     TorrentRenamePath(TorrentRenamePathArgs),
 }
 
-#[derive(Serialize, Debug, Clone)]
+impl Args {
+    pub fn parse(
+        method: Method,
+        args: Option<serde_json::Value>,
+    ) -> serde_json::Result<Option<Self>> {
+        use serde_json::from_value;
+        use Args as A;
+        use Method as M;
+
+        let Some(args) = args else {
+            return Ok(None);
+        };
+        let args = match method {
+            M::SessionSet => from_value(args).map(A::SessionSet),
+            M::FreeSpace => from_value(args).map(A::FreeSpace),
+            M::TorrentGet => from_value(args).map(A::TorrentGet),
+            M::TorrentSet => from_value(args).map(A::TorrentSet),
+            M::TorrentRemove => from_value(args).map(A::TorrentRemove),
+            M::TorrentAdd => from_value(args).map(A::TorrentAdd),
+            M::TorrentAction(_) => from_value(args).map(A::TorrentAction),
+            M::TorrentSetLocation => from_value(args).map(A::TorrentSetLocation),
+            M::TorrentRenamePath => from_value(args).map(A::TorrentRenamePath),
+            M::QueueMoveUp | M::QueueMoveDown | M::QueueMoveTop | M::QueueMoveBottom => {
+                from_value(args).map(A::QueueMove)
+            }
+            M::GroupSet => from_value(args).map(A::BandwidthGroupSet),
+            M::GroupGet => from_value(args).map(A::BandwidthGroupGet),
+            _ => return Ok(None),
+        };
+        args.map(Some)
+    }
+}
+
+#[derive(Serialize, Deserialize, Default, Debug, Clone, PartialEq)]
 pub struct FreeSpaceArgs {
-    path: String,
+    pub path: String,
 }
 
 #[skip_serializing_none]
-#[derive(Serialize, Debug, Clone, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub struct SessionSetArgs {
     pub alt_speed_down: Option<i32>,
@@ -342,9 +526,9 @@ pub struct SessionSetArgs {
 }
 
 #[skip_serializing_none]
-#[derive(Serialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Default, Debug, Clone, PartialEq)]
 pub struct QueueMoveArgs {
-    ids: Vec<Id>,
+    pub ids: Vec<Id>,
 }
 
 impl From<Vec<Id>> for QueueMoveArgs {
@@ -353,13 +537,13 @@ impl From<Vec<Id>> for QueueMoveArgs {
     }
 }
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Default, Debug, Clone, PartialEq)]
 pub struct BandwidthGroupGetArgs {
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    name: Vec<String>,
+    pub name: Vec<String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum TorrentGetIds {
     /// One or more explicit torrent ids/hashes.
     Ids(Vec<Id>),
@@ -371,7 +555,7 @@ pub enum TorrentGetIds {
 impl Serialize for TorrentGetIds {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
-        S: serde::Serializer,
+        S: Serializer,
     {
         match self {
             TorrentGetIds::Ids(ids) => ids.serialize(serializer),
@@ -380,18 +564,53 @@ impl Serialize for TorrentGetIds {
     }
 }
 
+impl<'de> Deserialize<'de> for TorrentGetIds {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct Visitor;
+        impl<'v> de::Visitor<'v> for Visitor {
+            type Value = TorrentGetIds;
+            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                f.write_str("torrent IDs")
+            }
+            fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                if v != "recently-active" {
+                    return Err(E::custom(format!("Unexpected value: {v}")));
+                }
+                Ok(Self::Value::RecentlyActive)
+            }
+            fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
+            where
+                A: de::SeqAccess<'v>,
+            {
+                let mut ids = Vec::new();
+                while let Some(id) = seq.next_element::<Id>()? {
+                    ids.push(id);
+                }
+                Ok(Self::Value::Ids(ids))
+            }
+        }
+        deserializer.deserialize_any(Visitor)
+    }
+}
+
 impl From<Vec<Id>> for TorrentGetIds {
     fn from(ids: Vec<Id>) -> Self {
         TorrentGetIds::Ids(ids)
     }
 }
-
-#[derive(Serialize, Debug, Clone)]
+#[skip_serializing_none]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct TorrentGetArgs {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    fields: Option<Vec<TorrentGetField>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    ids: Option<TorrentGetIds>,
+    pub fields: Option<Vec<TorrentGetField>>,
+    pub ids: Option<TorrentGetIds>,
+    #[serde(default)]
+    pub format: TorrentGetFormat,
 }
 
 impl Default for TorrentGetArgs {
@@ -399,39 +618,76 @@ impl Default for TorrentGetArgs {
         TorrentGetArgs {
             fields: all::<TorrentGetField>().collect::<Vec<_>>().into(),
             ids: None,
+            format: Default::default(),
         }
     }
 }
 
-#[derive(Serialize, Debug, Clone)]
-pub struct TorrentActionArgs {
-    ids: Vec<Id>,
+#[derive(Serialize, Default, Debug, Clone, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum TorrentGetFormat {
+    #[default]
+    Objects,
+    Table,
+    Unknown(String),
 }
-#[derive(Serialize, Debug, Clone)]
+
+impl<'de> Deserialize<'de> for TorrentGetFormat {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct Visitor;
+        impl de::Visitor<'_> for Visitor {
+            type Value = TorrentGetFormat;
+            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                f.write_str("format name as `objects` for `table`")
+            }
+            fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                match v {
+                    "objects" => Ok(Self::Value::Objects),
+                    "table" => Ok(Self::Value::Table),
+                    _ => Ok(Self::Value::Unknown(v.to_owned())),
+                }
+            }
+        }
+        deserializer.deserialize_str(Visitor)
+    }
+}
+
+#[derive(Serialize, Deserialize, Default, Debug, Clone, PartialEq)]
+pub struct TorrentActionArgs {
+    pub ids: Vec<Id>,
+}
+
+#[derive(Serialize, Deserialize, Default, Debug, Clone, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub struct TorrentRemoveArgs {
-    ids: Vec<Id>,
-    delete_local_data: bool,
+    pub ids: Vec<Id>,
+    pub delete_local_data: bool,
 }
 
 #[skip_serializing_none]
-#[derive(Serialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Default, Debug, Clone, PartialEq)]
 pub struct TorrentSetLocationArgs {
-    ids: Vec<Id>,
-    location: String,
+    pub ids: Vec<Id>,
+    pub location: String,
     #[serde(rename = "move")]
-    move_from: Option<bool>,
+    pub move_from: Option<bool>,
 }
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Default, Debug, Clone, PartialEq)]
 pub struct TorrentRenamePathArgs {
-    ids: Vec<Id>,
-    path: String,
-    name: String,
+    pub ids: Vec<Id>,
+    pub path: String,
+    pub name: String,
 }
 
 #[skip_serializing_none]
-#[derive(Serialize, Debug, Clone, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq)]
 #[serde(rename_all = "kebab-case")]
 pub struct TorrentAddArgs {
     pub cookies: Option<String>,
@@ -462,7 +718,7 @@ pub struct TorrentAddArgs {
     pub labels: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Sequence, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Sequence, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum TorrentGetField {
     ActivityDate,
@@ -534,6 +790,8 @@ pub enum TorrentGetField {
     StartDate,
     Status,
     TorrentFile,
+    TotalSeedersFromTrackers,
+    TotalLeechersFromTrackers,
     TotalSize,
     Trackers,
     TrackerList,
@@ -547,7 +805,7 @@ pub enum TorrentGetField {
     WebseedsSendingToUs,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
 pub enum TorrentAction {
     Start,
     Stop,
@@ -575,15 +833,64 @@ impl TorrentAction {
     }
 }
 
-#[derive(Debug, Clone, Default)]
-pub struct TrackerList(pub Vec<String>);
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct TrackerList(pub Vec<Vec<String>>);
 
 impl Serialize for TrackerList {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
-        self.0.join("\n").serialize(serializer)
+        let mut joined = String::new();
+        let mut tiers = self.0.iter().peekable();
+        while let Some(tier) = tiers.next() {
+            let mut tier = tier.iter().peekable();
+            while let Some(tracker) = tier.next() {
+                if tier.peek().is_none() {
+                    joined.push_str(tracker);
+                } else {
+                    joined.push_str(tracker);
+                    joined.push('\n');
+                }
+            }
+            if tiers.peek().is_some() {
+                // Blank line between tiers
+                joined.push_str("\n\n");
+            }
+        }
+        serializer.serialize_str(&joined)
+    }
+}
+
+impl<'de> Deserialize<'de> for TrackerList {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct Visitor;
+        impl de::Visitor<'_> for Visitor {
+            type Value = TrackerList;
+            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                f.write_str("tracker list")
+            }
+            fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                let mut tiers = Vec::new();
+                let mut tier = Vec::new();
+                for line in v.lines() {
+                    if line.is_empty() {
+                        tiers.push(mem::take(&mut tier));
+                        continue;
+                    }
+                    tier.push(line.to_owned());
+                }
+                tiers.push(tier);
+                Ok(TrackerList(tiers))
+            }
+        }
+        deserializer.deserialize_str(Visitor)
     }
 }
 
@@ -668,7 +975,7 @@ impl Serialize for TrackerList {
 /// [`torrent_set`]: crate::TransClient::torrent_set
 /// [`Trackers::id`]: super::Trackers::id
 #[skip_serializing_none]
-#[derive(Serialize, Debug, Clone, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct TorrentSetArgs {
     pub bandwidth_priority: Option<Priority>,
@@ -704,4 +1011,63 @@ pub struct TorrentSetArgs {
     pub tracker_replace: Option<Vec<String>>,
     pub upload_limit: Option<usize>,
     pub upload_limited: Option<bool>,
+}
+
+impl TorrentSetArgs {
+    pub fn ids(&self) -> Option<&[Id]> {
+        self.ids.as_deref()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::{from_value, json};
+
+    #[test]
+    fn test_deserialize_rpc_request() {
+        {
+            let json = json!({
+                "method": Method::SessionGet,
+                "arguments": null
+            });
+            let request: RpcRequest = from_value(json).unwrap();
+            assert_eq!(request.method, Method::SessionGet);
+            assert_eq!(request.arguments, None);
+        }
+
+        {
+            let args = Args::TorrentGet(Default::default());
+            let json = json!({
+                "method": Method::TorrentGet,
+                "arguments": args
+            });
+            let request: RpcRequest = from_value(json).unwrap();
+            assert_eq!(request.method, Method::TorrentGet);
+            assert_eq!(request.arguments, Some(args));
+        }
+    }
+
+    #[test]
+    fn test_tracker_list_ser() {
+        let source = TrackerList(vec![
+            vec!["a".to_string(), "b".to_string(), "c".to_string()],
+            vec!["d".to_string()],
+        ]);
+        let value = serde_json::to_value(&source).unwrap();
+        assert_eq!(value, json!("a\nb\nc\n\nd"));
+    }
+
+    #[test]
+    fn test_tracker_list_de() {
+        let source = json!("a\nb\nc\n\nd");
+        let list: TrackerList = from_value(source).unwrap();
+        assert_eq!(
+            list.0,
+            vec![
+                vec!["a".to_string(), "b".to_string(), "c".to_string()],
+                vec!["d".to_string()]
+            ]
+        );
+    }
 }
